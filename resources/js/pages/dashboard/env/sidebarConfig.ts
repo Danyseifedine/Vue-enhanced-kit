@@ -28,7 +28,7 @@ export const CELL_PADDING: string = "py-5";
  * The variant of the sidebar to display
  * Available options: "inset", "floating", "sidebar"
  */
-export const SIDEBAR_VARIANTS: "inset" | "floating" | "sidebar" = "sidebar";
+export const SIDEBAR_VARIANTS: "inset" | "floating" | "sidebar" = "inset";
 
 /**
  * Controls the design style of the sidebar submenu
@@ -39,8 +39,7 @@ export const SIDEBAR_VARIANTS: "inset" | "floating" | "sidebar" = "sidebar";
  * - glass: Frosted glass effect with blurred backgrounds
  * - neon: Vibrant glowing borders and highlights
  */
-export const SIDEBAR_SUBMENU_STYLE: "tree" | "bullet" | "minimal" | "glass" | "neon" = "neon";
-
+export const SIDEBAR_SUBMENU_STYLE: "tree" | "bullet" | "minimal" | "glass" | "neon" = "tree";
 /**
  * ? ONLY USED IF SIDEBAR_SUBMENU_STYLE IS "neon"
  *
@@ -91,15 +90,6 @@ export const SIDEBAR_MAIN_ITEMS: NavItem[] = [
     },
     {
         title: 'My Projects',
-        href: route('dashboard.profile.edit'),
-        icon: Folder,
-    },
-    {
-        title: 'Notifications',
-        isSection: true,
-    },
-    {
-        title: 'Projects',
         href: "#",
         icon: Folder,
         children: [
@@ -113,9 +103,13 @@ export const SIDEBAR_MAIN_ITEMS: NavItem[] = [
                 href: route('dashboard.appearance'),
                 icon: Folder,
             },
-
         ],
     },
+    {
+        title: 'Notifications',
+        isSection: true,
+    },
+
 
 
 ];

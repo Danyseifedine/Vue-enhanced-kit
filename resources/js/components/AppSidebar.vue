@@ -14,7 +14,7 @@ import AppLogo from './AppLogo.vue';
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
-                        <Link :href="route('dashboard')" class="flex items-center justify-center">
+                        <Link :href="route('dashboard')" class="flex items-center">
                             <AppLogo />
                         </Link>
                     </SidebarMenuButton>
