@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import InputError from '@/components/InputError.vue';
-import TextLink from '@/components/TextLink.vue';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import AuthBase from '@/layouts/GuestLayout.vue';
+import InputError from '@/shared/components/InputError.vue';
+import TextLink from '@/shared/components/TextLink.vue';
+import { Button } from '@/shared/components/ui/button';
+import { Checkbox } from '@/shared/components/ui/checkbox';
+import { Input } from '@/shared/components/ui/input';
+import { Label } from '@/shared/components/ui/label';
 import { Head, useForm } from '@inertiajs/vue3';
 import { LoaderCircle, Lock, Mail } from 'lucide-vue-next';
 
