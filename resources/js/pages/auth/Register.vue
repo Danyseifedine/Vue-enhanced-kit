@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AuthBase from '@/layouts/GuestLayout.vue';
+import AuthBase from '@/pages/layouts/GuestLayout.vue';
 import InputError from '@/shared/components/InputError.vue';
 import TextLink from '@/shared/components/TextLink.vue';
 import { Button } from '@/shared/components/ui/button';
