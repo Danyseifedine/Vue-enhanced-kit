@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { index } from '@/actions/App/Http/Controllers/Admin/IndexController';
-import AdminLayout from '@/pages/layouts/dashboards/admin/AdminLayout.vue';
-import PlaceholderPattern from '@/shared/components/PlaceholderPattern.vue';
-import { type BreadcrumbItem } from '@/shared/types';
+// Using Ziggy route helper instead of controller import
+import AdminLayout from '@modules/admin/layouts/AdminLayout.vue';
+import PlaceholderPattern from '@core/components/PlaceholderPattern.vue';
+import { type BreadcrumbItem } from '@core/types';
 import { Head } from '@inertiajs/vue3';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
-        href: index().url,
+        href: route('admin.dashboard'),
     },
 ];
 </script>

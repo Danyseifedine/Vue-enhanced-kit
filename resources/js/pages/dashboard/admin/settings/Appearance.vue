@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
 
-import HeadingSmall from '@components/HeadingSmall.vue';
-import { useAppearance } from '@composables/useAppearance';
-import { type BreadcrumbItem } from '@shared/types';
+import HeadingSmall from '@core/components/HeadingSmall.vue';
+import { useAppearance } from '@core/composables/useAppearance';
+import { type BreadcrumbItem } from '@core/types';
 import { Monitor, Moon, Sun } from 'lucide-vue-next';
 
 const { appearance, updateAppearance } = useAppearance();
@@ -14,8 +14,8 @@ const tabs = [
     { value: 'system', Icon: Monitor, label: 'System' },
 ] as const;
 
-import AdminLayout from '@layouts/admin/AdminLayout.vue';
-import SettingsLayout from '@layouts/admin/SettingsLayout.vue';
+import AdminLayout from '@modules/admin/layouts/AdminLayout.vue';
+import SettingsLayout from '@modules/admin/layouts/SettingsLayout.vue';
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {

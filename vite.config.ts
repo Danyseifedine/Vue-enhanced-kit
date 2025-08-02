@@ -5,11 +5,9 @@ import path from 'path';
 import tailwindcss from 'tailwindcss';
 import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
-import { wayfinder } from "@laravel/vite-plugin-wayfinder";
 
 export default defineConfig({
     plugins: [
-        wayfinder(),
         laravel({
             input: ['resources/js/app.ts'],
             ssr: 'resources/js/ssr.ts',
@@ -27,11 +25,10 @@ export default defineConfig({
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './resources/js'),
-            '@composables': path.resolve(__dirname, './resources/js/shared/states/composables'),
-            '@stores': path.resolve(__dirname, './resources/js/shared/states/stores'),
-            '@shared': path.resolve(__dirname, './resources/js/shared'),
-            '@components': path.resolve(__dirname, './resources/js/shared/components'),
-            '@layouts': path.resolve(__dirname, './resources/js/pages/layouts/dashboards'),
+            '@core': path.resolve(__dirname, './resources/js/core'),
+            '@modules': path.resolve(__dirname, './resources/js/modules'),
+            '@ui': path.resolve(__dirname, './resources/js/ui'),
+            '@pages': path.resolve(__dirname, './resources/js/pages'),
             'ziggy-js': resolve(__dirname, 'vendor/tightenco/ziggy'),
         },
     },

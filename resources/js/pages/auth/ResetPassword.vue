@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import GuestLayout from '@/layouts/GuestLayout.vue';
-import InputError from '@/shared/components/InputError.vue';
-import { Button } from '@/shared/components/ui/button';
-import { Input } from '@/shared/components/ui/input';
-import { Label } from '@/shared/components/ui/label';
+import GuestLayout from '@core/layouts/GuestLayout.vue';
+import InputError from '@core/components/InputError.vue';
+import { Button } from '@ui/button';
+import { Input } from '@ui/input';
+import { Label } from '@ui/label';
 import { Head, useForm } from '@inertiajs/vue3';
 import { KeyRound, LoaderCircle, Lock, Mail } from 'lucide-vue-next';
 

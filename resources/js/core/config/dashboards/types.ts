@@ -1,0 +1,36 @@
+import type { NavItem } from '@/core/types';
+
+export interface LayoutConfig {
+    containerVariant: 'sidebar' | 'header';
+    sidebarDirection: 'left' | 'right';
+    sidebarVariant: 'inset' | 'floating' | 'sidebar';
+    sidebarCollapseButton: boolean;
+    navbarAppearanceButton: boolean;
+    navbarLogoutButton: boolean;
+    navbarSettingsButton: boolean;
+    sidebarTitleExist: boolean;
+    sidebarTitle: string;
+    sidebarPadding: string;
+    sidebarNeonBorderColor: string;
+    sidebarSubmenuStyle: 'tree' | 'bullet' | 'glass' | 'neon' | 'minimal';
+}
+
+export interface NavigationConfig {
+    mainItems: NavItem[];
+    footerItems: NavItem[];
+}
+
+export interface RouteConfig {
+    logoRedirect: string;
+    settings: string;
+}
+
+export interface DashboardConfig {
+    id: string;
+    name: string;
+    layout: LayoutConfig;
+    navigation: NavigationConfig;
+    routes: RouteConfig;
+}
+
+export type DashboardType = 'admin' | 'user' | 'guest';

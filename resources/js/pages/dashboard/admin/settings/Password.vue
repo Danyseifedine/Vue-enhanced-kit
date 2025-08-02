@@ -1,16 +1,15 @@
 <script setup lang="ts">
-import InputError from '@components/InputError.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import AdminLayout from '@layouts/admin/AdminLayout.vue';
-import SettingsLayout from '@/pages/layouts/dashboards/admin/SettingsLayout.vue';
 import { ref } from 'vue';
 
-import PasswordController from '@/actions/App/Http/Controllers/Admin/Settings/PasswordController';
-import HeadingSmall from '@components/HeadingSmall.vue';
-import { Button } from '@components/ui/button';
-import { Input } from '@components/ui/input';
-import { Label } from '@components/ui/label';
-import { type BreadcrumbItem } from '@shared/types';
+import AdminLayout from '@modules/admin/layouts/AdminLayout.vue';
+import SettingsLayout from '@modules/admin/layouts/SettingsLayout.vue';
+import InputError from '@core/components/InputError.vue';
+import HeadingSmall from '@core/components/HeadingSmall.vue';
+import { Button } from '@ui/button';
+import { Input } from '@ui/input';
+import { Label } from '@ui/label';
+import { type BreadcrumbItem } from '@core/types';
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
@@ -29,7 +28,7 @@ const form = useForm({
 });
 
 const updatePassword = () => {
-    form.put(PasswordController.update().url, {
+    form.put(route('admin.settings.password.update'), {
         preserveScroll: true,
         onSuccess: () => form.reset(),
         onError: (errors: any) => {

@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 
-import ProfileController from '@/actions/App/Http/Controllers/Admin/Settings/ProfileController';
-import AdminLayout from '@layouts/admin/AdminLayout.vue';
-import SettingsLayout from '@/pages/layouts/dashboards/admin/SettingsLayout.vue';
-import DeleteUser from '@shared/components/DeleteUser.vue';
-import HeadingSmall from '@components/HeadingSmall.vue';
-import InputError from '@components/InputError.vue';
-import { Button } from '@components/ui/button';
-import { Input } from '@components/ui/input';
-import { Label } from '@components/ui/label';
-import { type BreadcrumbItem, type SharedData, type User } from '@shared/types';
+import AdminLayout from '@modules/admin/layouts/AdminLayout.vue';
+import SettingsLayout from '@modules/admin/layouts/SettingsLayout.vue';
+import DeleteUser from '@core/components/DeleteUser.vue';
+import HeadingSmall from '@core/components/HeadingSmall.vue';
+import InputError from '@core/components/InputError.vue';
+import { Button } from '@ui/button';
+import { Input } from '@ui/input';
+import { Label } from '@ui/label';
+import { type BreadcrumbItem, type SharedData, type User } from '@core/types';
 import { LoaderCircle } from 'lucide-vue-next';
 
 interface Props {
@@ -36,7 +35,7 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.patch(ProfileController.update().url, {
+    form.patch(route('admin.settings.profile.update'), {
         preserveScroll: true,
     });
 };

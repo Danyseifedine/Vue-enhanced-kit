@@ -6,7 +6,7 @@ import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
 import { createPinia } from 'pinia';
 import { ZiggyVue } from 'ziggy-js';
-import { initializeTheme } from '@composables/useAppearance';
+import { initializeTheme } from '@core/composables/useAppearance';
 import PrimeVue from 'primevue/config';
 
 
