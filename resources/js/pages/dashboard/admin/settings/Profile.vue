@@ -3,12 +3,12 @@ import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 
 import AdminLayout from '@modules/admin/layouts/AdminLayout.vue';
 import SettingsLayout from '@modules/admin/layouts/SettingsLayout.vue';
-import DeleteUser from '@shared/components/DeleteUser.vue';
+import DeleteUser from '@/modules/admin/components/DeleteUser.vue';
 import HeadingSmall from '@shared/components/HeadingSmall.vue';
 import InputError from '@shared/components/InputError.vue';
-import { Button } from '@ui/button';
-import { Input } from '@ui/input';
-import { Label } from '@ui/label';
+import { Button } from '@shared/ui/button';
+import { Input } from '@shared/ui/input';
+import { Label } from '@shared/ui/label';
 import { type BreadcrumbItem, type SharedData, type User } from '@core/types';
 import { LoaderCircle } from 'lucide-vue-next';
 

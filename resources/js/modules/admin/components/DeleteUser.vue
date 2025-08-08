@@ -5,7 +5,7 @@ import { ref } from 'vue';
 // Components
 import HeadingSmall from '@shared/components/HeadingSmall.vue';
 import InputError from '@shared/components/InputError.vue';
-import { Button } from '@ui/button';
+import { Button } from '@shared/ui/button';
 import {
     Dialog,
     DialogClose,
@@ -15,9 +15,9 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from '@ui/dialog';
-import { Input } from '@ui/input';
-import { Label } from '@ui/label';
+} from '@shared/ui/dialog';
+import { Input } from '@shared/ui/input';
+import { Label } from '@shared/ui/label';
 
 const passwordInput = ref<HTMLInputElement | null>(null);
 
@@ -28,7 +28,7 @@ const form = useForm({
 const deleteUser = (e: Event) => {
     e.preventDefault();
 
-    form.delete(ProfileController.destroy().url, {
+    form.delete(route('admin.settings.profile.destroy'), {
         preserveScroll: true,
         onSuccess: () => closeModal(),
         onError: () => passwordInput.value?.focus(),

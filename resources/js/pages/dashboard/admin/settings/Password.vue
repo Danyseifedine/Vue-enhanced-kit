@@ -6,9 +6,9 @@ import AdminLayout from '@modules/admin/layouts/AdminLayout.vue';
 import SettingsLayout from '@modules/admin/layouts/SettingsLayout.vue';
 import InputError from '@shared/components/InputError.vue';
 import HeadingSmall from '@shared/components/HeadingSmall.vue';
-import { Button } from '@ui/button';
-import { Input } from '@ui/input';
-import { Label } from '@ui/label';
+import { Button } from '@shared/ui/button';
+import { Input } from '@shared/ui/input';
+import { Label } from '@shared/ui/label';
 import { type BreadcrumbItem } from '@core/types';
 
 const breadcrumbItems: BreadcrumbItem[] = [
