@@ -3,8 +3,8 @@ import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 // Components
-import HeadingSmall from '@core/components/HeadingSmall.vue';
-import InputError from '@core/components/InputError.vue';
+import HeadingSmall from '@shared/components/HeadingSmall.vue';
+import InputError from '@shared/components/InputError.vue';
 import { Button } from '@ui/button';
 import {
     Dialog,

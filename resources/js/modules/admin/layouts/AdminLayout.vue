@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AuthLayout from '@/core/layouts/app/AppSidebarLayout.vue';
+import AuthLayout from '@shared/layouts/app/AppSidebarLayout.vue';
 import { useDashboardConfig } from '@/core/composables/useDashboardConfig';
 import { adminDashboardConfig } from '@/core/config/dashboards/admin.config';
 import type { BreadcrumbItemType } from '@/core/types';

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Breadcrumbs from '@core/components/Breadcrumbs.vue';
+import Breadcrumbs from '@shared/components/Breadcrumbs.vue';
 import Button from '@ui/button/Button.vue';
 import { SidebarTrigger } from '@ui/sidebar';
 import { useAppearance } from '@core/composables/useAppearance';

@@ -39,7 +39,8 @@
             "@/*": ["./resources/js/*"],
             "@core/*": ["./resources/js/core/*"],
             "@modules/*": ["./resources/js/modules/*"],
-            "@ui/*": ["./resources/js/ui/*"],
+            "@shared/*": ["./resources/js/shared/*"],
+            "@ui/*": ["./resources/js/shared/ui/*"],
             "@pages/*": ["./resources/js/pages/*"]
         },
         // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
 
-import HeadingSmall from '@core/components/HeadingSmall.vue';
+import HeadingSmall from '@shared/components/HeadingSmall.vue';
 import { useAppearance } from '@core/composables/useAppearance';
 import { type BreadcrumbItem } from '@core/types';
 import { Monitor, Moon, Sun } from 'lucide-vue-next';

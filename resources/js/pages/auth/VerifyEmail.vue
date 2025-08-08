@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import GuestLayout from '@core/layouts/GuestLayout.vue';
-import TextLink from '@core/components/TextLink.vue';
+import GuestLayout from '@shared/layouts/GuestLayout.vue';
+import TextLink from '@shared/components/TextLink.vue';
 import { Button } from '@ui/button';
 import { Head, useForm } from '@inertiajs/vue3';
 import { LoaderCircle, Mail } from 'lucide-vue-next';

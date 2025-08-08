@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import AuthBase from '@core/layouts/GuestLayout.vue';
-import InputError from '@core/components/InputError.vue';
-import TextLink from '@core/components/TextLink.vue';
+import AuthBase from '@shared/layouts/GuestLayout.vue';
+import InputError from '@shared/components/InputError.vue';
+import TextLink from '@shared/components/TextLink.vue';
 import { Button } from '@ui/button';
 import { Checkbox } from '@ui/checkbox';
 import { Input } from '@ui/input';

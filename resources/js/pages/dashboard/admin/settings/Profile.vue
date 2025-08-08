@@ -3,9 +3,9 @@ import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 
 import AdminLayout from '@modules/admin/layouts/AdminLayout.vue';
 import SettingsLayout from '@modules/admin/layouts/SettingsLayout.vue';
-import DeleteUser from '@core/components/DeleteUser.vue';
-import HeadingSmall from '@core/components/HeadingSmall.vue';
-import InputError from '@core/components/InputError.vue';
+import DeleteUser from '@shared/components/DeleteUser.vue';
+import HeadingSmall from '@shared/components/HeadingSmall.vue';
+import InputError from '@shared/components/InputError.vue';
 import { Button } from '@ui/button';
 import { Input } from '@ui/input';
 import { Label } from '@ui/label';

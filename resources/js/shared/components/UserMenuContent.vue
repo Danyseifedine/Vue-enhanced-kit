@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import UserInfo from '@core/components/UserInfo.vue';
+import UserInfo from '@shared/components/UserInfo.vue';
 import { DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@ui/dropdown-menu';
 import { useGlobalLayoutRouteStore } from '@core/stores/layout';
 import type { User } from '@core/types';

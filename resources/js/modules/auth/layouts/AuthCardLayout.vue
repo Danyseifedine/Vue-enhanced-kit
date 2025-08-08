@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AppLogoIcon from '@core/components/AppLogoIcon.vue';
+import AppLogoIcon from '@shared/components/AppLogoIcon.vue';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@ui/card';
 import { Link } from '@inertiajs/vue3';
 

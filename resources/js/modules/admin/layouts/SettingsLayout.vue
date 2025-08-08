@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import Heading from '@/core/components/Heading.vue';
-import { Button } from '@/ui/button';
-import { Separator } from '@/ui/separator';
+import Heading from '@shared/components/Heading.vue';
+import { Button } from '@ui/button';
+import { Separator } from '@ui/separator';
 import { type NavItem } from '@/core/types';
 import { Link, usePage } from '@inertiajs/vue3';
 
