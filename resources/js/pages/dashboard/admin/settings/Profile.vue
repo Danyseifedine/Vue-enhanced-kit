@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
 import AdminLayout from '@modules/admin/layouts/AdminLayout.vue';
 import SettingsLayout from '@modules/admin/layouts/SettingsLayout.vue';
@@ -10,7 +11,7 @@ import { Button } from '@shared/ui/button';
 import { Input } from '@shared/ui/input';
 import { Label } from '@shared/ui/label';
 import { type BreadcrumbItem, type SharedData, type User } from '@core/types';
-import { LoaderCircle } from 'lucide-vue-next';
+import { LoaderCircle, Edit } from 'lucide-vue-next';
 
 interface Props {
     mustVerifyEmail: boolean;
@@ -32,11 +33,35 @@ const user = page.props.auth.user as User;
 const form = useForm({
     name: user.name,
     email: user.email,
+    avatar: null as File | null,
 });
 
+const avatarInputRef = ref<HTMLInputElement | null>(null);
+const previewUrl = ref<string | null>(null);
+
+const handleAvatarChange = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    if (target.files && target.files[0]) {
+        form.avatar = target.files[0];
+        
+        // Create preview URL for immediate display
+        const file = target.files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            previewUrl.value = e.target?.result as string;
+        };
+        reader.readAsDataURL(file);
+    }
+};
+
+const triggerFileInput = () => {
+    avatarInputRef.value?.click();
+};
+
 const submit = () => {
-    form.patch(route('admin.settings.profile.update'), {
+    form.post(route('admin.settings.profile.update'), {
         preserveScroll: true,
+        forceFormData: true,
     });
 };
 </script>
@@ -50,6 +75,28 @@ const submit = () => {
                 <HeadingSmall title="Profile information" description="Update your name and email address" />
 
                 <form @submit.prevent="submit" class="space-y-6">
+                    <div class="grid gap-2">
+                        <Label for="avatar">Avatar</Label>
+                        <div class="flex items-center space-x-4">
+                            <div class="relative h-20 w-20 rounded-full bg-muted flex items-center justify-center overflow-visible cursor-pointer group" @click="triggerFileInput">
+                                <img v-if="previewUrl || user.avatar_url" :src="previewUrl || user.avatar_url" alt="Avatar" class="h-full w-full object-cover rounded-full" />
+                                <span v-else class="text-muted-foreground text-sm">No avatar</span>
+                                
+                                <!-- Crayon icon overlay -->
+                                <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-full flex items-center justify-center">
+                                    <Edit class="h-5 w-5 text-white" />
+                                </div>
+                                
+                                <!-- Small crayon icon in bottom right -->
+                                <div class="absolute bottom-0 right-0 bg-primary text-primary-foreground rounded-full p-1.5 shadow-md border-2 border-background">
+                                    <Edit class="h-3 w-3" />
+                                </div>
+                            </div>
+                            <input ref="avatarInputRef" id="avatar" type="file" accept="image/*" @change="handleAvatarChange" class="hidden" />
+                        </div>
+                        <InputError class="mt-2" :message="form.errors.avatar" />
+                    </div>
+
                     <div class="grid gap-2">
                         <Label for="name">Name</Label>
                         <Input id="name" class="mt-1 block w-full" v-model="form.name" autocomplete="name" placeholder="Full name" />
