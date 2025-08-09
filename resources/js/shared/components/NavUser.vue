@@ -5,10 +5,11 @@ import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@ui
 import { type SharedData, type User } from '@core/types';
 import { usePage } from '@inertiajs/vue3';
 import { ChevronsUpDown } from 'lucide-vue-next';
+import { computed } from 'vue';
 import UserMenuContent from './UserMenuContent.vue';
 
 const page = usePage<SharedData>();
-const user = page.props.auth.user as User;
+const user = computed(() => page.props.auth.user as User);
 const { isMobile, state } = useSidebar();
 </script>
 

@@ -71,23 +71,21 @@ class User extends Authenticatable implements MustVerifyEmail, HasMedia
             ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/gif', 'image/webp']);
     }
 
-    public function getAvatarUrlAttribute(): ?string
+    public function getAvatarUrlAttribute(): string
     {
         $url = $this->getFirstMediaUrl('avatar');
-
-        // if ($url) {
-        //     // Fix double slashes in URL
-        //     $url = preg_replace('#/+#', '/', $url);
-        //     $url = str_replace('http:/', 'http://', $url);
-        //     $url = str_replace('https:/', 'https://', $url);
-        // }
-
-        return $url ?: null;
+        
+        // Return default image if no avatar exists
+        return $url ?: asset('assets/images/default.jpg');
     }
 
     public function setAvatarAttribute($value): void
     {
-        if ($value) {
+        if ($value === 'remove') {
+            // Remove existing avatar and set to default
+            $this->clearMediaCollection('avatar');
+        } elseif ($value) {
+            // Add new avatar file
             $this->clearMediaCollection('avatar');
             $this->addMediaFromRequest('avatar')->toMediaCollection('avatar');
         }

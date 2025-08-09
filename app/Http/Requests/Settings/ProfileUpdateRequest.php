@@ -25,7 +25,22 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
-            'avatar' => ['nullable', 'image', 'max:2048'],
+            'avatar' => ['nullable', function ($attribute, $value, $fail) {
+                if ($value === 'remove') {
+                    return; // Allow 'remove' string
+                }
+                if ($value && !$value instanceof \Illuminate\Http\UploadedFile) {
+                    $fail('The avatar must be an image file.');
+                    return;
+                }
+                if ($value && $value->getSize() > 2048 * 1024) {
+                    $fail('The avatar must not be greater than 2MB.');
+                    return;
+                }
+                if ($value && !in_array($value->getMimeType(), ['image/jpeg', 'image/png', 'image/gif', 'image/webp'])) {
+                    $fail('The avatar must be an image (jpeg, png, gif, webp).');
+                }
+            }],
         ];
     }
 }

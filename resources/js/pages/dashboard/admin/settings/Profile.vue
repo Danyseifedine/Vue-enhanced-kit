@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { Head, Link, useForm, usePage, router } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
 
 import DeleteUser from '@/modules/admin/components/DeleteUser.vue';
 import { type BreadcrumbItem, type SharedData, type User } from '@core/types';
@@ -11,7 +11,8 @@ import InputError from '@shared/components/InputError.vue';
 import { Button } from '@shared/ui/button';
 import { Input } from '@shared/ui/input';
 import { Label } from '@shared/ui/label';
-import { Edit, LoaderCircle } from 'lucide-vue-next';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@shared/ui/dropdown-menu';
+import { Edit, LoaderCircle, Upload, Trash2 } from 'lucide-vue-next';
 
 interface Props {
     mustVerifyEmail: boolean;
@@ -28,31 +29,66 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const page = usePage<SharedData>();
-const user = page.props.auth.user as User;
+const user = computed(() => page.props.auth.user as User);
 
 const form = useForm({
-    name: user.name,
-    email: user.email,
+    name: user.value.name,
+    email: user.value.email,
     avatar: null as File | null,
 });
 
 const avatarInputRef = ref<HTMLInputElement | null>(null);
+const previewUrl = ref<string | null>(null);
+const isSubmitting = ref(false);
 
 const handleAvatarChange = (event: Event) => {
     const target = event.target as HTMLInputElement;
     if (target.files && target.files[0]) {
         form.avatar = target.files[0];
+        createPreview(target.files[0]);
     }
 };
 
-const triggerFileInput = () => {
+const createPreview = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        previewUrl.value = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+};
+
+const selectImage = () => {
     avatarInputRef.value?.click();
 };
 
+const removeAvatar = () => {
+    // Set form avatar to 'remove' to signal server to delete
+    form.avatar = 'remove' as any;
+    
+    // Set preview to default image
+    previewUrl.value = '/assets/images/default.jpg';
+};
+
 const submit = () => {
+    isSubmitting.value = true;
+    
     form.post(route('admin.settings.profile.update'), {
         preserveScroll: true,
         forceFormData: true,
+        onSuccess: () => {
+            // Clear preview URL and reset form avatar after successful save
+            previewUrl.value = null;
+            form.avatar = null;
+            
+            // Clear file input
+            if (avatarInputRef.value) avatarInputRef.value.value = '';
+            
+            // Force reload of all shared data to update UI immediately
+            router.reload();
+        },
+        onFinish: () => {
+            isSubmitting.value = false;
+        },
     });
 };
 </script>
@@ -69,28 +105,34 @@ const submit = () => {
                     <div class="grid gap-2">
                         <Label for="avatar">Avatar</Label>
                         <div class="flex items-center space-x-4">
-                            <div
-                                class="group relative flex h-20 w-20 cursor-pointer items-center justify-center overflow-visible rounded-full bg-muted"
-                                @click="triggerFileInput"
-                            >
-                                <img v-if="user.avatar_url" :src="user.avatar_url" alt="Avatar" class="h-full w-full rounded-full object-cover" />
-                                <span v-else class="text-sm text-muted-foreground">No avatar</span>
+                            <div class="relative">
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger as-child :disabled="isSubmitting">
+                                        <button
+                                            type="button"
+                                            :disabled="isSubmitting"
+                                            class="group relative h-20 w-20 cursor-pointer overflow-hidden rounded-full bg-muted transition-all duration-200 hover:ring-2 hover:ring-primary hover:ring-offset-2 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        >
+                                            <img v-if="previewUrl || user.avatar_url" :src="previewUrl || user.avatar_url" alt="Avatar" class="h-20 w-20 object-cover" />
+                                            <span v-else class="flex h-full w-full items-center justify-center text-sm text-muted-foreground">No avatar</span>
 
-                                <!-- Crayon icon overlay -->
-                                <div
-                                    class="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-                                >
-                                    <Edit class="h-5 w-5 text-white" />
-                                </div>
-
-                                <!-- Small crayon icon in bottom right -->
-                                <div
-                                    class="absolute bottom-0 right-0 rounded-full border-2 border-background bg-primary p-1.5 text-primary-foreground shadow-md"
-                                >
-                                    <Edit class="h-3 w-3" />
-                                </div>
+                                        </button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="start" class="w-48" sideOffset="2">
+                                        <DropdownMenuItem @click="selectImage" class="cursor-pointer">
+                                            <Upload class="mr-2 h-4 w-4" />
+                                            Select Image
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem @click="removeAvatar" class="cursor-pointer text-destructive focus:text-destructive">
+                                            <Trash2 class="mr-2 h-4 w-4" />
+                                            Remove Avatar
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
                             </div>
-                            <input ref="avatarInputRef" id="avatar" type="file" accept="image/*" @change="handleAvatarChange" class="hidden" />
+                            
+                            <!-- Hidden file input -->
+                            <input ref="avatarInputRef" type="file" accept="image/*" @change="handleAvatarChange" class="hidden" />
                         </div>
                         <InputError class="mt-2" :message="form.errors.avatar" />
                     </div>
