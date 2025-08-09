@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Head, Link, useForm, usePage, router } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
 
 import DeleteUser from '@/modules/admin/components/DeleteUser.vue';
 import { type BreadcrumbItem, type SharedData, type User } from '@core/types';
@@ -9,10 +9,10 @@ import SettingsLayout from '@modules/admin/layouts/SettingsLayout.vue';
 import HeadingSmall from '@shared/components/HeadingSmall.vue';
 import InputError from '@shared/components/InputError.vue';
 import { Button } from '@shared/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@shared/ui/dropdown-menu';
 import { Input } from '@shared/ui/input';
 import { Label } from '@shared/ui/label';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@shared/ui/dropdown-menu';
-import { Edit, LoaderCircle, Upload, Trash2 } from 'lucide-vue-next';
+import { LoaderCircle, Trash2, Upload } from 'lucide-vue-next';
 
 interface Props {
     mustVerifyEmail: boolean;
@@ -64,14 +64,14 @@ const selectImage = () => {
 const removeAvatar = () => {
     // Set form avatar to 'remove' to signal server to delete
     form.avatar = 'remove' as any;
-    
+
     // Set preview to default image
     previewUrl.value = '/assets/images/default.jpg';
 };
 
 const submit = () => {
     isSubmitting.value = true;
-    
+
     form.post(route('admin.settings.profile.update'), {
         preserveScroll: true,
         forceFormData: true,
@@ -79,10 +79,10 @@ const submit = () => {
             // Clear preview URL and reset form avatar after successful save
             previewUrl.value = null;
             form.avatar = null;
-            
+
             // Clear file input
             if (avatarInputRef.value) avatarInputRef.value.value = '';
-            
+
             // Force reload of all shared data to update UI immediately
             router.reload();
         },
@@ -113,9 +113,15 @@ const submit = () => {
                                             :disabled="isSubmitting"
                                             class="group relative h-20 w-20 cursor-pointer overflow-hidden rounded-full bg-muted transition-all duration-200 hover:ring-2 hover:ring-primary hover:ring-offset-2 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         >
-                                            <img v-if="previewUrl || user.avatar_url" :src="previewUrl || user.avatar_url" alt="Avatar" class="h-20 w-20 object-cover" />
-                                            <span v-else class="flex h-full w-full items-center justify-center text-sm text-muted-foreground">No avatar</span>
-
+                                            <img
+                                                v-if="previewUrl || user.avatar_url"
+                                                :src="previewUrl || user.avatar_url"
+                                                alt="Avatar"
+                                                class="h-20 w-20 object-cover"
+                                            />
+                                            <span v-else class="flex h-full w-full items-center justify-center text-sm text-muted-foreground"
+                                                >No avatar</span
+                                            >
                                         </button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="start" class="w-48" sideOffset="2">
@@ -130,7 +136,7 @@ const submit = () => {
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             </div>
-                            
+
                             <!-- Hidden file input -->
                             <input ref="avatarInputRef" type="file" accept="image/*" @change="handleAvatarChange" class="hidden" />
                         </div>
