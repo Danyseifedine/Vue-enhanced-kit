@@ -4,6 +4,8 @@ import type { Component } from 'vue';
 
 export interface Auth {
     user: User;
+    permissions: string[];
+    roles: string[];
 }
 
 export interface BreadcrumbItem {

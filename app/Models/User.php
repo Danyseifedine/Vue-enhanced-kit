@@ -12,11 +12,12 @@ use Danyseifeddine\Keychain\Traits\HasSocialAccounts;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail, HasMedia
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasSocialAccounts, InteractsWithMedia;
+    use HasFactory, Notifiable, HasSocialAccounts, InteractsWithMedia, HasRoles;
 
     /**
      * The attributes that are mass assignable.
