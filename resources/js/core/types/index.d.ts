@@ -17,6 +17,10 @@ export interface NavItem {
     title: string;
     href?: string;
     icon?: Component;
+    permission?: string;
+    role?: string;
+    permissions?: string[];
+    roles?: string[];
     children?: NavItem[];
     isSection?: boolean;
 }
