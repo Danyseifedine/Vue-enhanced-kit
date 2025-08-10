@@ -2,7 +2,7 @@ import type { DashboardConfig } from './types';
 import type { NavItem } from "@/core/types";
 import {
     BookOpen, Folder,
-    LayoutGrid
+    LayoutGrid,
 } from "lucide-vue-next";
 
 const getAdminSidebarMainItems = (): NavItem[] => [
@@ -10,31 +10,6 @@ const getAdminSidebarMainItems = (): NavItem[] => [
         title: 'Dashboard',
         href: route('admin.dashboard'),
         icon: LayoutGrid,
-    },
-    {
-        title: 'Projects',
-        isSection: true,
-    },
-    {
-        title: 'My Projects',
-        href: "#",
-        icon: Folder,
-        children: [
-            {
-                title: 'Project 1',
-                href: route('admin.settings.profile.edit'),
-                icon: Folder,
-            },
-            {
-                title: 'Project 2',
-                href: route('admin.settings.appearance'),
-                icon: Folder,
-            },
-        ],
-    },
-    {
-        title: 'Notifications',
-        isSection: true,
     },
 ];
 

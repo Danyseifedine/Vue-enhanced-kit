@@ -1,9 +1,8 @@
 <script setup lang="ts">
-// Using Ziggy route helper instead of controller import
-import AdminLayout from '@modules/admin/layouts/AdminLayout.vue';
-import PlaceholderPattern from '@shared/components/PlaceholderPattern.vue';
 import { type BreadcrumbItem } from '@core/types';
 import { Head } from '@inertiajs/vue3';
+import AdminLayout from '@modules/admin/layouts/AdminLayout.vue';
+import PlaceholderPattern from '@shared/components/PlaceholderPattern.vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {

@@ -8,6 +8,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,8 +20,15 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         // add 2 roles admin and user
+
+        $adminPermission = Permission::create(['name' => 'view-dashboard']);
+        $userPermission = Permission::create(['name' => 'x-dashboard']);
+
         $adminRole = Role::create(['name' => 'admin']);
         $userRole = Role::create(['name' => 'user']);
+
+        $adminRole->givePermissionTo($adminPermission);
+        $userRole->givePermissionTo($userPermission);
 
         User::factory()->create([
             'name' => 'Test User',

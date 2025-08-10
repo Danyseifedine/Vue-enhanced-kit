@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { filterNavigation, useGuard } from '@/guard';
+import { useGlobalLayoutStore } from '@core/stores/layout';
+import { type NavItem } from '@core/types';
+import { Link, usePage } from '@inertiajs/vue3';
 import {
     SidebarGroup,
     SidebarGroupLabel,
@@ -9,9 +13,6 @@ import {
     SidebarMenuSubButton,
     SidebarMenuSubItem,
 } from '@ui/sidebar';
-import { useGlobalLayoutStore } from '@core/stores/layout';
-import { type NavItem } from '@core/types';
-import { Link, usePage } from '@inertiajs/vue3';
 import { ChevronRight } from 'lucide-vue-next';
 import { computed, onMounted, ref, watch } from 'vue';
 
@@ -23,6 +24,14 @@ const props = defineProps<{
 
 // Get current page from Inertia
 const page = usePage();
+
+// Get user permissions and roles
+const { userPermissions, userRoles } = useGuard();
+
+// Filter navigation items based on permissions
+const filteredItems = computed(() => {
+    return filterNavigation(props.items, userPermissions.value, userRoles.value);
+});
 
 // Track which dropdown menus are open
 const openDropdowns = ref<Record<string, boolean>>({});
@@ -79,7 +88,7 @@ const updateDropdownStates = () => {
         openDropdowns.value[key] = false;
     });
 
-    for (const item of props.items) {
+    for (const item of filteredItems.value) {
         if (item.children && hasActiveChild(item)) {
             openDropdowns.value[item.title] = true;
             break;
@@ -207,7 +216,7 @@ const submenuItemClass = computed(() => {
 <template>
     <SidebarGroup class="px-2 py-0">
         <SidebarMenu>
-            <template v-for="(item, index) in items" :key="index">
+            <template v-for="(item, index) in filteredItems" :key="index">
                 <!-- Section header -->
                 <template v-if="item.isSection">
                     <SidebarGroupLabel class="mt-4">{{ item.title }}</SidebarGroupLabel>

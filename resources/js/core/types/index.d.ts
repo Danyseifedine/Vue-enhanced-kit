@@ -21,6 +21,7 @@ export interface NavItem {
     role?: string;
     permissions?: string[];
     roles?: string[];
+    requireAll?: boolean; // If true, user must have ALL permissions/roles. If false (default), user needs ANY
     children?: NavItem[];
     isSection?: boolean;
 }
