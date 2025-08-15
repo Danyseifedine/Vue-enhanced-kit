@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import BaseButton from '@/common/components/form/BaseButton.vue';
+import BaseInput from '@/common/components/form/BaseInput.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { onMounted } from 'vue';
 
@@ -8,12 +10,9 @@ import { type BreadcrumbItem } from '@core/types';
 import AdminLayout from '@modules/admin/layouts/AdminLayout.vue';
 import SettingsLayout from '@modules/admin/layouts/SettingsLayout.vue';
 import HeadingSmall from '@shared/components/HeadingSmall.vue';
-import InputError from '@shared/components/InputError.vue';
-import { Button } from '@shared/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@shared/ui/dropdown-menu';
-import { Input } from '@shared/ui/input';
 import { Label } from '@shared/ui/label';
-import { LoaderCircle, Trash2, Upload } from 'lucide-vue-next';
+import { Trash2, Upload } from 'lucide-vue-next';
 
 interface Props {
     mustVerifyEmail: boolean;
@@ -85,7 +84,6 @@ onMounted(() => {
                                 </DropdownMenu>
                             </div>
 
-                            <!-- Hidden file input -->
                             <input
                                 :ref="profileStore.setAvatarInputRef as any"
                                 type="file"
@@ -94,26 +92,33 @@ onMounted(() => {
                                 class="hidden"
                             />
                         </div>
-                        <InputError class="mt-2" :message="profileStore.form.errors.avatar" />
+                        <p v-if="profileStore.form.errors.avatar" class="text-sm text-destructive">{{ profileStore.form.errors.avatar }}</p>
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="name">Name</Label>
-                        <Input id="name" class="mt-1 block w-full" v-model="profileStore.form.name" autocomplete="name" placeholder="Full name" />
-                        <InputError class="mt-2" :message="profileStore.form.errors.name" />
+                        <BaseInput
+                            label="Name"
+                            id="name"
+                            type="text"
+                            :tabindex="1"
+                            autocomplete="name"
+                            v-model="profileStore.form.name"
+                            placeholder="Full name"
+                            :error="profileStore.form.errors.name"
+                        />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="email">Email address</Label>
-                        <Input
+                        <BaseInput
+                            label="Email address"
                             id="email"
                             type="email"
-                            class="mt-1 block w-full"
+                            :tabindex="2"
                             v-model="profileStore.form.email"
                             autocomplete="username"
                             placeholder="Email address"
+                            :error="profileStore.form.errors.email"
                         />
-                        <InputError class="mt-2" :message="profileStore.form.errors.email" />
                     </div>
 
                     <div v-if="mustVerifyEmail && !profileStore.user.email_verified_at">
@@ -135,10 +140,7 @@ onMounted(() => {
                     </div>
 
                     <div class="flex items-center gap-4">
-                        <Button :disabled="profileStore.form.processing">
-                            <LoaderCircle class="mr-2 h-4 w-4 animate-spin" v-if="profileStore.form.processing" />
-                            Save
-                        </Button>
+                        <BaseButton type="submit" class="" :loading="profileStore.form.processing">Save</BaseButton>
 
                         <Transition
                             enter-active-class="transition ease-in-out"

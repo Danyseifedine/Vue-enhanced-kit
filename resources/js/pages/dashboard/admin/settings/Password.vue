@@ -1,15 +1,12 @@
 <script setup lang="ts">
+import BaseButton from '@/common/components/form/BaseButton.vue';
+import BaseInput from '@/common/components/form/BaseInput.vue';
+import { type BreadcrumbItem } from '@core/types';
 import { Head, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
-
 import AdminLayout from '@modules/admin/layouts/AdminLayout.vue';
 import SettingsLayout from '@modules/admin/layouts/SettingsLayout.vue';
-import InputError from '@shared/components/InputError.vue';
 import HeadingSmall from '@shared/components/HeadingSmall.vue';
-import { Button } from '@shared/ui/button';
-import { Input } from '@shared/ui/input';
-import { Label } from '@shared/ui/label';
-import { type BreadcrumbItem } from '@core/types';
+import { ref } from 'vue';
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
@@ -60,48 +57,46 @@ const updatePassword = () => {
 
                 <form @submit.prevent="updatePassword" class="space-y-6">
                     <div class="grid gap-2">
-                        <Label for="current_password">Current password</Label>
-                        <Input
+                        <BaseInput
+                            label="Current password"
                             id="current_password"
-                            ref="currentPasswordInput"
-                            v-model="form.current_password"
                             type="password"
-                            class="mt-1 block w-full"
+                            :tabindex="1"
                             autocomplete="current-password"
+                            v-model="form.current_password"
                             placeholder="Current password"
+                            :error="form.errors.current_password"
                         />
-                        <InputError :message="form.errors.current_password" />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="password">New password</Label>
-                        <Input
+                        <BaseInput
+                            label="New password"
                             id="password"
-                            ref="passwordInput"
-                            v-model="form.password"
                             type="password"
-                            class="mt-1 block w-full"
+                            :tabindex="2"
                             autocomplete="new-password"
+                            v-model="form.password"
                             placeholder="New password"
+                            :error="form.errors.password"
                         />
-                        <InputError :message="form.errors.password" />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="password_confirmation">Confirm password</Label>
-                        <Input
+                        <BaseInput
+                            label="Confirm password"
                             id="password_confirmation"
-                            v-model="form.password_confirmation"
                             type="password"
-                            class="mt-1 block w-full"
+                            :tabindex="3"
                             autocomplete="new-password"
+                            v-model="form.password_confirmation"
                             placeholder="Confirm password"
+                            :error="form.errors.password_confirmation"
                         />
-                        <InputError :message="form.errors.password_confirmation" />
                     </div>
 
                     <div class="flex items-center gap-4">
-                        <Button :disabled="form.processing">Save password</Button>
+                        <BaseButton type="submit" :loading="form.processing">Reset</BaseButton>
 
                         <Transition
                             enter-active-class="transition ease-in-out"

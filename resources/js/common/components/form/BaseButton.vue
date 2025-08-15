@@ -6,7 +6,7 @@ import { computed, useSlots, type HTMLAttributes } from 'vue';
 const props = withDefaults(
     defineProps<{
         variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link' | 'success' | 'warning' | 'gradient' | 'glass';
-        size?: 'xs' | 'sm' | 'default' | 'lg' | 'xl' | '2xl' | 'icon';
+        size?: 'xs' | 'sm' | 'default' | 'lg' | 'xl' | 'icon';
         loading?: boolean;
         loadingText?: string;
         loadingPosition?: 'before' | 'after';
@@ -80,15 +80,13 @@ const customVariantClasses = computed(() => {
     }
 });
 
-// Custom size styles
+// Custom size styles - using more specific selectors to override base classes
 const customSizeClasses = computed(() => {
     switch (props.size) {
         case 'xs':
-            return 'h-7 px-2 text-xs';
-        case '2xl':
-            return 'h-14 px-8 text-lg font-semibold';
+            return 'h-7 px-2 py-1 text-xs [&]:h-7 [&]:px-2 [&]:py-1 [&]:text-xs';
         case 'xl':
-            return 'h-12 px-6 text-base font-medium';
+            return 'h-12 px-10 py-3 text-base font-medium [&]:h-12 [&]:px-10 [&]:py-3 [&]:text-base';
         default:
             return '';
     }
@@ -103,10 +101,15 @@ defineSlots<{
 <template>
     <Button
         :variant="['success', 'warning', 'gradient', 'glass'].includes(variant) ? 'default' : variant"
-        :size="['xs', 'xl', '2xl'].includes(size) ? 'default' : size"
+        :size="['xs', 'xl'].includes(size) ? 'default' : size"
         :type="type"
         :disabled="isDisabled"
-        :class="['relative transition-all duration-200', 'disabled:cursor-not-allowed', customVariantClasses, customSizeClasses, props.class]"
+        :class="[
+            'relative transition-all duration-200 disabled:cursor-not-allowed',
+            customVariantClasses,
+            customSizeClasses,
+            props.class
+        ]"
     >
         <!-- Loading state -->
         <template v-if="loading">
@@ -114,7 +117,7 @@ defineSlots<{
                 <component
                     v-if="getLoadingIcon"
                     :is="getLoadingIcon"
-                    :class="['mr-2 animate-spin', size === 'xs' ? 'h-3 w-3' : size === 'xl' || size === '2xl' ? 'h-5 w-5' : 'h-4 w-4']"
+                    :class="['mr-2 animate-spin', size === 'xs' ? 'h-3 w-3' : size === 'xl' ? 'h-5 w-5' : 'h-4 w-4']"
                 />
                 <span>{{ displayLoadingText }}</span>
             </template>
@@ -123,7 +126,7 @@ defineSlots<{
                 <component
                     v-if="getLoadingIcon"
                     :is="getLoadingIcon"
-                    :class="['ml-2 animate-spin', size === 'xs' ? 'h-3 w-3' : size === 'xl' || size === '2xl' ? 'h-5 w-5' : 'h-4 w-4']"
+                    :class="['ml-2 animate-spin', size === 'xs' ? 'h-3 w-3' : size === 'xl' ? 'h-5 w-5' : 'h-4 w-4']"
                 />
             </template>
         </template>

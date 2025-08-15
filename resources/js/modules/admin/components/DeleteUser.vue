@@ -1,23 +1,13 @@
 <script setup lang="ts">
+import BaseButton from '@/common/components/form/BaseButton.vue';
+import BaseInput from '@/common/components/form/BaseInput.vue';
 import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 // Components
 import HeadingSmall from '@shared/components/HeadingSmall.vue';
-import InputError from '@shared/components/InputError.vue';
 import { Button } from '@shared/ui/button';
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@shared/ui/dialog';
-import { Input } from '@shared/ui/input';
-import { Label } from '@shared/ui/label';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@shared/ui/dialog';
 
 const passwordInput = ref<HTMLInputElement | null>(null);
 
@@ -52,7 +42,7 @@ const closeModal = () => {
             </div>
             <Dialog>
                 <DialogTrigger as-child>
-                    <Button variant="destructive">Delete account</Button>
+                    <BaseButton type="button" size="default" variant="destructive">Delete account</BaseButton>
                 </DialogTrigger>
                 <DialogContent>
                     <form class="space-y-6" @submit="deleteUser">
@@ -65,9 +55,15 @@ const closeModal = () => {
                         </DialogHeader>
 
                         <div class="grid gap-2">
-                            <Label for="password" class="sr-only">Password</Label>
-                            <Input id="password" type="password" name="password" ref="passwordInput" v-model="form.password" placeholder="Password" />
-                            <InputError :message="form.errors.password" />
+                            <BaseInput
+                                label="Password"
+                                id="password"
+                                type="password"
+                                name="password"
+                                ref="passwordInput"
+                                v-model="form.password"
+                                placeholder="Password"
+                            />
                         </div>
 
                         <DialogFooter class="gap-2">
@@ -75,9 +71,9 @@ const closeModal = () => {
                                 <Button variant="secondary" @click="closeModal"> Cancel </Button>
                             </DialogClose>
 
-                            <Button variant="destructive" :disabled="form.processing">
-                                <button type="submit">Delete account</button>
-                            </Button>
+                            <BaseButton type="submit" size="lg" variant="destructive" class="h-9" :loading="form.processing">
+                                Delete account
+                            </BaseButton>
                         </DialogFooter>
                     </form>
                 </DialogContent>
