@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import type { LayoutInterface, LayoutRouteInterface } from './layout.types';
 import type { NavItem } from '@/core/types';
-import type { LayoutConfig } from '@/core/config/dashboards/types';
+import type { LayoutConfig } from '@/core/types/dashboardTypes';
 
 export const useGlobalLayoutStore = defineStore('globalLayout', {
     state: (): LayoutInterface => ({

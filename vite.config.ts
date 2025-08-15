@@ -28,6 +28,7 @@ export default defineConfig({
             '@core': path.resolve(__dirname, './resources/js/core'),
             '@modules': path.resolve(__dirname, './resources/js/modules'),
             '@shared': path.resolve(__dirname, './resources/js/shared'),
+            '@common': path.resolve(__dirname, './resources/js/common'),
             '@ui': path.resolve(__dirname, './resources/js/shared/ui'),
             '@pages': path.resolve(__dirname, './resources/js/pages'),
             '@guard': path.resolve(__dirname, './resources/js/guard'),

@@ -1,13 +1,12 @@
 <script setup lang="ts">
+import Input from '@common/components/Input.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import InputError from '@shared/components/InputError.vue';
 import TextLink from '@shared/components/TextLink.vue';
 import AuthBase from '@shared/layouts/GuestLayout.vue';
 import { Button } from '@shared/ui/button';
 import { Checkbox } from '@shared/ui/checkbox';
-import { Input } from '@shared/ui/input';
 import { Label } from '@shared/ui/label';
-import { LoaderCircle, Lock, Mail } from 'lucide-vue-next';
+import { LoaderCircle } from 'lucide-vue-next';
 
 defineProps<{
     status?: string;
@@ -45,57 +44,36 @@ const loginWithGoogle = () => {
 
         <form @submit.prevent="submit" class="flex flex-col gap-6">
             <div class="space-y-4">
-                <div class="relative">
-                    <Label for="email" class="text-sm font-medium">Email address</Label>
-                    <div class="mt-1 flex items-center rounded-md border border-input bg-background ring-offset-background">
-                        <div class="flex h-10 w-10 items-center justify-center text-muted-foreground">
-                            <Mail class="h-4 w-4" />
-                        </div>
-                        <Input
-                            id="email"
-                            type="email"
-                            required
-                            autofocus
-                            :tabindex="1"
-                            autocomplete="email"
-                            v-model="form.email"
-                            placeholder="email@example.com"
-                            class="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
-                        />
-                    </div>
-                    <InputError :message="form.errors.email" />
-                </div>
+                <Input
+                    label="Email address"
+                    id="email"
+                    type="email"
+                    :tabindex="1"
+                    autocomplete="email"
+                    v-model="form.email"
+                    placeholder="email@example.com"
+                    :error="form.errors.email"
+                />
 
-                <div class="relative">
-                    <div class="flex items-center justify-between">
-                        <Label for="password" class="text-sm font-medium">Password</Label>
-                        <TextLink v-if="canResetPassword" :href="route('password.request')" class="text-xs font-medium hover:underline" :tabindex="5">
-                            Forgot password?
-                        </TextLink>
-                    </div>
-                    <div class="mt-1 flex items-center rounded-md border border-input bg-background ring-offset-background">
-                        <div class="flex h-10 w-10 items-center justify-center text-muted-foreground">
-                            <Lock class="h-4 w-4" />
-                        </div>
-                        <Input
-                            id="password"
-                            type="password"
-                            required
-                            :tabindex="2"
-                            autocomplete="current-password"
-                            v-model="form.password"
-                            placeholder="••••••••"
-                            class="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
-                        />
-                    </div>
-                    <InputError :message="form.errors.password" />
-                </div>
+                <Input
+                    label="Password"
+                    id="password"
+                    type="password"
+                    :tabindex="2"
+                    autocomplete="current-password"
+                    v-model="form.password"
+                    placeholder="••••••••"
+                    :error="form.errors.password"
+                />
 
                 <div class="flex items-center justify-between" :tabindex="3">
                     <Label for="remember" class="flex items-center space-x-2 text-sm">
                         <Checkbox id="remember" v-model:checked="form.remember" :tabindex="4" />
                         <span>Remember me</span>
                     </Label>
+                    <TextLink v-if="canResetPassword" :href="route('password.request')" class="text-xs font-medium hover:underline" :tabindex="5">
+                        Forgot password?
+                    </TextLink>
                 </div>
 
                 <Button

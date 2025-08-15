@@ -40,6 +40,7 @@
             "@core/*": ["./resources/js/core/*"],
             "@modules/*": ["./resources/js/modules/*"],
             "@shared/*": ["./resources/js/shared/*"],
+            "@common/*": ["./resources/js/common/*"],
             "@ui/*": ["./resources/js/shared/ui/*"],
             "@pages/*": ["./resources/js/pages/*"]
         },

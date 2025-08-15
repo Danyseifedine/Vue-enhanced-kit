@@ -33,4 +33,4 @@ export interface DashboardConfig {
     routes: RouteConfig;
 }
 
-export type DashboardType = 'admin' | 'user' | 'guest';
+export type DashboardType = 'admin';

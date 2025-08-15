@@ -1,4 +1,4 @@
-import type { DashboardConfig } from './types';
+import type { DashboardConfig } from '../../../core/types/dashboardTypes';
 import type { NavItem } from "@/core/types";
 import {
     BookOpen, Folder,

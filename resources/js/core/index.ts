@@ -6,7 +6,7 @@ export type { LayoutInterface, LayoutRouteInterface } from './stores/layout.type
 
 // Dashboard Configuration System
 export { useDashboardConfig } from './composables/useDashboardConfig';
-export type { DashboardConfig, LayoutConfig, NavigationConfig, RouteConfig } from './config/dashboards/types';
+export type { DashboardConfig, LayoutConfig, NavigationConfig, RouteConfig } from './types/dashboardTypes';
 
 // Core Composables
 export { useAppearance } from './composables/useAppearance';

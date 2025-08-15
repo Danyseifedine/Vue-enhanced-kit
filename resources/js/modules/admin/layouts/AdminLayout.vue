@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import AuthLayout from '@shared/layouts/app/AppSidebarLayout.vue';
 import { useDashboardConfig } from '@/core/composables/useDashboardConfig';
-import { adminDashboardConfig } from '@/core/config/dashboards/admin.config';
 import type { BreadcrumbItemType } from '@/core/types';
+import { adminDashboardConfig } from '@/modules/admin/config/admin.config';
+import AuthLayout from '@shared/layouts/app/AppSidebarLayout.vue';
 
 interface Props {
     breadcrumbs?: BreadcrumbItemType[];
