@@ -4,15 +4,18 @@ import { cn } from '@core/utils/utils';
 import { useVModel } from '@vueuse/core';
 import type { HTMLAttributes } from 'vue';
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
     label?: string;
     defaultValue?: string | number;
     modelValue?: string | number;
     class?: HTMLAttributes['class'];
     error?: string;
     disableError?: boolean;
+    errorBorder?: boolean;
     required?: boolean;
-}>();
+}>(), {
+    errorBorder: true,
+});
 
 const emits = defineEmits<{
     (e: 'update:modelValue', payload: string | number): void;
@@ -37,7 +40,7 @@ const modelValue = useVModel(props, 'modelValue', emits, {
                 :class="
                     cn(
                         'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
-                        error && !disableError ? 'border-red-500 focus-visible:ring-red-500' : '',
+                        error && props.errorBorder ? 'border-red-500 focus-visible:ring-red-500' : '',
                         props.class,
                     )
                 "

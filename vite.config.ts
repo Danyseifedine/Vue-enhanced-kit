@@ -32,6 +32,7 @@ export default defineConfig({
             '@ui': path.resolve(__dirname, './resources/js/shared/ui'),
             '@pages': path.resolve(__dirname, './resources/js/pages'),
             '@guard': path.resolve(__dirname, './resources/js/guard'),
+            '@lang': path.resolve(__dirname, './resources/js/lang'),
             'ziggy-js': resolve(__dirname, 'vendor/tightenco/ziggy'),
         },
     },

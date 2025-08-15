@@ -123,4 +123,7 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'features' => [
+        'multi_lang' => env('APP_FEATURES_MULTI_LANG', false),
+    ],
 ];

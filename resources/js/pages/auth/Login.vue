@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Input from '@common/components/Input.vue';
+import LebifyInput from '@/common/components/LebifyInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import TextLink from '@shared/components/TextLink.vue';
 import AuthBase from '@shared/layouts/GuestLayout.vue';
@@ -44,18 +44,20 @@ const loginWithGoogle = () => {
 
         <form @submit.prevent="submit" class="flex flex-col gap-6">
             <div class="space-y-4">
-                <Input
-                    label="Email address"
-                    id="email"
-                    type="email"
-                    :tabindex="1"
-                    autocomplete="email"
-                    v-model="form.email"
-                    placeholder="email@example.com"
-                    :error="form.errors.email"
-                />
+                <div>
+                    <LebifyInput
+                        label="Email address"
+                        id="email"
+                        type="email"
+                        :tabindex="1"
+                        autocomplete="email"
+                        v-model="form.email"
+                        placeholder="email@example.com"
+                        :error="form.errors.email"
+                    />
+                </div>
 
-                <Input
+                <LebifyInput
                     label="Password"
                     id="password"
                     type="password"
@@ -82,8 +84,9 @@ const loginWithGoogle = () => {
                     tabindex="5"
                     :disabled="form.processing"
                 >
-                    <LoaderCircle v-if="form.processing" class="mr-2 h-4 w-4 animate-spin" />
-                    <span>Sign In</span>
+                    <span v-if="!form.processing">Sign In</span>
+                    <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
+                    <span v-if="form.processing">Signing in...</span>
                 </Button>
 
                 <!-- Google Login Button -->

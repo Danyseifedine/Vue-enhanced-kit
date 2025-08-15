@@ -19,8 +19,6 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        // add 2 roles admin and user
-
         $adminPermission = Permission::create(['name' => 'view-dashboard']);
         $userPermission = Permission::create(['name' => 'x-dashboard']);
 

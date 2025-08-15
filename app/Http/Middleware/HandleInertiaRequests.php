@@ -38,16 +38,24 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
-        
+
         $user = $request->user();
-        
+
         if ($user) {
             $user->load(['roles', 'permissions']);
+        }
+
+        if (config('app.features.multi_lang')) {
+            $translations = $this->getTranslations(app()->getLocale());
+        } else {
+            $translations = [];
         }
 
         return [
             ...parent::share($request),
             'name' => config('app.name'),
+            'locale' => app()->getLocale(),
+            'translations' => $translations,
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
                 'user' => $user,
@@ -59,5 +67,47 @@ class HandleInertiaRequests extends Middleware
                 'location' => $request->url(),
             ],
         ];
+    }
+
+    /**
+     * Get translations for the given locale (only commonly used ones for performance).
+     */
+    private function getTranslations(string $locale): array
+    {
+        $translations = [];
+
+        // Load JSON translations
+        $jsonPath = lang_path("{$locale}.json");
+        if (file_exists($jsonPath)) {
+            $jsonTranslations = json_decode(file_get_contents($jsonPath), true);
+            if ($jsonTranslations) {
+                $translations = array_merge($translations, $jsonTranslations);
+            }
+        }
+
+        // Load only essential PHP translation files for performance
+        $essentialFiles = ['auth', 'validation', 'passwords'];
+
+        foreach ($essentialFiles as $file) {
+            $filePath = lang_path("{$locale}/{$file}.php");
+            if (file_exists($filePath)) {
+                $fileTranslations = require $filePath;
+                if (is_array($fileTranslations)) {
+                    foreach ($fileTranslations as $key => $value) {
+                        $fullKey = "{$file}.{$key}";
+                        if (is_array($value)) {
+                            // Flatten nested arrays
+                            foreach ($value as $nestedKey => $nestedValue) {
+                                $translations["{$fullKey}.{$nestedKey}"] = $nestedValue;
+                            }
+                        } else {
+                            $translations[$fullKey] = $value;
+                        }
+                    }
+                }
+            }
+        }
+
+        return $translations;
     }
 }
