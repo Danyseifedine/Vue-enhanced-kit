@@ -36,6 +36,7 @@ const globalLayoutRouteStore = useGlobalLayoutRouteStore();
             </template>
         </div>
         <div class="mx-1 flex items-center justify-between gap-3">
+            <LanguageDropdown v-if="globalLayoutStore.navbarLanguageDropdown" />
             <Button variant="secondary" size="icon" v-if="globalLayoutStore.navbarAppearanceButton" class="h-8 w-8" @click="toggleTheme">
                 <Sun v-if="appearance === 'dark'" class="h-4 w-4" />
                 <Moon v-else class="h-4 w-4" />

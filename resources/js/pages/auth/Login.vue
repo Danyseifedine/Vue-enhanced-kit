@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import LebifyInput from '@/common/components/LebifyInput.vue';
+import BaseButton from '@/common/components/form/BaseButton.vue';
+import BaseInput from '@/common/components/form/BaseInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import TextLink from '@shared/components/TextLink.vue';
 import AuthBase from '@shared/layouts/GuestLayout.vue';
-import { Button } from '@shared/ui/button';
 import { Checkbox } from '@shared/ui/checkbox';
 import { Label } from '@shared/ui/label';
-import { LoaderCircle } from 'lucide-vue-next';
 
 defineProps<{
     status?: string;
@@ -45,7 +44,7 @@ const loginWithGoogle = () => {
         <form @submit.prevent="submit" class="flex flex-col gap-6">
             <div class="space-y-4">
                 <div>
-                    <LebifyInput
+                    <BaseInput
                         label="Email address"
                         id="email"
                         type="email"
@@ -57,7 +56,7 @@ const loginWithGoogle = () => {
                     />
                 </div>
 
-                <LebifyInput
+                <BaseInput
                     label="Password"
                     id="password"
                     type="password"
@@ -78,45 +77,34 @@ const loginWithGoogle = () => {
                     </TextLink>
                 </div>
 
-                <Button
-                    type="submit"
-                    class="mt-4 w-full rounded-md bg-primary py-2 text-base font-medium transition-colors hover:bg-primary/90"
-                    tabindex="5"
-                    :disabled="form.processing"
-                >
-                    <span v-if="!form.processing">Sign In</span>
-                    <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
-                    <span v-if="form.processing">Signing in...</span>
-                </Button>
+                <BaseButton type="submit" size="lg" class="mt-4 w-full" :loading="form.processing"> Sign In </BaseButton>
 
                 <!-- Google Login Button -->
-                <Button
-                    type="button"
-                    class="flex w-full items-center justify-center gap-2 rounded-md border border-gray-300 bg-white py-2 text-base font-medium text-gray-700 hover:bg-gray-50"
-                    @click="loginWithGoogle"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 48 48">
-                        <g>
-                            <path
-                                fill="#4285F4"
-                                d="M24 9.5c3.54 0 6.7 1.22 9.2 3.23l6.9-6.9C36.64 2.36 30.74 0 24 0 14.82 0 6.73 5.48 2.69 13.44l8.06 6.26C12.7 13.1 17.9 9.5 24 9.5z"
-                            />
-                            <path
-                                fill="#34A853"
-                                d="M46.1 24.55c0-1.64-.15-3.22-.42-4.74H24v9.01h12.4c-.54 2.9-2.18 5.36-4.65 7.01l7.18 5.59C43.98 37.13 46.1 31.36 46.1 24.55z"
-                            />
-                            <path
-                                fill="#FBBC05"
-                                d="M10.75 28.19a14.5 14.5 0 0 1 0-8.38l-8.06-6.26A23.97 23.97 0 0 0 0 24c0 3.82.92 7.44 2.69 10.81l8.06-6.62z"
-                            />
-                            <path
-                                fill="#EA4335"
-                                d="M24 48c6.48 0 11.93-2.15 15.9-5.86l-7.18-5.59c-2.01 1.35-4.6 2.16-8.72 2.16-6.1 0-11.3-3.6-13.25-8.81l-8.06 6.62C6.73 42.52 14.82 48 24 48z"
-                            />
-                        </g>
-                    </svg>
-                    <span>Sign in with Google</span>
-                </Button>
+                <BaseButton type="button" size="lg" variant="glass" class="w-full" @click="loginWithGoogle">
+                    <template #icon>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-5 w-5" viewBox="0 0 48 48">
+                            <g>
+                                <path
+                                    fill="#4285F4"
+                                    d="M24 9.5c3.54 0 6.7 1.22 9.2 3.23l6.9-6.9C36.64 2.36 30.74 0 24 0 14.82 0 6.73 5.48 2.69 13.44l8.06 6.26C12.7 13.1 17.9 9.5 24 9.5z"
+                                />
+                                <path
+                                    fill="#34A853"
+                                    d="M46.1 24.55c0-1.64-.15-3.22-.42-4.74H24v9.01h12.4c-.54 2.9-2.18 5.36-4.65 7.01l7.18 5.59C43.98 37.13 46.1 31.36 46.1 24.55z"
+                                />
+                                <path
+                                    fill="#FBBC05"
+                                    d="M10.75 28.19a14.5 14.5 0 0 1 0-8.38l-8.06-6.26A23.97 23.97 0 0 0 0 24c0 3.82.92 7.44 2.69 10.81l8.06-6.62z"
+                                />
+                                <path
+                                    fill="#EA4335"
+                                    d="M24 48c6.48 0 11.93-2.15 15.9-5.86l-7.18-5.59c-2.01 1.35-4.6 2.16-8.72 2.16-6.1 0-11.3-3.6-13.25-8.81l-8.06 6.62C6.73 42.52 14.82 48 24 48z"
+                                />
+                            </g>
+                        </svg>
+                    </template>
+                    Sign in with Google
+                </BaseButton>
             </div>
 
             <div class="mt-4 text-center text-sm text-muted-foreground">

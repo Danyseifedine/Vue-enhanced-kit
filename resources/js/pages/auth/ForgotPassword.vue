@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import GuestLayout from '@shared/layouts/GuestLayout.vue';
-import InputError from '@shared/components/InputError.vue';
-import TextLink from '@shared/components/TextLink.vue';
-import { Button } from '@ui/button';
-import { Input } from '@ui/input';
-import { Label } from '@ui/label';
+import BaseButton from '@/common/components/form/BaseButton.vue';
+import BaseInput from '@/common/components/form/BaseInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { LoaderCircle, Mail } from 'lucide-vue-next';
+import TextLink from '@shared/components/TextLink.vue';
+import GuestLayout from '@shared/layouts/GuestLayout.vue';
 
 defineProps<{
     status?: string;
@@ -31,32 +28,18 @@ const submit = () => {
 
         <form @submit.prevent="submit" class="flex flex-col gap-6">
             <div class="space-y-4">
-                <div class="relative">
-                    <Label for="email" class="text-sm font-medium">Email Address</Label>
-                    <div class="mt-1 flex items-center rounded-md border border-input bg-background ring-offset-background">
-                        <div class="flex h-10 w-10 items-center justify-center text-muted-foreground">
-                            <Mail class="h-4 w-4" />
-                        </div>
-                        <Input
-                            id="email"
-                            type="email"
-                            required
-                            autofocus
-                            autocomplete="email"
-                            v-model="form.email"
-                            placeholder="email@example.com"
-                            class="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
-                        />
-                    </div>
-                    <InputError :message="form.errors.email" />
-                </div>
+                <BaseInput
+                    label="Email Address"
+                    id="email"
+                    type="email"
+                    :tabindex="1"
+                    autocomplete="email"
+                    v-model="form.email"
+                    placeholder="email@example.com"
+                    :error="form.errors.email"
+                />
 
-                <div class="pt-2">
-                    <Button class="w-full" :disabled="form.processing">
-                        <LoaderCircle v-if="form.processing" class="mr-2 h-4 w-4 animate-spin" />
-                        Email password reset link
-                    </Button>
-                </div>
+                <BaseButton BaseButton type="submit" size="lg" class="w-full" :loading="form.processing"> Email password reset link </BaseButton>
             </div>
         </form>
 

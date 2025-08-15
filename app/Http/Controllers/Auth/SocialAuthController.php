@@ -46,6 +46,6 @@ class SocialAuthController extends BaseSocialAuthController
                 'provider' => $provider,
                 'custom_field' => 'custom_value',
             ]
-        );
+        )->assignRole('user');
     }
 }

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import GuestLayout from '@shared/layouts/GuestLayout.vue';
-import TextLink from '@shared/components/TextLink.vue';
-import { Button } from '@ui/button';
+import BaseButton from '@/common/components/form/BaseButton.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { LoaderCircle, Mail } from 'lucide-vue-next';
+import TextLink from '@shared/components/TextLink.vue';
+import GuestLayout from '@shared/layouts/GuestLayout.vue';
+import { Mail } from 'lucide-vue-next';
 
 defineProps<{
     status?: string;
@@ -33,10 +33,7 @@ const submit = () => {
                 <Mail class="h-12 w-12 text-primary" />
             </div>
 
-            <Button :disabled="form.processing" class="w-full">
-                <LoaderCircle v-if="form.processing" class="mr-2 h-4 w-4 animate-spin" />
-                Resend verification email
-            </Button>
+            <BaseButton type="submit" size="lg" class="w-full" :loading="form.processing"> Resend verification email </BaseButton>
 
             <TextLink :href="route('logout')" method="post" as="button" class="mx-auto block text-sm"> Log out </TextLink>
         </form>

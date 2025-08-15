@@ -12,6 +12,7 @@ export const useGlobalLayoutStore = defineStore('globalLayout', {
         sidebarFooterItems: [],
         sidebarCollapseButton: true,
         navbarAppearanceButton: true,
+        navbarLanguageDropdown: true,
         navbarLogoutButton: true,
         navbarSettingsButton: true,
         sidebarTitleExist: true,
@@ -46,6 +47,9 @@ export const useGlobalLayoutStore = defineStore('globalLayout', {
         setNavbarLogoutButton(logoutButton: boolean) {
             this.navbarLogoutButton = logoutButton;
         },
+        setNavbarLanguageDropdown(languageDropdown: boolean) {
+            this.navbarLanguageDropdown = languageDropdown;
+        },
         setNavbarSettingsButton(settingsButton: boolean) {
             this.navbarSettingsButton = settingsButton;
         },
@@ -72,6 +76,7 @@ export const useGlobalLayoutStore = defineStore('globalLayout', {
             this.setNavbarAppearanceButton(config.navbarAppearanceButton);
             this.setNavbarLogoutButton(config.navbarLogoutButton);
             this.setNavbarSettingsButton(config.navbarSettingsButton);
+            this.setNavbarLanguageDropdown(config.navbarLanguageDropdown);
             this.setSidebarTitleExist(config.sidebarTitleExist);
             this.setSidebarTitle(config.sidebarTitle);
             this.setSidebarPadding(config.sidebarPadding);

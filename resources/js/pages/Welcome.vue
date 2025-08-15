@@ -1,30 +1,43 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+// import BaseButton from '@/common/components/form/BaseButton.vue';
+import { useGuard } from '@/guard';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import GuestLayout from '@shared/layouts/GuestLayout.vue';
 
 defineOptions({
     layout: GuestLayout,
 });
+
+const page = usePage();
+const isAuthenticated = page.props.auth.is_authenticated;
+const { is } = useGuard();
 </script>
 
 <template>
     <Head title="Welcome" />
-    <div class="flex flex-col items-center justify-center min-h-[60vh] gap-6">
-        <h1 class="text-3xl font-bold mb-2">Welcome to the Starter Kit</h1>
-        <p class="text-gray-500 mb-6">Please log in or register to continue.</p>
+    <div class="flex min-h-[60vh] flex-col items-center justify-center gap-6">
+        <h1 class="mb-2 text-3xl font-bold">Welcome to the Starter Kit</h1>
+        <p class="mb-6 text-gray-500">Please log in or register to continue.</p>
         <div class="flex gap-4">
-            <Link
-                href="/login"
-                class="px-6 py-2 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700 transition"
-            >
-                Login
-            </Link>
-            <Link
-                href="/register"
-                class="px-6 py-2 rounded bg-gray-200 text-gray-800 font-semibold hover:bg-gray-300 transition"
-            >
-                Register
-            </Link>
+            <template v-if="!isAuthenticated">
+                <Link href="/login" class="rounded bg-blue-600 px-6 py-2 font-semibold text-white transition hover:bg-blue-700"> Login </Link>
+                <Link href="/register" class="rounded bg-gray-200 px-6 py-2 font-semibold text-gray-800 transition hover:bg-gray-300">
+                    Register
+                </Link>
+            </template>
+            <template v-if="is('admin')">
+                <Link href="/dashboard" class="rounded bg-blue-600 px-6 py-2 font-semibold text-white transition hover:bg-blue-700"> Dashboard </Link>
+            </template>
+            <template v-if="is('user')">
+                <Link
+                    :href="route('logout')"
+                    method="post"
+                    as="button"
+                    class="rounded bg-blue-600 px-6 py-2 font-semibold text-white transition hover:bg-blue-700"
+                >
+                    Logout
+                </Link>
+            </template>
         </div>
     </div>
 </template>

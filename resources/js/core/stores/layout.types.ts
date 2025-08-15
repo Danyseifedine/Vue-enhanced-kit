@@ -10,6 +10,7 @@ export interface LayoutInterface {
     navbarAppearanceButton: boolean;
     navbarLogoutButton: boolean;
     navbarSettingsButton: boolean;
+    navbarLanguageDropdown: boolean;
     sidebarTitleExist: boolean;
     sidebarTitle: string;
     sidebarPadding: string;

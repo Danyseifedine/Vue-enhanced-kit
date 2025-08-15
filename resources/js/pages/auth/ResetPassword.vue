@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import GuestLayout from '@shared/layouts/GuestLayout.vue';
-import InputError from '@shared/components/InputError.vue';
-import { Button } from '@ui/button';
-import { Input } from '@ui/input';
-import { Label } from '@ui/label';
+import BaseButton from '@/common/components/form/BaseButton.vue';
+import BaseInput from '@/common/components/form/BaseInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { KeyRound, LoaderCircle, Lock, Mail } from 'lucide-vue-next';
+import GuestLayout from '@shared/layouts/GuestLayout.vue';
 
 interface Props {
     token: string;
@@ -36,67 +33,40 @@ const submit = () => {
 
         <form @submit.prevent="submit" class="flex flex-col gap-6">
             <div class="space-y-4">
-                <div class="relative">
-                    <Label for="email" class="text-sm font-medium">Email Address</Label>
-                    <div class="mt-1 flex items-center rounded-md border border-input bg-background ring-offset-background">
-                        <div class="flex h-10 w-10 items-center justify-center text-muted-foreground">
-                            <Mail class="h-4 w-4" />
-                        </div>
-                        <Input
-                            id="email"
-                            type="email"
-                            autocomplete="email"
-                            v-model="form.email"
-                            readonly
-                            class="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
-                        />
-                    </div>
-                    <InputError :message="form.errors.email" />
-                </div>
+                <BaseInput
+                    label="Email Address"
+                    id="email"
+                    type="email"
+                    :tabindex="1"
+                    autocomplete="email"
+                    v-model="form.email"
+                    placeholder="email@example.com"
+                    :error="form.errors.email"
+                />
 
-                <div class="relative">
-                    <Label for="password" class="text-sm font-medium">Password</Label>
-                    <div class="mt-1 flex items-center rounded-md border border-input bg-background ring-offset-background">
-                        <div class="flex h-10 w-10 items-center justify-center text-muted-foreground">
-                            <Lock class="h-4 w-4" />
-                        </div>
-                        <Input
-                            id="password"
-                            type="password"
-                            autocomplete="new-password"
-                            v-model="form.password"
-                            autofocus
-                            placeholder="New password"
-                            class="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
-                        />
-                    </div>
-                    <InputError :message="form.errors.password" />
-                </div>
+                <BaseInput
+                    label="Password"
+                    id="password"
+                    type="password"
+                    :tabindex="2"
+                    autocomplete="new-password"
+                    v-model="form.password"
+                    placeholder="New password"
+                    :error="form.errors.password"
+                />
 
-                <div class="relative">
-                    <Label for="password_confirmation" class="text-sm font-medium">Confirm Password</Label>
-                    <div class="mt-1 flex items-center rounded-md border border-input bg-background ring-offset-background">
-                        <div class="flex h-10 w-10 items-center justify-center text-muted-foreground">
-                            <KeyRound class="h-4 w-4" />
-                        </div>
-                        <Input
-                            id="password_confirmation"
-                            type="password"
-                            autocomplete="new-password"
-                            v-model="form.password_confirmation"
-                            placeholder="Confirm password"
-                            class="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
-                        />
-                    </div>
-                    <InputError :message="form.errors.password_confirmation" />
-                </div>
+                <BaseInput
+                    label="Confirm Password"
+                    id="password_confirmation"
+                    type="password"
+                    :tabindex="3"
+                    autocomplete="new-password"
+                    v-model="form.password_confirmation"
+                    placeholder="Confirm password"
+                    :error="form.errors.password_confirmation"
+                />
 
-                <div class="pt-2">
-                    <Button class="w-full" :disabled="form.processing">
-                        <LoaderCircle v-if="form.processing" class="mr-2 h-4 w-4 animate-spin" />
-                        Reset Password
-                    </Button>
-                </div>
+                <BaseButton type="submit" size="lg" class="w-full" :loading="form.processing"> Reset Password </BaseButton>
             </div>
         </form>
     </GuestLayout>

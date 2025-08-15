@@ -39,3 +39,11 @@ createInertiaApp({
 
 // This will set light / dark mode on page load...
 initializeTheme();
+
+// Prevent transitions during page load
+document.body.classList.add('preload');
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        document.body.classList.remove('preload');
+    }, 100);
+});

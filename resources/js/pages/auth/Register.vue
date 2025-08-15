@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import AuthBase from '@shared/layouts/GuestLayout.vue';
-import InputError from '@shared/components/InputError.vue';
-import TextLink from '@shared/components/TextLink.vue';
-import { Button } from '@ui/button';
-import { Input } from '@ui/input';
-import { Label } from '@ui/label';
+import BaseButton from '@/common/components/form/BaseButton.vue';
+import BaseInput from '@/common/components/form/BaseInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { KeyRound, LoaderCircle, Lock, Mail, User } from 'lucide-vue-next';
+import TextLink from '@shared/components/TextLink.vue';
+import AuthBase from '@shared/layouts/GuestLayout.vue';
 
 const form = useForm({
     name: '',
@@ -28,97 +25,52 @@ const submit = () => {
 
         <form @submit.prevent="submit" class="flex flex-col gap-6">
             <div class="space-y-4">
-                <div class="relative">
-                    <Label for="name" class="text-sm font-medium">Full Name</Label>
-                    <div class="mt-1 flex items-center rounded-md border border-input bg-background ring-offset-background">
-                        <div class="flex h-10 w-10 items-center justify-center text-muted-foreground">
-                            <User class="h-4 w-4" />
-                        </div>
-                        <Input
-                            id="name"
-                            type="text"
-                            required
-                            autofocus
-                            :tabindex="1"
-                            autocomplete="name"
-                            v-model="form.name"
-                            placeholder="John Doe"
-                            class="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
-                        />
-                    </div>
-                    <InputError :message="form.errors.name" />
-                </div>
+                <BaseInput
+                    label="Full Name"
+                    id="name"
+                    type="text"
+                    :tabindex="1"
+                    autocomplete="name"
+                    v-model="form.name"
+                    placeholder="John Doe"
+                    :error="form.errors.name"
+                />
 
-                <div class="relative">
-                    <Label for="email" class="text-sm font-medium">Email Address</Label>
-                    <div class="mt-1 flex items-center rounded-md border border-input bg-background ring-offset-background">
-                        <div class="flex h-10 w-10 items-center justify-center text-muted-foreground">
-                            <Mail class="h-4 w-4" />
-                        </div>
-                        <Input
-                            id="email"
-                            type="email"
-                            required
-                            :tabindex="2"
-                            autocomplete="email"
-                            v-model="form.email"
-                            placeholder="email@example.com"
-                            class="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
-                        />
-                    </div>
-                    <InputError :message="form.errors.email" />
-                </div>
+                <BaseInput
+                    label="Email Address"
+                    id="email"
+                    type="email"
+                    :tabindex="2"
+                    autocomplete="email"
+                    v-model="form.email"
+                    placeholder="email@example.com"
+                    :error="form.errors.email"
+                />
 
-                <div class="relative">
-                    <Label for="password" class="text-sm font-medium">Password</Label>
-                    <div class="mt-1 flex items-center rounded-md border border-input bg-background ring-offset-background">
-                        <div class="flex h-10 w-10 items-center justify-center text-muted-foreground">
-                            <Lock class="h-4 w-4" />
-                        </div>
-                        <Input
-                            id="password"
-                            type="password"
-                            required
-                            :tabindex="3"
-                            autocomplete="new-password"
-                            v-model="form.password"
-                            placeholder="Create a strong password"
-                            class="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
-                        />
-                    </div>
-                    <InputError :message="form.errors.password" />
-                </div>
+                <BaseInput
+                    label="Password"
+                    id="password"
+                    type="password"
+                    :tabindex="3"
+                    autocomplete="new-password"
+                    v-model="form.password"
+                    placeholder="Create a strong password"
+                    :error="form.errors.password"
+                />
 
-                <div class="relative">
-                    <Label for="password_confirmation" class="text-sm font-medium">Confirm Password</Label>
-                    <div class="mt-1 flex items-center rounded-md border border-input bg-background ring-offset-background">
-                        <div class="flex h-10 w-10 items-center justify-center text-muted-foreground">
-                            <KeyRound class="h-4 w-4" />
-                        </div>
-                        <Input
-                            id="password_confirmation"
-                            type="password"
-                            required
-                            :tabindex="4"
-                            autocomplete="new-password"
-                            v-model="form.password_confirmation"
-                            placeholder="Confirm your password"
-                            class="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
-                        />
-                    </div>
-                    <InputError :message="form.errors.password_confirmation" />
-                </div>
+                <BaseInput
+                    label="Confirm Password"
+                    id="password_confirmation"
+                    type="password"
+                    :tabindex="4"
+                    autocomplete="new-password"
+                    v-model="form.password_confirmation"
+                    placeholder="Confirm your password"
+                    :error="form.errors.password_confirmation"
+                />
             </div>
 
-            <Button
-                type="submit"
-                class="mt-4 w-full rounded-md bg-primary py-2 text-base font-medium transition-colors hover:bg-primary/90"
-                tabindex="5"
-                :disabled="form.processing"
-            >
-                <LoaderCircle v-if="form.processing" class="mr-2 h-4 w-4 animate-spin" />
-                <span v-else>Create Account</span>
-            </Button>
+            <BaseButton type="submit" size="lg" class="mt-4 w-full" :loading="form.processing"> Create Account </BaseButton>
 
             <div class="mt-4 text-center text-sm text-muted-foreground">
                 Already have an account?
