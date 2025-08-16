@@ -37,7 +37,7 @@ export const adminDashboardConfig: DashboardConfig = {
         navbarAppearanceButton: true,
         navbarLogoutButton: true,
         navbarSettingsButton: true,
-        navbarLanguageDropdown: true,
+        navbarLanguageDropdown: false,
         sidebarTitleExist: true,
         sidebarTitle: 'Dany Seifeddine',
         sidebarPadding: 'py-5',

@@ -2,6 +2,7 @@
 import Label from '@/shared/ui/label/Label.vue';
 import { cn } from '@core/utils/utils';
 import { useVModel } from '@vueuse/core';
+import { ref } from 'vue';
 import type { HTMLAttributes } from 'vue';
 
 const props = withDefaults(defineProps<{
@@ -25,6 +26,14 @@ const modelValue = useVModel(props, 'modelValue', emits, {
     passive: true,
     defaultValue: props.defaultValue,
 });
+
+const inputRef = ref<HTMLInputElement>();
+
+defineExpose({
+    focus: () => inputRef.value?.focus(),
+    blur: () => inputRef.value?.blur(),
+    select: () => inputRef.value?.select(),
+});
 </script>
 
 <template>
@@ -35,6 +44,7 @@ const modelValue = useVModel(props, 'modelValue', emits, {
         </Label>
         <div :class="label ? 'mt-1' : ''">
             <input
+                ref="inputRef"
                 v-model="modelValue"
                 v-bind="$attrs"
                 :class="

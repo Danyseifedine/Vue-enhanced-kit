@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import Breadcrumbs from '@shared/components/Breadcrumbs.vue';
-import Button from '@ui/button/Button.vue';
-import { SidebarTrigger } from '@ui/sidebar';
 import { useAppearance } from '@core/composables/useAppearance';
 import { useGlobalLayoutRouteStore, useGlobalLayoutStore } from '@core/stores/layout';
 import type { BreadcrumbItemType } from '@core/types';
 import { Link } from '@inertiajs/vue3';
+import Breadcrumbs from '@shared/components/Breadcrumbs.vue';
+import LanguageDropdown from '@shared/components/LanguageDropdown.vue';
+import Button from '@ui/button/Button.vue';
+import { SidebarTrigger } from '@ui/sidebar';
 import { LogOut, Moon, Settings, Sun } from 'lucide-vue-next';
 
 defineProps<{

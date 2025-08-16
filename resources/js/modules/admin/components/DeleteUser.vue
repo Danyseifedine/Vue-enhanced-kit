@@ -3,7 +3,6 @@ import BaseButton from '@/common/components/form/BaseButton.vue';
 import BaseInput from '@/common/components/form/BaseInput.vue';
 import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
-
 // Components
 import HeadingSmall from '@shared/components/HeadingSmall.vue';
 import { Button } from '@shared/ui/button';
@@ -62,6 +61,7 @@ const closeModal = () => {
                                 name="password"
                                 ref="passwordInput"
                                 v-model="form.password"
+                                :error="form.errors.password"
                                 placeholder="Password"
                             />
                         </div>
@@ -71,9 +71,7 @@ const closeModal = () => {
                                 <Button variant="secondary" @click="closeModal"> Cancel </Button>
                             </DialogClose>
 
-                            <BaseButton type="submit" size="lg" variant="destructive" class="h-9" :loading="form.processing">
-                                Delete account
-                            </BaseButton>
+                            <BaseButton type="submit" variant="destructive" :loading="form.processing">Delete</BaseButton>
                         </DialogFooter>
                     </form>
                 </DialogContent>

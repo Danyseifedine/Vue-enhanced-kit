@@ -1,18 +1,37 @@
 <script setup lang="ts">
-import { Button } from '@ui/button';
+import { Button, type ButtonVariants } from '@ui/button';
 import { CircleDot, Cog, Disc3, Loader2, LoaderCircle, RefreshCw, RotateCw } from 'lucide-vue-next';
 import { computed, useSlots, type HTMLAttributes } from 'vue';
 
+/**
+ * Enhanced Button Component with Loading States and Custom Variants
+ *
+ * @example
+ * ```vue
+ * <BaseButton variant="success" size="lg" :loading="isLoading">
+ *   Save Changes
+ * </BaseButton>
+ * ```
+ */
 const props = withDefaults(
     defineProps<{
+        /** Button visual style variant */
         variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link' | 'success' | 'warning' | 'gradient' | 'glass';
+        /** Button size - xs and xl are custom sizes */
         size?: 'xs' | 'sm' | 'default' | 'lg' | 'xl' | 'icon';
+        /** Show loading state with spinner */
         loading?: boolean;
+        /** Custom loading text - if not provided, uses button's default text */
         loadingText?: string;
+        /** Position of loading icon relative to text */
         loadingPosition?: 'before' | 'after';
+        /** Loading spinner icon type - 'none' shows text only */
         loadingIcon?: 'circle' | 'spinner' | 'rotate' | 'refresh' | 'gear' | 'dot' | 'disc' | 'none';
+        /** Additional CSS classes */
         class?: HTMLAttributes['class'];
+        /** Disable button interaction */
         disabled?: boolean;
+        /** HTML button type attribute */
         type?: 'button' | 'submit' | 'reset';
     }>(),
     {
@@ -35,9 +54,13 @@ const displayLoadingText = computed(() => {
     // Extract text from default slot
     const defaultSlot = slots.default?.();
     if (defaultSlot?.[0]?.children) {
-        return defaultSlot[0].children as string;
+        const text = defaultSlot[0].children as string;
+        // If it's just whitespace or empty, return null to show no text
+        return text.trim() || null;
     }
-    return 'Loading...';
+
+    // If no default slot content, return null (no text)
+    return null;
 });
 
 // Get loading icon component
@@ -93,15 +116,17 @@ const customSizeClasses = computed(() => {
 });
 
 defineSlots<{
+    /** Button content (text, elements) */
     default(): any;
+    /** Icon to display alongside text (shows only when not loading) */
     icon?(): any;
 }>();
 </script>
 
 <template>
     <Button
-        :variant="['success', 'warning', 'gradient', 'glass'].includes(variant) ? 'default' : variant"
-        :size="['xs', 'xl'].includes(size) ? 'default' : size"
+            :variant="(['success', 'warning', 'gradient', 'glass'].includes(variant) ? 'default' : variant) as ButtonVariants['variant']"
+        :size="(['xs', 'xl'].includes(size) ? 'default' : size) as ButtonVariants['size']"
         :type="type"
         :disabled="isDisabled"
         :class="[
@@ -117,16 +142,24 @@ defineSlots<{
                 <component
                     v-if="getLoadingIcon"
                     :is="getLoadingIcon"
-                    :class="['mr-2 animate-spin', size === 'xs' ? 'h-3 w-3' : size === 'xl' ? 'h-5 w-5' : 'h-4 w-4']"
+                    :class="[
+                        'animate-spin',
+                        displayLoadingText ? 'mr-2' : '',
+                        size === 'xs' ? 'h-3 w-3' : size === 'xl' ? 'h-5 w-5' : 'h-4 w-4'
+                    ]"
                 />
-                <span>{{ displayLoadingText }}</span>
+                <span v-if="displayLoadingText">{{ displayLoadingText }}</span>
             </template>
             <template v-else>
-                <span>{{ displayLoadingText }}</span>
+                <span v-if="displayLoadingText">{{ displayLoadingText }}</span>
                 <component
                     v-if="getLoadingIcon"
                     :is="getLoadingIcon"
-                    :class="['ml-2 animate-spin', size === 'xs' ? 'h-3 w-3' : size === 'xl' ? 'h-5 w-5' : 'h-4 w-4']"
+                    :class="[
+                        'animate-spin',
+                        displayLoadingText ? 'ml-2' : '',
+                        size === 'xs' ? 'h-3 w-3' : size === 'xl' ? 'h-5 w-5' : 'h-4 w-4'
+                    ]"
                 />
             </template>
         </template>
