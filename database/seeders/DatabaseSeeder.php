@@ -7,8 +7,6 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 
 class DatabaseSeeder extends Seeder
 {
@@ -17,22 +15,32 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $this->call([
+            PermissionSeeder::class,
+            RoleSeeder::class,
+        ]);
 
-        $adminPermission = Permission::create(['name' => 'view-dashboard']);
-        $userPermission = Permission::create(['name' => 'x-dashboard']);
+        $users = [
+            [
+                'name' => 'Super Admin',
+                'email' => 'admin@admin.com',
+                'role' => 'super-admin',
+            ],
+        ];
 
-        $adminRole = Role::create(['name' => 'admin']);
-        $userRole = Role::create(['name' => 'user']);
+        foreach ($users as $userData) {
+            $user = User::firstOrCreate(
+                ['email' => $userData['email']],
+                [
+                    'name' => $userData['name'],
+                    'password' => Hash::make('password'),
+                    'email_verified_at' => Carbon::now(),
+                ]
+            );
 
-        $adminRole->givePermissionTo($adminPermission);
-        $userRole->givePermissionTo($userPermission);
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 's@s.com',
-            'password' => Hash::make('password'),
-            'email_verified_at' => Carbon::now(),
-        ])->assignRole($adminRole);
+            if (!$user->hasRole($userData['role'])) {
+                $user->assignRole($userData['role']);
+            }
+        }
     }
 }

@@ -4,10 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
 use Danyseifeddine\Keychain\Http\Controllers\SocialAuthController as BaseSocialAuthController;
-use Illuminate\Http\RedirectResponse;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class SocialAuthController extends BaseSocialAuthController
 {

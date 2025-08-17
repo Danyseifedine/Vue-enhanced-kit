@@ -4,6 +4,7 @@ import type { Component } from 'vue';
 
 export interface Auth {
     user: User;
+    is_authenticated: boolean;
     permissions: string[];
     roles: string[];
 }

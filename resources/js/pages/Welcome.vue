@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // import BaseButton from '@/common/components/form/BaseButton.vue';
 import { useGuard } from '@/guard';
+import type { SharedData } from '@core/types';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import GuestLayout from '@shared/layouts/GuestLayout.vue';
 
@@ -8,7 +9,7 @@ defineOptions({
     layout: GuestLayout,
 });
 
-const page = usePage();
+const page = usePage<SharedData>();
 const isAuthenticated = page.props.auth.is_authenticated;
 const { is } = useGuard();
 </script>
@@ -25,19 +26,19 @@ const { is } = useGuard();
                     Register
                 </Link>
             </template>
-            <template v-if="is('admin')">
-                <Link href="/dashboard" class="rounded bg-blue-600 px-6 py-2 font-semibold text-white transition hover:bg-blue-700"> Dashboard </Link>
-            </template>
-            <template v-if="is('user')">
-                <Link
-                    :href="route('logout')"
-                    method="post"
-                    as="button"
-                    class="rounded bg-blue-600 px-6 py-2 font-semibold text-white transition hover:bg-blue-700"
-                >
-                    Logout
+            <template v-if="is('super-admin')">
+                <Link :href="route('admin.dashboard')" class="rounded bg-blue-600 px-6 py-2 font-semibold text-white transition hover:bg-blue-700">
+                    Dashboard
                 </Link>
             </template>
+            <Link
+                :href="route('logout')"
+                method="post"
+                as="button"
+                class="rounded bg-blue-600 px-6 py-2 font-semibold text-white transition hover:bg-blue-700"
+            >
+                Logout
+            </Link>
         </div>
     </div>
 </template>

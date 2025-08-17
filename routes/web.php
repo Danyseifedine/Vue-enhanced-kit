@@ -26,7 +26,7 @@ function registerWebRoutes()
         return Inertia::render('Welcome');
     })->name('home');
 
-    Route::middleware(['role:admin'])->group(function () {
+    Route::middleware(['role:super-admin', 'permission:access-admin-panel'])->group(function () {
         require __DIR__ . '/admin.php';
     });
 
