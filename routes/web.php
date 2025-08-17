@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HomeController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -22,11 +23,14 @@ if (config('app.features.multi_lang')) {
 // i need better name then defineRoutes
 function registerWebRoutes()
 {
-    Route::get('/', function () {
-        return Inertia::render('Welcome');
-    })->name('home');
+    Route::get('/', [HomeController::class, 'index'])->name('home');
 
-    Route::middleware(['role:super-admin', 'permission:access-admin-panel'])->group(function () {
+    Route::middleware([
+        'auth',
+        'verified',
+        'role:super-admin',
+        'permission:access-super-admin-panel',
+    ])->group(function () {
         require __DIR__ . '/admin.php';
     });
 

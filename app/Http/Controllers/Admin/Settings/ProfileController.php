@@ -14,6 +14,12 @@ use Inertia\Response;
 
 class ProfileController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:update-super-admin-profile')->only('edit', 'update');
+        $this->middleware('permission:delete-super-admin-profile')->only('destroy');
+    }
+
     /**
      * Show the user's profile settings page.
      */

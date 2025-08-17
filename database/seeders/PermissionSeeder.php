@@ -14,11 +14,22 @@ class PermissionSeeder extends Seeder
     public function run(): void
     {
         $permissions = [
+
+            // ================================================
+            // ---------------- Start Super Admin ---------------
+            // ================================================
             // Dashboard permissions
-            'access-admin-panel',
+            'access-super-admin-panel',
+            'access-super-admin-dashboard',
 
-            // Role & Permission management
+            // Profile permissions
+            'update-super-admin-profile',
+            'delete-super-admin-profile',
+            'update-super-admin-password',
 
+            // ================================================
+            // ---------------- End Super Admin ---------------
+            // ================================================
         ];
 
         foreach ($permissions as $permission) {

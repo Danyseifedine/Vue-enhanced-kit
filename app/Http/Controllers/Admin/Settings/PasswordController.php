@@ -14,6 +14,11 @@ use Inertia\Response;
 
 class PasswordController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:update-super-admin-password')->only('edit', 'update');
+    }
+
     /**
      * Show the user's password settings page.
      */

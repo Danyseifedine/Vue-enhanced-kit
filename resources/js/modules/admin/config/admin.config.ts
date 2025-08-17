@@ -10,6 +10,7 @@ const getAdminSidebarMainItems = (): NavItem[] => [
         title: 'Dashboard',
         href: route('admin.dashboard'),
         icon: LayoutGrid,
+        permissions: ['access-super-admin-dashboard'],
     },
 ];
 

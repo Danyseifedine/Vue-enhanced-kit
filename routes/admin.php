@@ -5,11 +5,16 @@ use App\Http\Controllers\Admin\Settings\PasswordController;
 use App\Http\Controllers\Admin\Settings\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/admin', [IndexController::class, 'index'])->middleware(['auth', 'verified'])->name('admin.dashboard');
 
-Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    Route::get('/', [IndexController::class, 'index'])->name('dashboard');
+
+    // ================================================
+    // ---------------- Start Settings ----------------
+    // ================================================
+
     Route::redirect('/settings', '/admin/settings');
-
     Route::prefix('settings')->name('settings.')->group(function () {
 
         Route::prefix('profile')->name('profile.')->group(function () {
@@ -25,4 +30,8 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
 
         Route::get('appearance', [IndexController::class, 'appearance'])->name('appearance');
     });
+
+    // ================================================
+    // ---------------- End Settings ----------------
+    // ================================================
 });
