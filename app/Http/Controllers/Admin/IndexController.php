@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Navigation\AdminPath;
+use App\Navigation\SuperAdminPath;
 use App\Http\Controllers\Controller;
 use Inertia\Inertia;
 
@@ -16,11 +16,11 @@ class IndexController extends Controller
 
     public function index()
     {
-        return Inertia::render(AdminPath::view("Index"));
+        return Inertia::render(SuperAdminPath::view("Index"));
     }
 
     public function appearance()
     {
-        return Inertia::render(AdminPath::view("settings/Appearance"));
+        return Inertia::render(SuperAdminPath::view("settings/Appearance"));
     }
 }

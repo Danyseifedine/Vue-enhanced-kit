@@ -2,9 +2,9 @@
 
 namespace App\Navigation;
 
-class AdminPath
+class SuperAdminPath
 {
-    private const PREFIX = 'dashboard/admin';
+    private const PREFIX = 'dashboard/super-admin';
 
     public static function view(string $path): string
     {
