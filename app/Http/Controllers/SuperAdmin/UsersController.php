@@ -7,6 +7,7 @@ use App\Navigation\SuperAdminPath;
 use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UsersController extends Controller
 {
@@ -17,7 +18,7 @@ class UsersController extends Controller
         if ($request->has('search') && $request->search) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('email', 'like', '%' . $request->search . '%');
+                    ->orWhere('email', 'like', '%' . $request->search . '%');
             });
         }
 
@@ -29,10 +30,10 @@ class UsersController extends Controller
 
         $sortField = $request->get('sort', 'created_at');
         $sortDirection = $request->get('direction', 'desc');
-        
+
         $users = $query->orderBy($sortField, $sortDirection)
-                      ->paginate($request->get('per_page', 10))
-                      ->withQueryString();
+            ->paginate($request->get('per_page', 10))
+            ->withQueryString();
 
         return Inertia::render(SuperAdminPath::view("users/Index"), [
             'users' => $users,

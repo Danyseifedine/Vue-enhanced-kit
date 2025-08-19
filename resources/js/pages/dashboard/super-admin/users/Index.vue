@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { type BreadcrumbItem } from '@core/types';
-import { Head } from '@inertiajs/vue3';
+import DataTable from '@/common/components/datatable/Datatable.vue';
+import BaseButton from '@/common/components/form/BaseButton.vue';
+import { BreadcrumbItem } from '@core/types';
 import AdminLayout from '@modules/admin/layouts/AdminLayout.vue';
-import DataTable from './DataTable.vue';
-import { columns, type User } from './columns';
+import { Plus } from 'lucide-vue-next';
+import type { User } from './type';
+import { userColumns } from './userColumns';
 
 interface Props {
     users: {
@@ -17,7 +19,6 @@ interface Props {
     };
     filters: {
         search?: string;
-        role?: string;
         sort?: string;
         direction?: string;
         per_page?: number;
@@ -25,6 +26,32 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+// Configure DataTable
+const tableConfig = {
+    searchable: true,
+    searchPlaceholder: 'Search users...',
+    selectable: true,
+    columnVisibility: true,
+    perPageSelector: true,
+    perPageOptions: [10, 25, 50, 100],
+    serverSide: true,
+    pagination: props.users,
+    filters: {
+        ...props.filters,
+        direction: props.filters.direction as 'asc' | 'desc' | undefined,
+    },
+    routeName: 'super-admin.users.index',
+};
+
+// Handle events
+const handleSelectionChange = (users: User[]) => {
+    console.log('Selected:', users);
+};
+
+const handleRowClick = (user: User) => {
+    console.log('Clicked:', user);
+};
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -35,25 +62,31 @@ const breadcrumbs: BreadcrumbItem[] = [
 </script>
 
 <template>
-    <Head title="Users" />
-
     <AdminLayout :breadcrumbs="breadcrumbs">
-        <div class="p-4 space-y-6 py-4">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-2xl font-semibold">Users</h1>
-                    <p class="text-muted-foreground">Manage your users and their roles.</p>
-                </div>
+        <Head title="Users" />
+
+        <div class="container mx-auto py-10">
+            <div class="mb-6 flex items-center justify-between">
+                <h1 class="text-3xl font-bold">Users</h1>
+                <BaseButton variant="outline">
+                    <Plus class="mr-2 h-4 w-4" />
+                    Add User
+                </BaseButton>
             </div>
 
-            <div class="">
-                <DataTable 
-                    :data="users.data" 
-                    :columns="columns" 
-                    :pagination="users"
-                    :filters="filters"
-                />
-            </div>
+            <DataTable
+                :columns="userColumns"
+                :data="users.data"
+                :config="tableConfig"
+                @selection-change="handleSelectionChange"
+                @row-click="handleRowClick"
+            >
+                <template #toolbar="{ table }">
+                    <Button v-if="table.getFilteredSelectedRowModel().rows.length > 0" variant="destructive" size="sm">
+                        Delete ({{ table.getFilteredSelectedRowModel().rows.length }})
+                    </Button>
+                </template>
+            </DataTable>
         </div>
     </AdminLayout>
 </template>
