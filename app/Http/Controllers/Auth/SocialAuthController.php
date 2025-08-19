@@ -28,7 +28,7 @@ class SocialAuthController extends BaseSocialAuthController
         Auth::login($user);
 
         // Custom redirect
-        return redirect()->route('admin.dashboard')
+        return redirect()->route('super-admin.dashboard')
             ->with('success', "Welcome! You've been authenticated via {$provider}");
     }
 

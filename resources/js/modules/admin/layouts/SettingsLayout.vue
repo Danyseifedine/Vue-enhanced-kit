@@ -8,15 +8,15 @@ import { Link, usePage } from '@inertiajs/vue3';
 const sidebarNavItems: NavItem[] = [
     {
         title: 'Profile',
-        href: route('admin.settings.profile.edit'),
+        href: route('super-admin.settings.profile.edit'),
     },
     {
         title: 'Password',
-        href: route('admin.settings.password.edit'),
+        href: route('super-admin.settings.password.edit'),
     },
     {
         title: 'Appearance',
-        href: route('admin.settings.appearance'),
+        href: route('super-admin.settings.appearance'),
     },
 ];
 

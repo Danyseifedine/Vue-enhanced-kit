@@ -9,11 +9,11 @@ export const useProfileStore = defineStore('profile', () => {
     const avatarInputRef = ref<HTMLInputElement | null>(null);
     const previewUrl = ref<string | null>(null);
     const isSubmitting = ref(false);
-    
+
     // Get current user from Inertia shared props
     const page = usePage<SharedData>();
     const user = computed(() => page.props.auth.user as User);
-    
+
     // Initialize form with current user data
     const form = useForm({
         name: user.value.name,
@@ -53,7 +53,7 @@ export const useProfileStore = defineStore('profile', () => {
     const removeAvatar = () => {
         // Set form avatar to 'remove' to signal server to delete
         form.avatar = 'remove' as any;
-        
+
         // Set preview to default image
         previewUrl.value = '/assets/images/default.jpg';
     };
@@ -61,7 +61,7 @@ export const useProfileStore = defineStore('profile', () => {
     const submitProfile = () => {
         isSubmitting.value = true;
 
-        form.post(route('admin.settings.profile.update'), {
+        form.post(route('super-admin.settings.profile.update'), {
             preserveScroll: true,
             forceFormData: true,
             onSuccess: () => {
@@ -108,11 +108,11 @@ export const useProfileStore = defineStore('profile', () => {
         previewUrl,
         isSubmitting,
         avatarInputRef,
-        
+
         // Getters
         currentAvatarUrl,
         hasAvatar,
-        
+
         // Actions
         initializeForm,
         handleAvatarChange,

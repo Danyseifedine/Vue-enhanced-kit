@@ -31,7 +31,7 @@ function registerWebRoutes()
         'role:super-admin',
         'permission:access-super-admin-panel',
     ])->group(function () {
-        require __DIR__ . '/admin.php';
+        require __DIR__ . '/super-admin.php';
     });
 
     require __DIR__ . '/auth.php';

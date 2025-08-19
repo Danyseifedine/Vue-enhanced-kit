@@ -25,7 +25,7 @@ const form = useForm({
 });
 
 const updatePassword = () => {
-    form.put(route('admin.settings.password.update'), {
+    form.put(route('super-admin.settings.password.update'), {
         preserveScroll: true,
         onSuccess: () => form.reset(),
         onError: (errors: any) => {

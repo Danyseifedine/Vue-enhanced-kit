@@ -3,13 +3,20 @@ import type { NavItem } from "@/core/types";
 import {
     BookOpen, Folder,
     LayoutGrid,
+    Users,
 } from "lucide-vue-next";
 
 const getAdminSidebarMainItems = (): NavItem[] => [
     {
         title: 'Dashboard',
-        href: route('admin.dashboard'),
+        href: route('super-admin.dashboard'),
         icon: LayoutGrid,
+        permissions: ['access-super-admin-dashboard'],
+    },
+    {
+        title: 'Users',
+        href: route('super-admin.users.index'),
+        icon: Users,
         permissions: ['access-super-admin-dashboard'],
     },
 ];
@@ -50,7 +57,7 @@ export const adminDashboardConfig: DashboardConfig = {
         footerItems: getAdminSidebarFooterItems(),
     },
     routes: {
-        logoRedirect: route('admin.dashboard'),
-        settings: route('admin.settings.profile.edit'),
+        logoRedirect: route('super-admin.dashboard'),
+        settings: route('super-admin.settings.profile.edit'),
     },
 };

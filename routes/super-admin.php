@@ -1,12 +1,13 @@
 <?php
 
-use App\Http\Controllers\Admin\IndexController;
-use App\Http\Controllers\Admin\Settings\PasswordController;
-use App\Http\Controllers\Admin\Settings\ProfileController;
+use App\Http\Controllers\SuperAdmin\IndexController;
+use App\Http\Controllers\SuperAdmin\UsersController;
+use App\Http\Controllers\SuperAdmin\Settings\PasswordController;
+use App\Http\Controllers\SuperAdmin\Settings\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('super-admin')->name('super-admin.')->group(function () {
 
     Route::get('/', [IndexController::class, 'index'])->name('dashboard');
 
@@ -14,7 +15,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // ---------------- Start Settings ----------------
     // ================================================
 
-    Route::redirect('/settings', '/admin/settings');
+    Route::redirect('/settings', '/super-admin/settings');
     Route::prefix('settings')->name('settings.')->group(function () {
 
         Route::prefix('profile')->name('profile.')->group(function () {
@@ -32,6 +33,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 
     // ================================================
-    // ---------------- End Settings ----------------
+    // ---------------- End Settings ------------------
     // ================================================
+
+    // ================================================
+    // ---------------- Start Users ------------------
+    // ================================================
+
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/', [UsersController::class, 'index'])->name('index');
+    });
 });

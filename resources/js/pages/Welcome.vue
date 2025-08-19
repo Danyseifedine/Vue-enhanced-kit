@@ -27,7 +27,7 @@ const { is } = useGuard();
                 </Link>
             </template>
             <template v-if="is('super-admin')">
-                <Link :href="route('admin.dashboard')" class="rounded bg-blue-600 px-6 py-2 font-semibold text-white transition hover:bg-blue-700">
+                <Link :href="route('super-admin.dashboard')" class="rounded bg-blue-600 px-6 py-2 font-semibold text-white transition hover:bg-blue-700">
                     Dashboard
                 </Link>
             </template>
