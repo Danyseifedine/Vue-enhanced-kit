@@ -3,7 +3,8 @@ import { router } from '@inertiajs/vue3'
 import type {
     ColumnFiltersState,
     SortingState,
-    VisibilityState
+    VisibilityState,
+    PaginationState
 } from '@tanstack/vue-table'
 import {
     getCoreRowModel,
@@ -32,31 +33,32 @@ export function useDataTable(props: any, emit: any) {
     const rowSelection = ref({})
     const globalFilter = ref(props.config?.filters?.search || '')
 
+    // ADD THIS: Pagination state for client-side
+    const pagination = ref<PaginationState>({
+        pageIndex: 0,
+        pageSize: props.config?.perPageOptions?.[0] || 10,
+    })
+
     // Debounce timer for search
     let searchTimer: ReturnType<typeof setTimeout> | null = null
 
     // Update server-side data
     const updateServerData = (params: Record<string, any>) => {
-        // Only run in browser and if server-side is enabled
         if (typeof window === 'undefined' || !props.config?.serverSide) return
 
-        // Merge with existing filters
         const queryParams = {
             ...props.config.filters,
             ...params,
         }
 
-        // Remove empty values
         Object.keys(queryParams).forEach((key) => {
             if (queryParams[key] === '' || queryParams[key] === null || queryParams[key] === undefined) {
                 delete queryParams[key]
             }
         })
 
-        // Emit filter update event
         emit('update:filters', queryParams)
 
-        // Use Inertia router if route name is provided
         if (props.config.routeName && typeof route !== 'undefined') {
             router.get(route(props.config.routeName), queryParams, {
                 preserveState: props.config.preserveState ?? false,
@@ -76,13 +78,13 @@ export function useDataTable(props: any, emit: any) {
             get columnVisibility() { return columnVisibility.value },
             get rowSelection() { return rowSelection.value },
             get globalFilter() { return globalFilter.value },
+            get pagination() { return pagination.value }, // ADD THIS
         },
         onSortingChange: (updater) => {
             sorting.value = typeof updater === 'function'
                 ? updater(sorting.value)
                 : updater
 
-            // Handle server-side sorting
             if (props.config?.serverSide && sorting.value.length > 0) {
                 const sort = sorting.value[0]
                 updateServerData({
@@ -106,7 +108,6 @@ export function useDataTable(props: any, emit: any) {
                 ? updater(rowSelection.value)
                 : updater
 
-            // Emit selection change event
             const selectedRows = table.getFilteredSelectedRowModel().rows.map(row => row.original)
             emit('selection-change', selectedRows)
         },
@@ -115,14 +116,20 @@ export function useDataTable(props: any, emit: any) {
                 ? updater(globalFilter.value)
                 : updater
         },
+        // ADD THIS: Pagination change handler
+        onPaginationChange: (updater) => {
+            pagination.value = typeof updater === 'function'
+                ? updater(pagination.value)
+                : updater
+        },
         getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: props.config?.serverSide ? undefined : getPaginationRowModel(),
-        getSortedRowModel: props.config?.serverSide ? getCoreRowModel() : getSortedRowModel(),
-        getFilteredRowModel: props.config?.serverSide ? getCoreRowModel() : getFilteredRowModel(),
+        getPaginationRowModel: getPaginationRowModel(), // CHANGE: Always use this
+        getSortedRowModel: getSortedRowModel(), // CHANGE: Always use this
+        getFilteredRowModel: getFilteredRowModel(), // CHANGE: Always use this
         manualPagination: !!props.config?.serverSide,
         manualSorting: !!props.config?.serverSide,
         manualFiltering: !!props.config?.serverSide,
-        pageCount: props.config?.pagination?.last_page,
+        pageCount: props.config?.serverSide ? props.config?.pagination?.last_page : undefined,
     })
 
     // Search handler with debouncing
@@ -130,15 +137,11 @@ export function useDataTable(props: any, emit: any) {
         globalFilter.value = value
 
         if (props.config?.serverSide) {
-            // Clear existing timer
             if (searchTimer) clearTimeout(searchTimer)
-
-            // Set new timer for debounced search
             searchTimer = setTimeout(() => {
                 updateServerData({ search: value, page: 1 })
             }, 300)
         } else {
-            // Client-side filtering
             table.setGlobalFilter(value)
         }
     }
@@ -162,9 +165,9 @@ export function useDataTable(props: any, emit: any) {
     }
 
     const nextPage = () => {
-        const pagination = props.config?.pagination
-        if (props.config?.serverSide && pagination) {
-            if (pagination.current_page < pagination.last_page) {
+        if (props.config?.serverSide) {
+            const pagination = props.config?.pagination
+            if (pagination && pagination.current_page < pagination.last_page) {
                 goToPage(pagination.current_page + 1)
             }
         } else {
@@ -173,9 +176,9 @@ export function useDataTable(props: any, emit: any) {
     }
 
     const previousPage = () => {
-        const pagination = props.config?.pagination
-        if (props.config?.serverSide && pagination) {
-            if (pagination.current_page > 1) {
+        if (props.config?.serverSide) {
+            const pagination = props.config?.pagination
+            if (pagination && pagination.current_page > 1) {
                 goToPage(pagination.current_page - 1)
             }
         } else {
@@ -183,7 +186,13 @@ export function useDataTable(props: any, emit: any) {
         }
     }
 
-    const firstPage = () => goToPage(1)
+    const firstPage = () => {
+        if (props.config?.serverSide) {
+            goToPage(1)
+        } else {
+            table.setPageIndex(0) // FIX: Use 0 for client-side
+        }
+    }
 
     const lastPage = () => {
         if (props.config?.serverSide && props.config?.pagination) {
@@ -193,7 +202,7 @@ export function useDataTable(props: any, emit: any) {
         }
     }
 
-    // Computed properties for pagination state
+    // Computed properties
     const canPreviousPage = computed(() => {
         if (props.config?.serverSide && props.config?.pagination) {
             return props.config.pagination.current_page > 1
@@ -222,6 +231,14 @@ export function useDataTable(props: any, emit: any) {
         return table.getPageCount()
     })
 
+    // ADD THIS: Current per page value
+    const currentPerPage = computed(() => {
+        if (props.config?.serverSide) {
+            return props.config?.pagination?.per_page || props.config?.filters?.per_page || 10
+        }
+        return table.getState().pagination.pageSize
+    })
+
     // Reset selection when data changes
     watch(() => props.data, () => {
         rowSelection.value = {}
@@ -235,19 +252,17 @@ export function useDataTable(props: any, emit: any) {
     }
 
     return {
-        // State
         sorting,
         columnFilters,
         columnVisibility,
         rowSelection,
         globalFilter,
         table,
-        // Computed
         currentPage,
         pageCount,
+        currentPerPage, // ADD THIS
         canPreviousPage,
         canNextPage,
-        // Handlers
         handleSearch,
         handlePerPageChange,
         goToPage,

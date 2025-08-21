@@ -38,7 +38,14 @@ export const userColumns = createColumns<User>([
 
     // Verification status
     textColumn('email_verified_at', 'Status', {
-        format: (value: any) => value ? 'verified' : 'unverified',
+        format: (value: any) => {
+            console.log(value)
+            if (value) {
+                return 'verified'
+            } else {
+                return 'unverified'
+            }
+        },
     }),
 
     // Join date

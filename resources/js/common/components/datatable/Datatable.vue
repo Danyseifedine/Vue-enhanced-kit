@@ -1,4 +1,5 @@
 <script setup lang="ts" generic="TData">
+import { useDataTable } from '@/core/composables/useDatatable';
 import type { ColumnDef } from '@tanstack/vue-table';
 import { FlexRender } from '@tanstack/vue-table';
 import { Button } from '@ui/button';
@@ -7,7 +8,6 @@ import { Input } from '@ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@ui/table';
 import { ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Search } from 'lucide-vue-next';
 import { computed, onUnmounted } from 'vue';
-import { useDataTable } from '@/core/composables/useDatatable';
 import type { DataTableConfig } from './index';
 
 interface Props {
@@ -42,6 +42,7 @@ const {
     table,
     currentPage,
     pageCount,
+    currentPerPage,
     canPreviousPage,
     canNextPage,
     handleSearch,
@@ -70,8 +71,6 @@ const selectedRowsText = computed(() => {
     }
     return `${selectedCount} of ${totalCount} row(s) selected`;
 });
-
-const currentPerPage = computed(() => props.config?.pagination?.per_page || props.config?.filters?.per_page || 10);
 
 const showPagination = computed(() => {
     const total = props.config?.pagination?.total || props.data.length;
@@ -162,7 +161,7 @@ const showPagination = computed(() => {
                             :key="row.id"
                             :data-state="row.getIsSelected() ? 'selected' : undefined"
                             class="cursor-pointer hover:bg-muted/50"
-                            @click="emit('row-click', row.original)"
+                            @click="emit('row-click', row.original as TData)"
                         >
                             <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id" :class="cell.column.columnDef.meta?.className">
                                 <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />

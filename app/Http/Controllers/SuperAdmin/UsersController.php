@@ -2,42 +2,47 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\BaseController;
 use App\Navigation\SuperAdminPath;
 use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
-class UsersController extends Controller
+class UsersController extends BaseController
 {
     public function index(Request $request)
     {
         $query = User::with('roles');
 
-        if ($request->has('search') && $request->search) {
-            $query->where(function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%')
-                    ->orWhere('email', 'like', '%' . $request->search . '%');
-            });
-        }
+        // Define DataTable configuration
+        $searchColumns = ['name', 'email'];
+        $allowedSorts = ['name', 'email', 'created_at', 'updated_at'];
+        $allowedFilters = [
+            'role' => [
+                'type' => 'relationship',
+                'relationship' => 'roles',
+                'relation_column' => 'name'
+            ],
+            'status' => function ($query, $value) {
+                if ($value === 'verified') {
+                    $query->whereNotNull('email_verified_at');
+                } else {
+                    $query->whereNull('email_verified_at');
+                }
+            }
+        ];
 
-        if ($request->has('role') && $request->role) {
-            $query->whereHas('roles', function ($q) use ($request) {
-                $q->where('name', $request->role);
-            });
-        }
-
-        $sortField = $request->get('sort', 'created_at');
-        $sortDirection = $request->get('direction', 'desc');
-
-        $users = $query->orderBy($sortField, $sortDirection)
-            ->paginate($request->get('per_page', 10))
-            ->withQueryString();
+        // Apply DataTable logic
+        $users = $this->dataTable(
+            $query,
+            $searchColumns,
+            $allowedSorts,
+            $allowedFilters
+        );
 
         return Inertia::render(SuperAdminPath::view("users/Index"), [
             'users' => $users,
-            'filters' => $request->only(['search', 'role', 'sort', 'direction', 'per_page']),
+            'filters' => $this->getFilters(['role', 'status']),
         ]);
     }
 }

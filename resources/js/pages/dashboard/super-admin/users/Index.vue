@@ -65,7 +65,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     <AdminLayout :breadcrumbs="breadcrumbs">
         <Head title="Users" />
 
-        <div class="container mx-auto py-10">
+        <div class="p-4 py-10">
             <div class="mb-6 flex items-center justify-between">
                 <h1 class="text-3xl font-bold">Users</h1>
                 <BaseButton variant="outline">
