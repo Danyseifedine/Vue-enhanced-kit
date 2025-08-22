@@ -16,7 +16,7 @@ class UsersController extends BaseController
 
         // Define DataTable configuration
         $searchColumns = ['name', 'email'];
-        $allowedSorts = ['name', 'email', 'created_at', 'updated_at'];
+        $allowedSorts = ['name', 'email', 'created_at'];
         $allowedFilters = [
             'role' => [
                 'type' => 'relationship',

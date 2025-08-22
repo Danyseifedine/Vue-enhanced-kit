@@ -50,7 +50,7 @@ export const userColumns = createColumns<User>([
 
     // Join date
     dateColumn('created_at', 'Joined', {
-        relative: false,
+        relative: true,
     }),
 
     // Actions menu
