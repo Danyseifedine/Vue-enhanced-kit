@@ -6,9 +6,11 @@ import type {
     BadgeColumnConfig,
     DateColumnConfig,
     SelectColumnConfig,
+    CounterColumnConfig,
     ActionsColumnConfig
 } from '../index'
 import SelectColumn from './SelectColumn.vue'
+import CounterColumn from './CounterColumn.vue'
 import TextColumn from './TextColumn.vue'
 import BadgeColumn from './BadgeColumn.vue'
 import DateColumn from './DateColumn.vue'
@@ -61,6 +63,22 @@ export function createColumns<TData>(configs: AnyColumnConfig[]): ColumnDef<TDat
                     }),
                     enableSorting: false,
                     size: 40,
+                }
+
+            case 'counter':
+                const counterConfig = config as CounterColumnConfig
+                return {
+                    ...baseColumn,
+                    id: 'counter',
+                    accessorKey: undefined,
+                    header: counterConfig.label || '#',
+                    cell: ({ row }) => h(CounterColumn, {
+                        rowIndex: row.index,
+                        startFrom: counterConfig.startFrom,
+                    }),
+                    enableSorting: false,
+                    enableHiding: false,
+                    size: 60,
                 }
 
             case 'text':
@@ -171,6 +189,22 @@ export function selectColumn(): SelectColumnConfig {
     return {
         type: 'select',
         key: 'select',
+    }
+}
+
+/**
+ * Helper function to create a counter column
+ */
+export function counterColumn(
+    label?: string,
+    options?: Partial<CounterColumnConfig>
+): CounterColumnConfig {
+    return {
+        type: 'counter',
+        key: 'counter',
+        label: label || '#',
+        startFrom: 1,
+        ...options,
     }
 }
 

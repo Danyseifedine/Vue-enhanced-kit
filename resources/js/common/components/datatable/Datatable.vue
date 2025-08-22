@@ -6,7 +6,7 @@ import { Button } from '@ui/button';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@ui/dropdown-menu';
 import { Input } from '@ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@ui/table';
-import { ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Search } from 'lucide-vue-next';
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Columns, Search } from 'lucide-vue-next';
 import { computed, onUnmounted } from 'vue';
 import type { DataTableConfig } from './index';
 
@@ -119,8 +119,10 @@ const showPagination = computed(() => {
                 <DropdownMenu v-if="config?.columnVisibility">
                     <DropdownMenuTrigger as-child>
                         <Button variant="outline" size="sm" class="h-8 gap-1">
-                            <span class="hidden sm:inline">Columns</span>
-                            <ChevronDown class="h-3.5 w-3.5" />
+                            <span class="hidden sm:inline">
+                                <!-- add columns icon -->
+                                <Columns class="h-3.5 w-3.5" />
+                            </span>
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" class="w-[150px]">

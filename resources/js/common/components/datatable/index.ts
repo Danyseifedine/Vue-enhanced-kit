@@ -79,6 +79,12 @@ export interface SelectColumnConfig extends ColumnConfig {
     type: 'select'
 }
 
+// Counter column configuration
+export interface CounterColumnConfig extends ColumnConfig {
+    type: 'counter'
+    startFrom?: number
+}
+
 // Actions column configuration
 export interface ActionsColumnConfig extends ColumnConfig {
     type: 'actions'
@@ -102,4 +108,5 @@ export type AnyColumnConfig =
     | BadgeColumnConfig
     | DateColumnConfig
     | SelectColumnConfig
+    | CounterColumnConfig
     | ActionsColumnConfig

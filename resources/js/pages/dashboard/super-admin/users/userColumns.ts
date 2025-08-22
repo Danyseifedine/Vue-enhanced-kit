@@ -1,6 +1,7 @@
 import {
     createColumns,
     selectColumn,
+    counterColumn,
     textColumn,
     badgeColumn,
     dateColumn,
@@ -11,13 +12,13 @@ import { router } from '@inertiajs/vue3'
 import type { User } from './type'
 
 export const userColumns = createColumns<User>([
-    // Checkbox selection
+    // Row counter (change to selectColumn() for checkboxes)
     selectColumn(),
-
     // Name with custom styling
     textColumn('name', 'Name', {
         sortable: true,
         searchable: true,
+        visible: false,
         className: 'font-medium font-bold',
     }),
 
