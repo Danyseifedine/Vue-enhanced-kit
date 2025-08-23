@@ -7,10 +7,12 @@ import type {
     DateColumnConfig,
     SelectColumnConfig,
     CounterColumnConfig,
+    ToggleColumnConfig,
     ActionsColumnConfig
 } from '../index'
 import SelectColumn from './SelectColumn.vue'
 import CounterColumn from './CounterColumn.vue'
+import ToggleColumn from './ToggleColumn.vue'
 import TextColumn from './TextColumn.vue'
 import BadgeColumn from './BadgeColumn.vue'
 import DateColumn from './DateColumn.vue'
@@ -79,6 +81,23 @@ export function createColumns<TData>(configs: AnyColumnConfig[]): ColumnDef<TDat
                     enableSorting: false,
                     enableHiding: false,
                     size: 60,
+                }
+
+            case 'toggle':
+                const toggleConfig = config as ToggleColumnConfig
+                return {
+                    ...baseColumn,
+                    header: toggleConfig.label,
+                    cell: ({ row }) => h(ToggleColumn, {
+                        value: row.getValue(config.key),
+                        row: row.original,
+                        onToggle: toggleConfig.onToggle,
+                        disabled: toggleConfig.disabled,
+                        toggledWhen: toggleConfig.toggledWhen,
+                        size: toggleConfig.size,
+                    }),
+                    enableSorting: false,
+                    size: 80,
                 }
 
             case 'text':
@@ -204,6 +223,23 @@ export function counterColumn(
         key: 'counter',
         label: label || '#',
         startFrom: 1,
+        ...options,
+    }
+}
+
+/**
+ * Helper function to create a toggle column
+ */
+export function toggleColumn(
+    key: string,
+    label?: string,
+    options?: Partial<ToggleColumnConfig>
+): ToggleColumnConfig {
+    return {
+        type: 'toggle',
+        key,
+        label: label || key,
+        size: 'default',
         ...options,
     }
 }

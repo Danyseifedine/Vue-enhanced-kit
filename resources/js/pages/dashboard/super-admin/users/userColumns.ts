@@ -1,7 +1,7 @@
 import {
     createColumns,
-    selectColumn,
     counterColumn,
+    toggleColumn,
     textColumn,
     badgeColumn,
     dateColumn,
@@ -11,14 +11,19 @@ import { Copy, Eye, Edit, Trash2 } from 'lucide-vue-next'
 import { router } from '@inertiajs/vue3'
 import type { User } from './type'
 
+import { useGuard } from '@/guard'
+import { convertToBoolean } from '@/core/utils/utils';
+
+const { userIsSuperAdmin } = useGuard();
+
 export const userColumns = createColumns<User>([
     // Row counter (change to selectColumn() for checkboxes)
-    selectColumn(),
+    counterColumn(' ', { startFrom: 1 }),
     // Name with custom styling
     textColumn('name', 'Name', {
         sortable: true,
         searchable: true,
-        visible: false,
+        visible: true,
         className: 'font-medium font-bold',
     }),
 
@@ -31,16 +36,30 @@ export const userColumns = createColumns<User>([
 
     // Roles with badge variants
     badgeColumn('roles', 'Roles', {
-        'super-admin': 'destructive',
+        'super-admin': 'default',
         'admin': 'default',
         'editor': 'secondary',
         'user': 'outline',
     }),
 
+    // Active status toggle
+    toggleColumn('is_active', 'Active', {
+        onToggle: (value: boolean, user: User) => {
+            router.patch(route('super-admin.users.toggle-status', user.id), { is_active: value })
+        },
+        disabled: (user: User) => {
+            return userIsSuperAdmin(user);
+        },
+        toggledWhen: (value: any) => {
+            return convertToBoolean(value);
+        },
+        size: 'sm',
+        className: 'flex justify-start',
+    }),
+
     // Verification status
     textColumn('email_verified_at', 'Status', {
         format: (value: any) => {
-            console.log(value)
             if (value) {
                 return 'verified'
             } else {
@@ -61,7 +80,6 @@ export const userColumns = createColumns<User>([
             icon: Copy,
             onClick: (user) => {
                 navigator.clipboard.writeText(user.id.toString())
-                // Show toast notification
             },
         },
         { separator: true, label: 'Separator' },
@@ -77,6 +95,9 @@ export const userColumns = createColumns<User>([
         },
         { separator: true, label: 'Separator' },
         {
+            show: (user: User) => {
+                return !userIsSuperAdmin(user);
+            },
             label: 'Delete',
             icon: Trash2,
             destructive: true,

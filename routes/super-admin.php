@@ -42,5 +42,6 @@ Route::prefix('super-admin')->name('super-admin.')->group(function () {
 
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [UsersController::class, 'index'])->name('index');
+        Route::patch('/{user}/toggle-status', [UsersController::class, 'toggleStatus'])->name('toggle-status');
     });
 });

@@ -12,8 +12,7 @@ class UsersController extends BaseController
 {
     public function index(Request $request)
     {
-        $query = User::with('roles');
-
+        $query = User::select('id', 'name', 'email', 'is_active', 'email_verified_at', 'created_at')->with('roles', 'media');
         // Define DataTable configuration
         $searchColumns = ['name', 'email'];
         $allowedSorts = ['name', 'email', 'created_at'];
@@ -44,5 +43,12 @@ class UsersController extends BaseController
             'users' => $users,
             'filters' => $this->getFilters(['role', 'status']),
         ]);
+    }
+
+    public function toggleStatus(User $user)
+    {
+        $user->update(['is_active' => !$user->is_active]);
+
+        return redirect()->back();
     }
 }

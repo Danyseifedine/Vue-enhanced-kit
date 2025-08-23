@@ -15,9 +15,23 @@ const getAdminSidebarMainItems = (): NavItem[] => [
     },
     {
         title: 'Users',
-        href: route('super-admin.users.index'),
+        // href: route('super-admin.users.index'),
         icon: Users,
         permissions: ['access-super-admin-dashboard'],
+        children: [
+            {
+                title: 'Users',
+                href: route('super-admin.users.index'),
+                icon: Users,
+                permissions: ['access-super-admin-dashboard'],
+            },
+            {
+                title: 'Users',
+                href: route('super-admin.users.index'),
+                icon: Users,
+                permissions: ['access-super-admin-dashboard'],
+            },
+        ]
     },
 ];
 
@@ -49,7 +63,7 @@ export const adminDashboardConfig: DashboardConfig = {
         sidebarTitleExist: true,
         sidebarTitle: 'Dany Seifeddine',
         sidebarPadding: 'py-5',
-        sidebarNeonBorderColor: '#d9ff00',
+        sidebarNeonBorderColor: '#fff',
         sidebarSubmenuStyle: 'tree',
     },
     navigation: {

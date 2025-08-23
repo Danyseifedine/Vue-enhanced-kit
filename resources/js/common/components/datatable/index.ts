@@ -85,6 +85,15 @@ export interface CounterColumnConfig extends ColumnConfig {
     startFrom?: number
 }
 
+// Toggle column configuration
+export interface ToggleColumnConfig extends ColumnConfig {
+    type: 'toggle'
+    onToggle?: (value: boolean, row: any) => void
+    disabled?: (row: any) => boolean
+    toggledWhen?: (value: any, row: any) => boolean
+    size?: 'sm' | 'default' | 'lg'
+}
+
 // Actions column configuration
 export interface ActionsColumnConfig extends ColumnConfig {
     type: 'actions'
@@ -109,4 +118,5 @@ export type AnyColumnConfig =
     | DateColumnConfig
     | SelectColumnConfig
     | CounterColumnConfig
+    | ToggleColumnConfig
     | ActionsColumnConfig

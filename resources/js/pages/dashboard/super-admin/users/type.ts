@@ -5,4 +5,5 @@ export interface User {
     email_verified_at: string | null
     created_at: string
     roles: Array<{ name: string; id: number }>
+    is_active?: boolean
 }

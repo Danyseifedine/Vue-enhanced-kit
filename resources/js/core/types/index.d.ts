@@ -2,6 +2,16 @@ import type { PageProps } from '@inertiajs/core';
 import type { Config } from 'ziggy-js';
 import type { Component } from 'vue';
 
+// Extend ColumnMeta from @tanstack/vue-table
+declare module '@tanstack/vue-table' {
+    interface ColumnMeta {
+        label?: string;
+        width?: number | string;
+        className?: string;
+        headerClassName?: string;
+    }
+}
+
 export interface Auth {
     user: User;
     is_authenticated: boolean;

@@ -26,6 +26,7 @@ class User extends Authenticatable implements MustVerifyEmail, HasMedia
      */
     protected $fillable = [
         'name',
+        'is_active',
         'email',
         'password',
         'email_verified_at',
@@ -75,7 +76,7 @@ class User extends Authenticatable implements MustVerifyEmail, HasMedia
     public function getAvatarUrlAttribute(): string
     {
         $url = $this->getFirstMediaUrl('avatar');
-        
+
         // Return default image if no avatar exists
         return $url ?: asset('assets/images/default.jpg');
     }

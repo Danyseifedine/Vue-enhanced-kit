@@ -86,7 +86,12 @@ const showPagination = computed(() => {
             <div v-if="config?.searchable" class="flex flex-1 items-center space-x-2">
                 <div class="relative w-full sm:w-[250px] lg:w-[350px]">
                     <Search class="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input :model-value="globalFilter" :placeholder="config.searchPlaceholder" class="h-9 pl-8" @update:model-value="handleSearch" />
+                    <Input
+                        :model-value="globalFilter"
+                        :placeholder="config.searchPlaceholder"
+                        class="h-9 pl-8"
+                        @update:model-value="(value) => handleSearch(String(value))"
+                    />
                 </div>
             </div>
 

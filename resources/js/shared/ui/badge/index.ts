@@ -15,12 +15,28 @@ export const badgeVariants = cva(
         destructive:
           "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
         outline: "text-foreground",
+
+        // New badge designs
+        success:
+          "border-transparent bg-green-500 text-white hover:bg-green-600",
+        info:
+          "border-transparent bg-blue-500 text-white hover:bg-blue-600",
+        warning:
+          "border-transparent bg-yellow-400 text-yellow-900 hover:bg-yellow-500",
+        muted:
+          "border-transparent bg-muted text-muted-foreground hover:bg-muted/80",
+        dark:
+          "border-transparent bg-gray-900 text-white hover:bg-gray-800",
+        light:
+          "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50",
+        pink:
+          "border-transparent bg-pink-500 text-white hover:bg-pink-600",
       },
     },
     defaultVariants: {
       variant: "default",
     },
-  },
+  }
 )
 
 export type BadgeVariants = VariantProps<typeof badgeVariants>

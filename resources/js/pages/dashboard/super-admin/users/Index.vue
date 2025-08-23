@@ -2,7 +2,9 @@
 import DataTable from '@/common/components/datatable/Datatable.vue';
 import BaseButton from '@/common/components/form/BaseButton.vue';
 import { BreadcrumbItem } from '@core/types';
+import { Head } from '@inertiajs/vue3';
 import AdminLayout from '@modules/admin/layouts/AdminLayout.vue';
+import { Button } from '@ui/button';
 import { Plus } from 'lucide-vue-next';
 import type { User } from './type';
 import { userColumns } from './userColumns';
