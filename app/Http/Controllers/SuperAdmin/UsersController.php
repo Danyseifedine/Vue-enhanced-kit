@@ -47,8 +47,15 @@ class UsersController extends BaseController
 
     public function toggleStatus(User $user)
     {
-        $user->update(['is_active' => !$user->is_active]);
+        try {
+            $user->update(['is_active' => !$user->is_active]);
 
-        return redirect()->back();
+            $status = $user->is_active ? 'activated' : 'deactivated';
+            $message = "User '{$user->name}' has been {$status} successfully.";
+
+            return $this->successWithToast($message, 'User ' . ucfirst($status));
+        } catch (\Exception $e) {
+            return $this->errorWithToast('Failed to update user status. Please try again.');
+        }
     }
 }

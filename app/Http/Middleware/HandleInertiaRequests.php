@@ -56,7 +56,6 @@ class HandleInertiaRequests extends Middleware
             'name' => config('app.name'),
             'locale' => app()->getLocale(),
             'translations' => $translations,
-            'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
                 'user' => $user,
                 'is_authenticated' => $user ? true : false,
@@ -66,6 +65,9 @@ class HandleInertiaRequests extends Middleware
             'ziggy' => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
+            ],
+            'flash' => [
+                'toast' => $request->session()->get('toast'),
             ],
         ];
     }

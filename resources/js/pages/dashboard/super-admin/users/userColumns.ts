@@ -44,8 +44,15 @@ export const userColumns = createColumns<User>([
 
     // Active status toggle
     toggleColumn('is_active', 'Active', {
-        onToggle: (value: boolean, user: User) => {
-            router.patch(route('super-admin.users.toggle-status', user.id), { is_active: value })
+        onToggle: (value: boolean, user: User, control) => {
+            router.patch(route('super-admin.users.toggle-status', user.id), { is_active: value }, {
+                onSuccess: (_) => {
+                    const toast = (_.props as any).flash?.toast;
+                    if (toast?.type === 'error') {
+                        control.revert();
+                    }
+                }
+            });
         },
         disabled: (user: User) => {
             return userIsSuperAdmin(user);

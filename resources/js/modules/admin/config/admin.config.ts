@@ -15,23 +15,9 @@ const getAdminSidebarMainItems = (): NavItem[] => [
     },
     {
         title: 'Users',
-        // href: route('super-admin.users.index'),
+        href: route('super-admin.users.index'),
         icon: Users,
         permissions: ['access-super-admin-dashboard'],
-        children: [
-            {
-                title: 'Users',
-                href: route('super-admin.users.index'),
-                icon: Users,
-                permissions: ['access-super-admin-dashboard'],
-            },
-            {
-                title: 'Users',
-                href: route('super-admin.users.index'),
-                icon: Users,
-                permissions: ['access-super-admin-dashboard'],
-            },
-        ]
     },
 ];
 

@@ -85,10 +85,18 @@ export interface CounterColumnConfig extends ColumnConfig {
     startFrom?: number
 }
 
+// Toggle control interface
+export interface ToggleControl {
+    element: HTMLElement;
+    dontToggle: () => void;
+    revert: () => void;
+    toggle: () => void;
+}
+
 // Toggle column configuration
 export interface ToggleColumnConfig extends ColumnConfig {
     type: 'toggle'
-    onToggle?: (value: boolean, row: any) => void
+    onToggle?: (value: boolean, row: any, control: ToggleControl) => void
     disabled?: (row: any) => boolean
     toggledWhen?: (value: any, row: any) => boolean
     size?: 'sm' | 'default' | 'lg'
