@@ -6,7 +6,6 @@ use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Carbon\Carbon;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,10 +14,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-
-        User::factory()->count(10)->create()->each(function ($user) {
-            $user->assignRole('user');
-        });
 
         $this->call([
             PermissionSeeder::class,
@@ -31,6 +26,11 @@ class DatabaseSeeder extends Seeder
                 'email' => 'admin@admin.com',
                 'role' => 'super-admin',
             ],
+            // [
+            //     'name' => 'User',
+            //     'email' => 'user@user.com',
+            //     'role' => 'user',
+            // ],
         ];
 
         foreach ($users as $userData) {
@@ -39,7 +39,7 @@ class DatabaseSeeder extends Seeder
                 [
                     'name' => $userData['name'],
                     'password' => Hash::make('password'),
-                    'email_verified_at' => Carbon::now(),
+                    'email_verified_at' => now(),
                 ]
             );
 
