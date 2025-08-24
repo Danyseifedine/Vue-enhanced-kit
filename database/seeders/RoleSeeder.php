@@ -21,6 +21,8 @@ class RoleSeeder extends Seeder
                 'delete-super-admin-profile',
                 'update-super-admin-password',
             ],
+
+            'user' => [],
         ];
 
         foreach ($roles as $roleName => $permissions) {

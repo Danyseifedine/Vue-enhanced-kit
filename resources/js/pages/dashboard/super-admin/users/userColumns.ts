@@ -57,8 +57,8 @@ export const userColumns = createColumns<User>([
                 onFinish: () => {
                     isToggleLoading.value = false;
                 },
-                onSuccess: (_) => {
-                    const toast = (_.props as any).flash?.toast;
+                onSuccess: (page) => {
+                    const toast = (page.props as any).flash?.toast;
                     if (toast?.type === 'error') {
                         control.revert();
                     }

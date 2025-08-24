@@ -26,11 +26,11 @@ class DatabaseSeeder extends Seeder
                 'email' => 'admin@admin.com',
                 'role' => 'super-admin',
             ],
-            // [
-            //     'name' => 'User',
-            //     'email' => 'user@user.com',
-            //     'role' => 'user',
-            // ],
+            [
+                'name' => 'User',
+                'email' => 'user@user.com',
+                'role' => 'user',
+            ],
         ];
 
         foreach ($users as $userData) {
