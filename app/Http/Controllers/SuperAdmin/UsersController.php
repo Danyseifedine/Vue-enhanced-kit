@@ -12,7 +12,8 @@ class UsersController extends BaseController
 {
     public function index(Request $request)
     {
-        $query = User::select('id', 'name', 'email', 'is_active', 'email_verified_at', 'created_at')->with('roles', 'media');
+        $query = User::select('id', 'name', 'email', 'is_active', 'email_verified_at', 'created_at')
+            ->with(['roles:id,name', 'media:id,model_id,model_type,file_name']);
         // Define DataTable configuration
         $searchColumns = ['name', 'email'];
         $allowedSorts = ['name', 'email', 'created_at'];

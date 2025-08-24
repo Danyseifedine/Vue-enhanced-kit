@@ -1,19 +1,20 @@
 <script setup lang="ts">
 import DataTable from '@/common/components/datatable/Datatable.vue';
 import BaseButton from '@/common/components/form/BaseButton.vue';
+import { useFilters } from '@/core/composables/useFilters';
+import { formatDateForBackend } from '@/core/utils/formatters';
+import { parseDate } from '@/core/utils/parsers';
 import { BreadcrumbItem } from '@core/types';
 import { Head, router } from '@inertiajs/vue3';
 import AdminLayout from '@modules/admin/layouts/AdminLayout.vue';
-import { Badge } from '@ui/badge';
+import { Tag } from '@ui/badge';
 import { Button } from '@ui/button';
-import { Filter, Plus } from 'lucide-vue-next';
+import { Plus } from 'lucide-vue-next';
 import DatePicker from 'primevue/datepicker';
 import Select from 'primevue/select';
-import { computed, ref, watch } from 'vue';
+import { watch } from 'vue';
 import type { User } from './type';
 import { userColumns } from './userColumns';
-import { formatDateForBackend } from '@/core/utils/formatters';
-import { parseDate } from '@/core/utils/parsers';
 
 interface Props {
     users: {
@@ -40,6 +41,7 @@ const initializeFilters = () => {
     const urlFilters = props.filters as any;
 
     return {
+        ...urlFilters,
         role: urlFilters?.role || '',
         status: urlFilters?.status || '',
         email_verified: urlFilters?.email_verified || '',
@@ -48,16 +50,21 @@ const initializeFilters = () => {
     };
 };
 
-// Filter state - initialize from props
-const localFilters = ref(initializeFilters());
-const isFilteringLoading = ref(false);
+// Use the reusable filter composable
+const { localFilters, isFilteringLoading, hasActiveFilters, activeFilterCount, applyFilters, clearFilters, updateFilters } = useFilters(
+    initializeFilters(),
+    {
+        routeName: 'super-admin.users.index',
+        preserveState: false,
+        preserveScroll: true,
+    },
+);
 
-// Watch for prop changes and update local filters
 watch(
     () => props.filters,
     (newFilters) => {
         if (newFilters) {
-            localFilters.value = initializeFilters();
+            updateFilters(initializeFilters());
         }
     },
     { deep: true },
@@ -80,68 +87,16 @@ const emailVerifiedOptions = [
     { name: 'Not Verified', code: 'false' },
 ];
 
-// Check if filters are active
-const hasActiveFilters = computed(() => {
-    return (
-        localFilters.value.role !== '' ||
-        localFilters.value.status !== '' ||
-        localFilters.value.email_verified !== '' ||
-        localFilters.value.created_from !== null ||
-        localFilters.value.created_to !== null
-    );
-});
+// Custom filter logic for date formatting
+const applyFiltersWithDateFormat = () => {
+    // Format dates before applying filters
+    if (localFilters.value.created_from) {
+        localFilters.value.created_from = formatDateForBackend(localFilters.value.created_from);
+    }
+    if (localFilters.value.created_to) {
+        localFilters.value.created_to = formatDateForBackend(localFilters.value.created_to);
+    }
 
-// Count active filters
-const activeFilterCount = computed(() => {
-    let count = 0;
-    if (localFilters.value.role !== '') count++;
-    if (localFilters.value.status !== '') count++;
-    if (localFilters.value.email_verified !== '') count++;
-    if (localFilters.value.created_from !== null) count++;
-    if (localFilters.value.created_to !== null) count++;
-    return count;
-});
-
-// Apply filters
-const applyFilters = () => {
-    const queryParams = {
-        ...props.filters,
-        role: localFilters.value.role || undefined,
-        status: localFilters.value.status || undefined,
-        email_verified: localFilters.value.email_verified || undefined,
-        // Convert Date objects to strings for URL params
-        created_from: formatDateForBackend(localFilters.value.created_from) || undefined,
-        created_to: formatDateForBackend(localFilters.value.created_to) || undefined,
-    };
-
-    // Remove undefined values
-    Object.keys(queryParams).forEach((key) => {
-        if (queryParams[key] === undefined) {
-            delete queryParams[key];
-        }
-    });
-
-    isFilteringLoading.value = true;
-
-    router.get(route('super-admin.users.index'), queryParams, {
-        preserveState: false,
-        preserveScroll: true,
-        replace: true,
-        onFinish: () => {
-            isFilteringLoading.value = false;
-        },
-    });
-};
-
-// Clear filters
-const clearFilters = () => {
-    localFilters.value = {
-        role: '',
-        status: '',
-        email_verified: '',
-        created_from: null,
-        created_to: null,
-    };
     applyFilters();
 };
 
@@ -206,10 +161,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                 <template #toolbar="{ table }">
                     <!-- Active filters display -->
                     <div v-if="hasActiveFilters" class="flex items-center gap-2">
-                        <Badge variant="secondary" class="px-2 py-1">
-                            <Filter class="mr-1 h-3 w-3" />
-                            {{ activeFilterCount }} {{ activeFilterCount === 1 ? 'filter' : 'filters' }} active
-                        </Badge>
+                        <Tag :value="`${activeFilterCount} ${activeFilterCount === 1 ? 'filter' : 'filters'} active`" severity="info" />
                     </div>
 
                     <!-- Bulk actions -->
@@ -236,7 +188,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                                     :showClear="true"
                                     filter
                                     filterPlaceholder="Search roles..."
-                                    :scrollHeight="100"
+                                    :scrollHeight="'100px'"
                                 />
                             </div>
 
@@ -254,7 +206,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                                     :showClear="true"
                                     filter
                                     filterPlaceholder="Search status..."
-                                    :scrollHeight="200"
+                                    :scrollHeight="'200px'"
                                 />
                             </div>
 
@@ -272,7 +224,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                                     :showClear="true"
                                     filter
                                     filterPlaceholder="Search email verification..."
-                                    :scrollHeight="200"
+                                    :scrollHeight="'200px'"
                                 />
                             </div>
 
@@ -317,7 +269,9 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 <Button @click="clearFilters" variant="ghost" size="sm" :disabled="!hasActiveFilters || isFilteringLoading">
                                     Clear All
                                 </Button>
-                                <BaseButton @click="applyFilters" size="sm" variant="default" :loading="isFilteringLoading">Filter</BaseButton>
+                                <BaseButton @click="applyFiltersWithDateFormat" size="sm" variant="default" :loading="isFilteringLoading"
+                                    >Filter</BaseButton
+                                >
                             </div>
                         </div>
                     </div>
