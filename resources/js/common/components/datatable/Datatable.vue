@@ -3,11 +3,13 @@ import { useDataTable } from '@/core/composables/useDatatable';
 import type { ColumnDef } from '@tanstack/vue-table';
 import { FlexRender } from '@tanstack/vue-table';
 import { Button } from '@ui/button';
+import { Card } from '@ui/card';
+import { Collapsible, CollapsibleContent } from '@ui/collapsible';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@ui/dropdown-menu';
 import { Input } from '@ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@ui/table';
-import { ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Columns, Search } from 'lucide-vue-next';
-import { computed, onUnmounted } from 'vue';
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Columns, Filter, Search, X } from 'lucide-vue-next';
+import { computed, onUnmounted, ref } from 'vue';
 import type { DataTableConfig } from './index';
 
 interface Props {
@@ -36,6 +38,9 @@ const emit = defineEmits<{
     'selection-change': [rows: TData[]];
 }>();
 
+// Filter panel state
+const isFilterPanelOpen = ref(false);
+
 // Use composable for table logic
 const {
     globalFilter,
@@ -53,6 +58,11 @@ const {
     lastPage,
     cleanup,
 } = useDataTable(props, emit);
+
+// Toggle filter panel
+const toggleFilterPanel = () => {
+    isFilterPanelOpen.value = !isFilterPanelOpen.value;
+};
 
 // Cleanup on unmount
 onUnmounted(() => {
@@ -76,6 +86,12 @@ const showPagination = computed(() => {
     const total = props.config?.pagination?.total || props.data.length;
     return total > 0;
 });
+
+// Check if any filters are active (you can customize this based on your filter implementation)
+const hasActiveFilters = computed(() => {
+    // This is a placeholder - you should check actual filter values
+    return isFilterPanelOpen.value;
+});
 </script>
 
 <template>
@@ -90,7 +106,7 @@ const showPagination = computed(() => {
                         :model-value="globalFilter"
                         :placeholder="config.searchPlaceholder"
                         class="h-9 pl-8"
-                        @update:model-value="(value) => handleSearch(String(value))"
+                        @update:model-value="(value: string) => handleSearch(value)"
                     />
                 </div>
             </div>
@@ -98,6 +114,26 @@ const showPagination = computed(() => {
             <!-- Actions -->
             <div class="flex items-center gap-2">
                 <slot name="toolbar" :table="table" />
+
+                <!-- Filter Toggle Button -->
+                <Button
+                    v-if="config?.filterable"
+                    @click="toggleFilterPanel"
+                    variant="outline"
+                    size="sm"
+                    class="filter-button-transition h-8 gap-1"
+                    :class="{
+                        'border-primary/20 bg-primary/10 text-primary': isFilterPanelOpen,
+                        'hover:bg-primary/5': !isFilterPanelOpen,
+                    }"
+                >
+                    <Filter class="h-3.5 w-3.5 transition-all duration-200" :class="{ 'text-primary': isFilterPanelOpen }" />
+                    <span class="sr-only transition-colors duration-200 sm:not-sr-only">Filter</span>
+                    <ChevronDown
+                        class="ml-1 h-3 w-3 transition-all duration-300 ease-out"
+                        :class="{ 'rotate-180 text-primary': isFilterPanelOpen }"
+                    />
+                </Button>
 
                 <!-- Per Page Selector -->
                 <DropdownMenu v-if="config?.perPageSelector">
@@ -124,10 +160,8 @@ const showPagination = computed(() => {
                 <DropdownMenu v-if="config?.columnVisibility">
                     <DropdownMenuTrigger as-child>
                         <Button variant="outline" size="sm" class="h-8 gap-1">
-                            <span class="hidden sm:inline">
-                                <!-- add columns icon -->
-                                <Columns class="h-3.5 w-3.5" />
-                            </span>
+                            <Columns class="h-3.5 w-3.5" />
+                            <span class="sr-only">Columns</span>
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" class="w-[150px]">
@@ -143,6 +177,31 @@ const showPagination = computed(() => {
                 </DropdownMenu>
             </div>
         </div>
+
+        <!-- Collapsible Filter Panel -->
+        <Collapsible v-if="config?.filterable" v-model:open="isFilterPanelOpen">
+            <CollapsibleContent>
+                <Card class="border-dashed p-4">
+                    <div class="space-y-4">
+                        <!-- Filter Header -->
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <Filter class="h-4 w-4 text-muted-foreground" />
+                                <h3 class="font-medium">Filters</h3>
+                            </div>
+                            <Button @click="isFilterPanelOpen = false" variant="ghost" size="icon" class="h-7 w-7">
+                                <X class="h-4 w-4" />
+                            </Button>
+                        </div>
+
+                        <!-- Filter Content -->
+                        <div class="pt-2">
+                            <slot name="filters" :table="table" />
+                        </div>
+                    </div>
+                </Card>
+            </CollapsibleContent>
+        </Collapsible>
 
         <!-- Table -->
         <div class="rounded-md border bg-background">
@@ -218,3 +277,51 @@ const showPagination = computed(() => {
         </div>
     </div>
 </template>
+
+<style scoped>
+/* Smooth transitions for DataTable filter section */
+.filter-button-transition {
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Optimized collapsible animations - using transform instead of height for better performance */
+[data-state='open'] {
+    animation: slideDown 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-state='closed'] {
+    animation: slideUp 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+}
+
+/* Optimized filter content transitions */
+.collapsible-content {
+    transition:
+        transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, opacity;
+}
+</style>

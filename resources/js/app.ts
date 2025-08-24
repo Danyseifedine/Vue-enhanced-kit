@@ -8,6 +8,7 @@ import { createPinia } from 'pinia';
 import { ZiggyVue } from 'ziggy-js';
 import { initializeTheme } from '@core/composables/useAppearance';
 import PrimeVue from 'primevue/config';
+import Aura from '@primeuix/themes/aura';
 
 
 // Extend ImportMeta interface for Vite...
@@ -30,7 +31,16 @@ createInertiaApp({
             .use(plugin)
             .use(ZiggyVue)
             .use(pinia)
-            .use(PrimeVue)
+            .use(PrimeVue, {
+                theme: {
+                    preset: Aura,
+                    options: {
+                        prefix: 'p',
+                        darkModeSelector: '.dark',
+                        cssLayer: false
+                    }
+                }
+            })
             .mount(el);
     },
     progress: {

@@ -15,6 +15,8 @@ export { useInitials } from './composables/useInitials';
 // Core Layouts
 // Utilities
 export * from './utils/utils';
+export * from './utils/converters';
+export * from './utils/formatters';
 
 // Types
 export * from './types';

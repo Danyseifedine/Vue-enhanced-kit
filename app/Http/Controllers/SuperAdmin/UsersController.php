@@ -23,12 +23,25 @@ class UsersController extends BaseController
                 'relation_column' => 'name'
             ],
             'status' => function ($query, $value) {
-                if ($value === 'verified') {
+                if ($value === 'active') {
+                    $query->where('is_active', 1);
+                } else {
+                    $query->where('is_active', 0);
+                }
+            },
+            'email_verified' => function ($query, $value) {
+                if ($value === 'true') {
                     $query->whereNotNull('email_verified_at');
                 } else {
                     $query->whereNull('email_verified_at');
                 }
-            }
+            },
+            'created_from' => function ($query, $value) {
+                $query->whereDate('created_at', '>=', $value);
+            },
+            'created_to' => function ($query, $value) {
+                $query->whereDate('created_at', '<=', $value);
+            },
         ];
 
         // Apply DataTable logic
@@ -41,7 +54,7 @@ class UsersController extends BaseController
 
         return Inertia::render(SuperAdminPath::view("users/Index"), [
             'users' => $users,
-            'filters' => $this->getFilters(['role', 'status']),
+            'filters' => $this->getFilters(['role', 'status', 'email_verified', 'created_from', 'created_to']),
         ]);
     }
 

@@ -12,7 +12,7 @@ import { router } from '@inertiajs/vue3'
 import type { User } from './type'
 
 import { useGuard } from '@/guard'
-import { convertToBoolean } from '@/core/utils/utils';
+import { convertToBoolean } from '@/core/utils/converters';
 import { ref } from 'vue';
 
 const { userIsSuperAdmin } = useGuard();

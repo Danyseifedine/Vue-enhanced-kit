@@ -66,6 +66,7 @@ const loginWithGoogle = () => {
                     placeholder="••••••••"
                     :error="form.errors.password"
                 />
+                
 
                 <div class="flex items-center justify-between" :tabindex="3">
                     <Label for="remember" class="flex items-center space-x-2 text-sm">

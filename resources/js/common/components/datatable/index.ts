@@ -10,6 +10,8 @@ export interface DataTableConfig {
     columnVisibility?: boolean
     perPageSelector?: boolean
     perPageOptions?: number[]
+    filterable?: boolean
+    filterDrawerWidth?: string
 
     // Server-side configuration
     serverSide?: boolean
