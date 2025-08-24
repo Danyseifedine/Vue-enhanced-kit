@@ -13,12 +13,17 @@ import type { User } from './type'
 
 import { useGuard } from '@/guard'
 import { convertToBoolean } from '@/core/utils/utils';
+import { ref } from 'vue';
 
 const { userIsSuperAdmin } = useGuard();
 
+const isToggleLoading = ref(false);
+
 export const userColumns = createColumns<User>([
+
     // Row counter (change to selectColumn() for checkboxes)
     counterColumn(' ', { startFrom: 1 }),
+
     // Name with custom styling
     textColumn('name', 'Name', {
         sortable: true,
@@ -46,6 +51,12 @@ export const userColumns = createColumns<User>([
     toggleColumn('is_active', 'Active', {
         onToggle: (value: boolean, user: User, control) => {
             router.patch(route('super-admin.users.toggle-status', user.id), { is_active: value }, {
+                onStart: () => {
+                    isToggleLoading.value = true;
+                },
+                onFinish: () => {
+                    isToggleLoading.value = false;
+                },
                 onSuccess: (_) => {
                     const toast = (_.props as any).flash?.toast;
                     if (toast?.type === 'error') {
@@ -55,7 +66,7 @@ export const userColumns = createColumns<User>([
             });
         },
         disabled: (user: User) => {
-            return userIsSuperAdmin(user);
+            return userIsSuperAdmin(user) || isToggleLoading.value;
         },
         toggledWhen: (value: any) => {
             return convertToBoolean(value);
@@ -100,7 +111,7 @@ export const userColumns = createColumns<User>([
             icon: Edit,
             href: (user) => route('users.edit', user.id),
         },
-        { separator: true, label: 'Separator' },
+        { separator: true, label: 'Separator', show: (user: User) => !userIsSuperAdmin(user) },
         {
             show: (user: User) => {
                 return !userIsSuperAdmin(user);
