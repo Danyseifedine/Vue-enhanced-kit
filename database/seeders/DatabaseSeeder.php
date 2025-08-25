@@ -28,7 +28,77 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'User',
-                'email' => 'user@user.com',
+                'email' => 'user1@user.com',
+                'role' => 'user',
+            ],
+            [
+                'name' => 'User1',
+                'email' => 'user2@user.com',
+                'role' => 'user',
+            ],
+            [
+                'name' => 'User2',
+                'email' => 'user3@user.com',
+                'role' => 'user',
+            ],
+
+            [
+                'name' => 'User3',
+                'email' => 'user4@user.com',
+                'role' => 'user',
+            ],
+
+            [
+                'name' => 'User4',
+                'email' => 'user5@user.com',
+                'role' => 'user',
+            ],
+
+            [
+                'name' => 'User5',
+                'email' => 'user6@user.com',
+                'role' => 'user',
+            ],
+
+            [
+                'name' => 'User6',
+                'email' => 'user7@user.com',
+                'role' => 'user',
+            ],
+
+            [
+                'name' => 'User7',
+                'email' => 'user8@user.com',
+                'role' => 'user',
+            ],
+
+            [
+                'name' => 'User8',
+                'email' => 'user9@user.com',
+                'role' => 'user',
+            ],
+
+            [
+                'name' => 'User9',
+                'email' => 'user10@user.com',
+                'role' => 'user',
+            ],
+
+            [
+                'name' => 'User10',
+                'email' => 'user11@user.com',
+                'role' => 'user',
+            ],
+
+            [
+                'name' => 'User11',
+                'email' => 'user12@user.com',
+                'role' => 'user',
+            ],
+
+            [
+                'name' => 'User12',
+                'email' => 'user13@user.com',
                 'role' => 'user',
             ],
         ];
