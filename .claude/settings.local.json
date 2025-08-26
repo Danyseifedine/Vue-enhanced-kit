@@ -12,5 +12,9 @@
       "Bash(php artisan:*)"
     ],
     "deny": []
-  }
+  },
+  "enabledMcpjsonServers": [
+    "laravel-boost"
+  ],
+  "enableAllProjectMcpServers": true
 }

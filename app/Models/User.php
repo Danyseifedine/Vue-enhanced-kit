@@ -52,6 +52,10 @@ class User extends Authenticatable implements MustVerifyEmail, HasMedia
         'avatar_url',
     ];
 
+    protected $with = [
+        'media',
+    ];
+
     /**
      * Get the attributes that should be cast.
      *

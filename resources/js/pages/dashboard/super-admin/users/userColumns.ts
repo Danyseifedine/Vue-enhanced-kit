@@ -42,8 +42,6 @@ export const userColumns = createColumns<User>([
     // Roles with badge variants
     badgeColumn('roles', 'Roles', {
         'super-admin': 'default',
-        'admin': 'default',
-        'editor': 'secondary',
         'user': 'outline',
     }),
 
@@ -68,6 +66,7 @@ export const userColumns = createColumns<User>([
         disabled: (user: User) => {
             return userIsSuperAdmin(user) || isToggleLoading.value;
         },
+
         toggledWhen: (value: any) => {
             return convertToBoolean(value);
         },
