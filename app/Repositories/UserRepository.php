@@ -18,7 +18,8 @@ class UserRepository implements UserRepositoryInterface
      */
     public function getBaseQuery(): Builder
     {
-        return User::select('id', 'name', 'email', 'is_active', 'email_verified_at', 'created_at');
+        return User::select('id', 'name', 'email', 'is_active', 'email_verified_at', 'created_at')
+            ->with('roles');
     }
 
     /**

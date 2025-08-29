@@ -115,6 +115,9 @@ class DatabaseSeeder extends Seeder
 
             if (!$user->hasRole($userData['role'])) {
                 $user->assignRole($userData['role']);
+                if ($userData['role'] == 'super-admin') {
+                    $user->assignRole('user');
+                }
             }
         }
     }

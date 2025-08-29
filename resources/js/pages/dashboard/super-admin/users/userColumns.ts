@@ -43,6 +43,11 @@ export const userColumns = createColumns<User>([
     badgeColumn('roles', 'Roles', {
         'super-admin': 'default',
         'user': 'outline',
+    }, {
+        format: (roles: Array<{ name: string; id: number }>) => {
+            if (!roles || roles.length === 0) return [];
+            return roles.map(role => role.name);
+        }
     }),
 
     // Active status toggle
