@@ -23,7 +23,9 @@ if (config('app.features.multi_lang')) {
 // i need better name then defineRoutes
 function registerWebRoutes()
 {
-    Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/', function () {
+        return Inertia::render('Welcome');
+    })->name('home');
 
     Route::middleware([
         'auth',

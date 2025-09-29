@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Services\Core;
 
 use App\Models\User;
-use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
 
-class UserRepository implements UserRepositoryInterface
+class UserService
 {
     /**
      * Get base query for users with relationships
@@ -69,11 +68,19 @@ class UserRepository implements UserRepositoryInterface
     }
 
     /**
-     * Find user by ID
+     * Find user by ID (using cache)
      */
     public function findById(int $id): ?User
     {
-        return User::find($id);
+        return User::findCached($id);
+    }
+
+    /**
+     * Find user by ID or fail (using cache)
+     */
+    public function findByIdOrFail(int $id): User
+    {
+        return User::findCachedOrFail($id);
     }
 
     /**
@@ -82,5 +89,53 @@ class UserRepository implements UserRepositoryInterface
     public function update(User $user, array $data): bool
     {
         return $user->update($data);
+    }
+
+    /**
+     * Create a new user
+     */
+    public function create(array $data): User
+    {
+        return User::create($data);
+    }
+
+    /**
+     * Delete a user
+     */
+    public function delete(User $user): bool
+    {
+        return $user->delete();
+    }
+
+    /**
+     * Get all active users
+     */
+    public function getActiveUsers(): Builder
+    {
+        return User::where('is_active', 1);
+    }
+
+    /**
+     * Get users by role
+     */
+    public function getUsersByRole(string $role): Builder
+    {
+        return User::role($role);
+    }
+
+    /**
+     * Assign role to user
+     */
+    public function assignRole(User $user, string $role): void
+    {
+        $user->assignRole($role);
+    }
+
+    /**
+     * Remove role from user
+     */
+    public function removeRole(User $user, string $role): void
+    {
+        $user->removeRole($role);
     }
 }
