@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import BaseButton from '@/common/components/form/BaseButton.vue';
+import BaseButton from '@/common/components/dashboards/form/BaseButton.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import TextLink from '@shared/components/TextLink.vue';
 import GuestLayout from '@shared/layouts/GuestLayout.vue';

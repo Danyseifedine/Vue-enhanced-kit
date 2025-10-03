@@ -6,7 +6,7 @@ import {
     badgeColumn,
     dateColumn,
     actionsColumn
-} from '@/common/components/datatable/columnDef'
+} from '@/common/components/dashboards/datatable/columnDef'
 import { Copy, Eye, Edit, Trash2 } from 'lucide-vue-next'
 import { router } from '@inertiajs/vue3'
 import type { User } from './type'

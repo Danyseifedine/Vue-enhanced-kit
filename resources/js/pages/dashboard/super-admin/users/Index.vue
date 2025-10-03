@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import DataTable from '@/common/components/datatable/Datatable.vue';
-import BaseButton from '@/common/components/form/BaseButton.vue';
+import DataTable from '@/common/components/dashboards/datatable/Datatable.vue';
+import BaseButton from '@/common/components/dashboards/form/BaseButton.vue';
 import { useFilters } from '@/core/composables/useFilters';
 import { formatDateForBackend } from '@/core/utils/formatters';
 import { parseDate } from '@/core/utils/parsers';
@@ -13,8 +13,8 @@ import { Plus } from 'lucide-vue-next';
 import DatePicker from 'primevue/datepicker';
 import Select from 'primevue/select';
 import { watch } from 'vue';
-import type { User } from './type';
-import { userColumns } from './userColumns';
+import type { User } from './datatable/type';
+import { userColumns } from './datatable/userColumns';
 
 interface Props {
     users: {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import BaseButton from '@/common/components/form/BaseButton.vue';
-import BaseInput from '@/common/components/form/BaseInput.vue';
+import BaseButton from '@/common/components/dashboards/form/BaseButton.vue';
+import BaseInput from '@/common/components/dashboards/form/BaseInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import TextLink from '@shared/components/TextLink.vue';
 import AuthBase from '@shared/layouts/GuestLayout.vue';
@@ -66,7 +66,7 @@ const loginWithGoogle = () => {
                     placeholder="••••••••"
                     :error="form.errors.password"
                 />
-                
+
 
                 <div class="flex items-center justify-between" :tabindex="3">
                     <Label for="remember" class="flex items-center space-x-2 text-sm">

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import BaseButton from '@/common/components/form/BaseButton.vue';
-import BaseInput from '@/common/components/form/BaseInput.vue';
+import BaseButton from '@/common/components/dashboards/form/BaseButton.vue';
+import BaseInput from '@/common/components/dashboards/form/BaseInput.vue';
 import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 // Components
