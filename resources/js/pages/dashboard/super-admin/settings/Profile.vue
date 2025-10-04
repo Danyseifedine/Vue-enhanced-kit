@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import BaseButton from '@/common/components/dashboards/form/BaseButton.vue';
-import BaseInput from '@/common/components/dashboards/form/BaseInput.vue';
+import DashboardButton from '@/common/components/dashboards/form/DashboardButton.vue';
+import BaseInput from '@/common/components/dashboards/form/DashboardTextInput.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { onMounted } from 'vue';
 
@@ -140,7 +140,7 @@ onMounted(() => {
                     </div>
 
                     <div class="flex items-center gap-4">
-                        <BaseButton type="submit" class="" :loading="profileStore.form.processing">Save</BaseButton>
+                        <DashboardButton type="submit" class="" :loading="profileStore.form.processing">Save</DashboardButton>
 
                         <Transition
                             enter-active-class="transition ease-in-out"

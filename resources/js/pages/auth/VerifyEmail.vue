@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import BaseButton from '@/common/components/dashboards/form/BaseButton.vue';
+import DashboardButton from '@/common/components/dashboards/form/DashboardButton.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import TextLink from '@shared/components/TextLink.vue';
 import GuestLayout from '@shared/layouts/GuestLayout.vue';
@@ -33,7 +33,7 @@ const submit = () => {
                 <Mail class="h-12 w-12 text-primary" />
             </div>
 
-            <BaseButton type="submit" size="lg" class="w-full" :loading="form.processing"> Resend verification email </BaseButton>
+            <DashboardButton type="submit" size="lg" class="w-full" :loading="form.processing"> Resend verification email </DashboardButton>
 
             <TextLink :href="route('logout')" method="post" as="button" class="mx-auto block text-sm"> Log out </TextLink>
         </form>

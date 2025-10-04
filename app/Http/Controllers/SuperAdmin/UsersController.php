@@ -15,7 +15,7 @@ class UsersController extends BaseController
         private UserService $userService
     ) {}
 
-    public function index(Request $request)
+    public function index()
     {
         $query = $this->userService->getBaseQuery();
         $config = $this->userService->getDataTableConfig();
@@ -30,6 +30,46 @@ class UsersController extends BaseController
         return Inertia::render(SuperAdminPath::view("users/Index"), [
             'users' => $users,
             'filters' => $this->getFilters(['role', 'status', 'email_verified', 'created_from', 'created_to']),
+        ]);
+    }
+
+    public function create()
+    {
+        return Inertia::render(SuperAdminPath::view("users/actions/Create"));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
+        ]);
+
+        $this->userService->create($request->all());
+    }
+
+    public function edit(User $user)
+    {
+        $user->load('roles');
+        return Inertia::render(SuperAdminPath::view("users/actions/Edit"), [
+            'user' => $user,
+        ]);
+    }
+
+    public function update(Request $request, User $user)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $this->userService->update($user, $request->all());
+    }
+
+    public function show(User $user)
+    {
+        $user->load('roles');
+        return Inertia::render(SuperAdminPath::view("users/actions/Show"), [
+            'user' => $user,
         ]);
     }
 

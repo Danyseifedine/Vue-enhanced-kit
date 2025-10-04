@@ -1,6 +1,6 @@
 import {
     createColumns,
-    counterColumn,
+    selectColumn,
     toggleColumn,
     textColumn,
     badgeColumn,
@@ -22,7 +22,7 @@ const isToggleLoading = ref(false);
 export const userColumns = createColumns<User>([
 
     // Row counter (change to selectColumn() for checkboxes)
-    counterColumn(' ', { startFrom: 1 }),
+    selectColumn(),
 
     // Name with custom styling
     textColumn('name', 'Name', {
@@ -56,8 +56,8 @@ export const userColumns = createColumns<User>([
                     isToggleLoading.value = false;
                 },
                 onSuccess: (page) => {
-                    const toast = (page.props as any).flash?.toast;
-                    if (toast?.type === 'error') {
+                    const response = (page.props as any).flash?.toast;
+                    if (response?.success === false) {
                         control.revert();
                     }
                 }

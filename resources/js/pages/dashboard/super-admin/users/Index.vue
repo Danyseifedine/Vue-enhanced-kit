@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import DataTable from '@/common/components/dashboards/datatable/Datatable.vue';
-import BaseButton from '@/common/components/dashboards/form/BaseButton.vue';
+import DashboardButton from '@/common/components/dashboards/form/DashboardButton.vue';
 import { useFilters } from '@/core/composables/useFilters';
 import { formatDateForBackend } from '@/core/utils/formatters';
 import { parseDate } from '@/core/utils/parsers';
-import { BreadcrumbItem } from '@core/types';
+import type { BreadcrumbItem } from '@core/types';
+import type { DataTablePageProps } from '@core/types/datatable';
 import { Head, router } from '@inertiajs/vue3';
 import AdminLayout from '@modules/admin/layouts/AdminLayout.vue';
 import { Tag } from '@ui/badge';
@@ -16,25 +17,20 @@ import { watch } from 'vue';
 import type { User } from './datatable/type';
 import { userColumns } from './datatable/userColumns';
 
-interface Props {
-    users: {
-        data: User[];
-        current_page: number;
-        last_page: number;
-        per_page: number;
-        total: number;
-        from: number;
-        to: number;
-    };
-    filters: {
-        search?: string;
-        sort?: string;
-        direction?: string;
-        per_page?: number;
-    };
+// User-specific filters interface
+interface UserFilters {
+    role?: string;
+    status?: string;
+    email_verified?: string;
+    created_from?: Date | string | null;
+    created_to?: Date | string | null;
 }
 
-const props = defineProps<Props>();
+// Props using the reusable DataTablePageProps type
+const props = defineProps<{
+    users: DataTablePageProps<User, UserFilters>['data'];
+    filters: DataTablePageProps<User, UserFilters>['filters'];
+}>();
 
 // Initialize filters from URL params
 const initializeFilters = () => {
@@ -124,7 +120,7 @@ const handleSelectionChange = (users: User[]) => {
 };
 
 const handleRowClick = (user: User) => {
-    router.get(route('super-admin.users.show', user.id));
+    router.get(route('super-admin.users.show', user as any));
 };
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -145,10 +141,10 @@ const breadcrumbs: BreadcrumbItem[] = [
                     <h1 class="text-3xl font-bold">Users</h1>
                     <p class="mt-1 text-muted-foreground">Manage system users and their permissions</p>
                 </div>
-                <BaseButton variant="default" @click="() => router.get(route('super-admin.users.create'))">
+                <DashboardButton variant="default" @click="() => router.get(route('super-admin.users.create'))">
                     <Plus class="mr-2 h-4 w-4" />
                     Add User
-                </BaseButton>
+                </DashboardButton>
             </div>
 
             <DataTable
@@ -187,7 +183,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                                     size="small"
                                     :showClear="true"
                                     filter
-                                    filterPlaceholder="Search roles..."
+                                    filterPlaceholder="Search..."
                                     :scrollHeight="'100px'"
                                 />
                             </div>
@@ -205,7 +201,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                                     size="small"
                                     :showClear="true"
                                     filter
-                                    filterPlaceholder="Search status..."
+                                    filterPlaceholder="Search..."
                                     :scrollHeight="'200px'"
                                 />
                             </div>
@@ -223,7 +219,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                                     size="small"
                                     :showClear="true"
                                     filter
-                                    filterPlaceholder="Search email verification..."
+                                    filterPlaceholder="Search..."
                                     :scrollHeight="'200px'"
                                 />
                             </div>
@@ -269,8 +265,8 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 <Button @click="clearFilters" variant="ghost" size="sm" :disabled="!hasActiveFilters || isFilteringLoading">
                                     Clear All
                                 </Button>
-                                <BaseButton @click="applyFiltersWithDateFormat" size="sm" variant="default" :loading="isFilteringLoading"
-                                    >Filter</BaseButton
+                                <DashboardButton @click="applyFiltersWithDateFormat" size="sm" variant="default" :loading="isFilteringLoading"
+                                    >Filter</DashboardButton
                                 >
                             </div>
                         </div>

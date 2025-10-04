@@ -1,5 +1,4 @@
 <script setup lang="ts">
-// import BaseButton from '@/common/components/form/BaseButton.vue';
 import { useGuard } from '@/guard';
 import type { SharedData } from '@core/types';
 import { Head, Link, usePage } from '@inertiajs/vue3';

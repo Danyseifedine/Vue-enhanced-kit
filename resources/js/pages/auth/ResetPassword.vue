@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import BaseButton from '@/common/components/dashboards/form/BaseButton.vue';
-import BaseInput from '@/common/components/dashboards/form/BaseInput.vue';
+import DashboardButton from '@/common/components/dashboards/form/DashboardButton.vue';
+import BaseInput from '@/common/components/dashboards/form/DashboardTextInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import GuestLayout from '@shared/layouts/GuestLayout.vue';
 
@@ -66,7 +66,7 @@ const submit = () => {
                     :error="form.errors.password_confirmation"
                 />
 
-                <BaseButton type="submit" size="lg" class="w-full" :loading="form.processing"> Reset Password </BaseButton>
+                <DashboardButton type="submit" size="lg" class="w-full" :loading="form.processing"> Reset Password </DashboardButton>
             </div>
         </form>
     </GuestLayout>

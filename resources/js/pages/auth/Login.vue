@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import BaseButton from '@/common/components/dashboards/form/BaseButton.vue';
-import BaseInput from '@/common/components/dashboards/form/BaseInput.vue';
+import DashboardButton from '@/common/components/dashboards/form/DashboardButton.vue';
+import BaseInput from '@/common/components/dashboards/form/DashboardTextInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import TextLink from '@shared/components/TextLink.vue';
 import AuthBase from '@shared/layouts/GuestLayout.vue';
@@ -67,7 +67,6 @@ const loginWithGoogle = () => {
                     :error="form.errors.password"
                 />
 
-
                 <div class="flex items-center justify-between" :tabindex="3">
                     <Label for="remember" class="flex items-center space-x-2 text-sm">
                         <Checkbox id="remember" v-model:checked="form.remember" :tabindex="4" />
@@ -78,10 +77,10 @@ const loginWithGoogle = () => {
                     </TextLink>
                 </div>
 
-                <BaseButton type="submit" size="lg" class="mt-4 w-full" :loading="form.processing"> Sign In </BaseButton>
+                <DashboardButton type="submit" size="lg" class="mt-4 w-full" :loading="form.processing"> Sign In </DashboardButton>
 
                 <!-- Google Login Button -->
-                <BaseButton type="button" size="lg" variant="glass" class="w-full" @click="loginWithGoogle">
+                <DashboardButton type="button" size="lg" variant="glass" class="w-full" @click="loginWithGoogle">
                     <template #icon>
                         <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-5 w-5" viewBox="0 0 48 48">
                             <g>
@@ -105,7 +104,7 @@ const loginWithGoogle = () => {
                         </svg>
                     </template>
                     Sign in with Google
-                </BaseButton>
+                </DashboardButton>
             </div>
 
             <div class="mt-4 text-center text-sm text-muted-foreground">

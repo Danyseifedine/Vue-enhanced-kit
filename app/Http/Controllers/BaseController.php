@@ -12,6 +12,7 @@ class BaseController extends Controller
     public function successWithToast($message, $title = 'Success')
     {
         return redirect()->back()->with([
+            'success' => true,
             'toast' => [
                 'type' => 'success',
                 'title' => $title,
@@ -23,6 +24,7 @@ class BaseController extends Controller
     public function errorWithToast($message, $title = 'Error')
     {
         return redirect()->back()->with([
+            'success' => false,
             'toast' => [
                 'type' => 'error',
                 'title' => $title,

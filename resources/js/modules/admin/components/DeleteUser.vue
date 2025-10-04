@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import BaseButton from '@/common/components/dashboards/form/BaseButton.vue';
-import BaseInput from '@/common/components/dashboards/form/BaseInput.vue';
+import DashboardButton from '@/common/components/dashboards/form/DashboardButton.vue';
+import BaseInput from '@/common/components/dashboards/form/DashboardTextInput.vue';
 import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 // Components
@@ -41,7 +41,7 @@ const closeModal = () => {
             </div>
             <Dialog>
                 <DialogTrigger as-child>
-                    <BaseButton type="button" size="default" variant="destructive">Delete account</BaseButton>
+                    <DashboardButton type="button" size="default" variant="destructive">Delete account</DashboardButton>
                 </DialogTrigger>
                 <DialogContent>
                     <form class="space-y-6" @submit="deleteUser">
@@ -71,7 +71,7 @@ const closeModal = () => {
                                 <Button variant="secondary" @click="closeModal"> Cancel </Button>
                             </DialogClose>
 
-                            <BaseButton type="submit" variant="destructive" :loading="form.processing">Delete</BaseButton>
+                            <DashboardButton type="submit" variant="destructive" :loading="form.processing">Delete</DashboardButton>
                         </DialogFooter>
                     </form>
                 </DialogContent>

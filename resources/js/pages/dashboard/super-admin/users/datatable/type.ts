@@ -6,4 +6,5 @@ export interface User {
     created_at: string
     roles: Array<{ name: string; id: number }>
     is_active?: boolean
+    avatar_url?: string | null
 }

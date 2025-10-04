@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import BaseButton from '@/common/components/dashboards/form/BaseButton.vue';
-import BaseInput from '@/common/components/dashboards/form/BaseInput.vue';
+import DashboardButton from '@/common/components/dashboards/form/DashboardButton.vue';
+import BaseInput from '@/common/components/dashboards/form/DashboardTextInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import TextLink from '@shared/components/TextLink.vue';
 import GuestLayout from '@shared/layouts/GuestLayout.vue';
@@ -39,7 +39,7 @@ const submit = () => {
                     :error="form.errors.email"
                 />
 
-                <BaseButton BaseButton type="submit" size="lg" class="w-full" :loading="form.processing"> Email password reset link </BaseButton>
+                <DashboardButton type="submit" size="lg" class="w-full" :loading="form.processing"> Email password reset link </DashboardButton>
             </div>
         </form>
 

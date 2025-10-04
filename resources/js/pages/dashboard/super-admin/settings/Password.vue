@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import BaseButton from '@/common/components/dashboards/form/BaseButton.vue';
-import BaseInput from '@/common/components/dashboards/form/BaseInput.vue';
+import DashboardButton from '@/common/components/dashboards/form/DashboardButton.vue';
+import BaseInput from '@/common/components/dashboards/form/DashboardTextInput.vue';
 import { type BreadcrumbItem } from '@core/types';
 import { Head, useForm } from '@inertiajs/vue3';
 import AdminLayout from '@modules/admin/layouts/AdminLayout.vue';
@@ -96,7 +96,7 @@ const updatePassword = () => {
                     </div>
 
                     <div class="flex items-center gap-4">
-                        <BaseButton type="submit" :loading="form.processing">Reset</BaseButton>
+                        <DashboardButton type="submit" :loading="form.processing">Reset</DashboardButton>
 
                         <Transition
                             enter-active-class="transition ease-in-out"

@@ -8,9 +8,9 @@ import { computed, useSlots, type HTMLAttributes } from 'vue';
  *
  * @example
  * ```vue
- * <BaseButton variant="success" size="lg" :loading="isLoading">
+ * <DashboardButton variant="success" size="lg" :loading="isLoading">
  *   Save Changes
- * </BaseButton>
+ * </DashboardButton>
  * ```
  */
 const props = withDefaults(

@@ -41,7 +41,20 @@ Route::prefix('super-admin')->name('super-admin.')->group(function () {
     // ================================================
 
     Route::prefix('users')->name('users.')->group(function () {
-        Route::get('/', [UsersController::class, 'index'])->name('index');
+        Route::resource('/', UsersController::class)
+            ->parameters(['' => 'user'])
+            ->only(['index', 'create', 'store', 'edit', 'show', 'update', 'destroy'])
+            ->names([
+                'index' => 'index',
+                'create' => 'create',
+                'store' => 'store',
+                'edit' => 'edit',
+                'show' => 'show',
+                'update' => 'update',
+                'destroy' => 'destroy',
+            ]);
+
+        // Custom route for toggling user status
         Route::patch('/{user}/toggle-status', [UsersController::class, 'toggleStatus'])->name('toggle-status');
     });
 });
