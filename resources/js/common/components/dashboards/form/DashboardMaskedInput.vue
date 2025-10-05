@@ -1,17 +1,12 @@
 <script setup lang="ts">
-import InputText from 'primevue/inputtext';
+import Password from 'primevue/password';
 import { computed } from 'vue';
 
 interface Props {
     /**
      * Input value (v-model)
      */
-    modelValue?: string | number | null;
-
-    /**
-     * Input type
-     */
-    type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url';
+    modelValue?: string | null;
 
     /**
      * Placeholder text
@@ -56,6 +51,18 @@ interface Props {
     fluid?: boolean;
 
     /**
+     * Show/hide password toggle button
+     * @default false
+     */
+    toggleMask?: boolean;
+
+    /**
+     * Show strength meter
+     * @default false
+     */
+    showStrength?: boolean;
+
+    /**
      * Additional class names
      */
     class?: string;
@@ -63,7 +70,6 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
     modelValue: '',
-    type: 'text',
     placeholder: '',
     error: null,
     disabled: false,
@@ -72,27 +78,37 @@ const props = withDefaults(defineProps<Props>(), {
     id: undefined,
     size: 'small',
     fluid: true,
+    toggleMask: false,
+    showStrength: false,
     class: '',
 });
 
 const emit = defineEmits<{
-    'update:modelValue': [value: string | number];
+    'update:modelValue': [value: string];
     blur: [event: FocusEvent];
     focus: [event: FocusEvent];
 }>();
 
-// Computed class with error state
-const inputClasses = computed(() => {
-    const classes = [props.class];
+// Computed class with error state - for input element
+const inputClass = computed(() => {
+    const classes: string[] = [];
 
     if (props.error) {
         classes.push('invalid-input-text');
     }
 
-    classes.push('input-text-no-border');
-
     return classes.join(' ');
 });
+
+// Computed pt (pass through) object for PrimeVue
+const ptOptions = computed(() => ({
+    pcInput: {
+        class: inputClass.value,
+        root: {
+            class: props.class,
+        },
+    },
+}));
 
 // Handle input event
 const handleInput = (event: Event) => {
@@ -112,17 +128,19 @@ const handleFocus = (event: FocusEvent) => {
 </script>
 
 <template>
-    <InputText
+    <Password
         :id="id"
-        :model-value="modelValue as string"
-        :type="type"
+        :model-value="modelValue"
         :placeholder="placeholder"
         :disabled="disabled"
         :required="required"
         :autofocus="autofocus"
-        :size="size"
+        :toggleMask="toggleMask"
+        :feedback="showStrength"
         :fluid="fluid"
-        :class="inputClasses"
+        :size="size"
+        :inputClass="inputClass"
+        :pt="ptOptions"
         @input="handleInput"
         @blur="handleBlur"
         @focus="handleFocus"

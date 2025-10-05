@@ -43,6 +43,7 @@ class UsersController extends BaseController
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
+            'password' => 'required|string|min:8',
         ]);
 
         $this->userService->create($request->all());

@@ -5,7 +5,7 @@ import { adminDashboardConfig } from '@/modules/admin/config/admin.config';
 import AuthLayout from '@shared/layouts/app/AppSidebarLayout.vue';
 
 // Import admin-specific styles (PrimeVue overrides, etc.)
-import '../../../../css/admin-dashboard.css';
+import '../../../../css/dashboard/inputs.css';
 
 interface Props {
     breadcrumbs?: BreadcrumbItemType[];

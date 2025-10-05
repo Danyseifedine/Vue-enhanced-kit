@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import DashboardButton from '@/common/components/dashboards/form/DashboardButton.vue';
-import BaseInput from '@/common/components/dashboards/form/DashboardTextInput.vue';
+import DashboardTextInput from '@/common/components/dashboards/form/DashboardTextInput.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { onMounted } from 'vue';
 
@@ -10,6 +10,7 @@ import { type BreadcrumbItem } from '@core/types';
 import AdminLayout from '@modules/admin/layouts/AdminLayout.vue';
 import SettingsLayout from '@modules/admin/layouts/SettingsLayout.vue';
 import HeadingSmall from '@shared/components/HeadingSmall.vue';
+import InputError from '@shared/components/InputError.vue';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@shared/ui/dropdown-menu';
 import { Label } from '@shared/ui/label';
 import { Trash2, Upload } from 'lucide-vue-next';
@@ -96,7 +97,7 @@ onMounted(() => {
                     </div>
 
                     <div class="grid gap-2">
-                        <BaseInput
+                        <DashboardTextInput
                             label="Name"
                             id="name"
                             type="text"
@@ -106,10 +107,11 @@ onMounted(() => {
                             placeholder="Full name"
                             :error="profileStore.form.errors.name"
                         />
+                        <InputError :message="profileStore.form.errors.name" />
                     </div>
 
                     <div class="grid gap-2">
-                        <BaseInput
+                        <DashboardTextInput
                             label="Email address"
                             id="email"
                             type="email"
@@ -119,6 +121,7 @@ onMounted(() => {
                             placeholder="Email address"
                             :error="profileStore.form.errors.email"
                         />
+                        <InputError :message="profileStore.form.errors.email" />
                     </div>
 
                     <div v-if="mustVerifyEmail && !profileStore.user.email_verified_at">

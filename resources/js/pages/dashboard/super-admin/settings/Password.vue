@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import DashboardButton from '@/common/components/dashboards/form/DashboardButton.vue';
-import BaseInput from '@/common/components/dashboards/form/DashboardTextInput.vue';
+import DashboardTextInput from '@/common/components/dashboards/form/DashboardTextInput.vue';
 import { type BreadcrumbItem } from '@core/types';
 import { Head, useForm } from '@inertiajs/vue3';
 import AdminLayout from '@modules/admin/layouts/AdminLayout.vue';
+import InputError from '@shared/components/InputError.vue';
 import SettingsLayout from '@modules/admin/layouts/SettingsLayout.vue';
 import HeadingSmall from '@shared/components/HeadingSmall.vue';
 import { ref } from 'vue';
@@ -57,7 +58,7 @@ const updatePassword = () => {
 
                 <form @submit.prevent="updatePassword" class="space-y-6">
                     <div class="grid gap-2">
-                        <BaseInput
+                        <DashboardTextInput
                             label="Current password"
                             id="current_password"
                             type="password"
@@ -67,10 +68,11 @@ const updatePassword = () => {
                             placeholder="Current password"
                             :error="form.errors.current_password"
                         />
+                        <InputError :message="form.errors.current_password" />
                     </div>
 
                     <div class="grid gap-2">
-                        <BaseInput
+                        <DashboardTextInput
                             label="New password"
                             id="password"
                             type="password"
@@ -80,10 +82,11 @@ const updatePassword = () => {
                             placeholder="New password"
                             :error="form.errors.password"
                         />
+                        <InputError :message="form.errors.password" />
                     </div>
 
                     <div class="grid gap-2">
-                        <BaseInput
+                        <DashboardTextInput
                             label="Confirm password"
                             id="password_confirmation"
                             type="password"
@@ -93,6 +96,7 @@ const updatePassword = () => {
                             placeholder="Confirm password"
                             :error="form.errors.password_confirmation"
                         />
+                        <InputError :message="form.errors.password_confirmation" />
                     </div>
 
                     <div class="flex items-center gap-4">

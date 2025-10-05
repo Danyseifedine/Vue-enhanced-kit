@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import DashboardButton from '@/common/components/dashboards/form/DashboardButton.vue';
+import DashboardTextInput from '@/common/components/dashboards/form/DashboardTextInput.vue';
+import DashboardMaskedInput from '@/common/components/dashboards/form/DashboardMaskedInput.vue';
 import type { BreadcrumbItem } from '@core/types';
 import { Head, router, useForm } from '@inertiajs/vue3';
 import ActionLayout from '@modules/admin/layouts/ActionLayout.vue';
 import InputError from '@shared/components/InputError.vue';
 import { Label } from '@ui/label';
-import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 
 // Define roles (in real app, this would come from props)
@@ -56,17 +57,19 @@ const breadcrumbs: BreadcrumbItem[] = [
 
         <!-- Form -->
         <form @submit.prevent="submit" class="space-y-6">
-            <!-- Name -->
+            <!-- Name & Email -->
             <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                <!-- Name -->
                 <div class="space-y-2">
                     <Label for="name" required>Name</Label>
-                    <InputText
+                    <DashboardTextInput
+                        id="name"
                         v-model="form.name"
                         type="text"
-                        :class="form.errors.name ? 'invalid-input-text' : ''"
-                        size="small"
-                        fluid
                         placeholder="Enter user name"
+                        :error="form.errors.name"
+                        autofocus
+                        required
                     />
                     <InputError :message="form.errors.name" />
                 </div>
@@ -74,15 +77,12 @@ const breadcrumbs: BreadcrumbItem[] = [
                 <!-- Email -->
                 <div class="space-y-2">
                     <Label for="email" required>Email</Label>
-                    <InputText
+                    <DashboardTextInput
                         id="email"
                         v-model="form.email"
                         type="email"
-                        fluid
-                        class="input-text-no-border"
-                        :class="form.errors.email ? 'invalid-input-text' : ''"
                         placeholder="Enter email address"
-                        size="small"
+                        :error="form.errors.email"
                         required
                     />
                     <InputError :message="form.errors.email" />
@@ -92,15 +92,15 @@ const breadcrumbs: BreadcrumbItem[] = [
             <!-- Password -->
             <div class="space-y-2">
                 <Label for="password" required>Password</Label>
-                <InputText
+                <DashboardMaskedInput
                     id="password"
                     v-model="form.password"
-                    type="password"
-                    fluid
-                    :class="form.errors.password ? 'invalid-input-text' : ''"
                     placeholder="Enter password"
+                    :error="form.errors.password"
+                    toggleMask
                     size="small"
                     required
+                    show-strength
                 />
                 <InputError :message="form.errors.password" />
             </div>
@@ -108,15 +108,14 @@ const breadcrumbs: BreadcrumbItem[] = [
             <!-- Password Confirmation -->
             <div class="space-y-2">
                 <Label for="password_confirmation" required>Confirm Password</Label>
-                <InputText
+                <DashboardMaskedInput
                     id="password_confirmation"
                     v-model="form.password_confirmation"
-                    type="password"
-                    fluid
-                    :class="form.errors.password_confirmation ? 'invalid-input-text' : ''"
                     placeholder="Confirm password"
-                    size="small"
+                    :error="form.errors.password_confirmation"
+                    toggleMask
                     required
+                    show-strength
                 />
                 <InputError :message="form.errors.password_confirmation" />
             </div>
@@ -129,7 +128,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                     :options="roles"
                     optionLabel="name"
                     optionValue="code"
-                    placeholder="All Role"
+                    placeholder="Select role"
                     class="w-full"
                     size="small"
                     :showClear="true"

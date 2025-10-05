@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import DashboardButton from '@/common/components/dashboards/form/DashboardButton.vue';
-import BaseInput from '@/common/components/dashboards/form/DashboardTextInput.vue';
+import DashboardTextInput from '@/common/components/dashboards/form/DashboardTextInput.vue';
 import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 // Components
 import HeadingSmall from '@shared/components/HeadingSmall.vue';
+import InputError from '@shared/components/InputError.vue';
 import { Button } from '@shared/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@shared/ui/dialog';
 
@@ -54,7 +55,7 @@ const closeModal = () => {
                         </DialogHeader>
 
                         <div class="grid gap-2">
-                            <BaseInput
+                            <DashboardTextInput
                                 label="Password"
                                 id="password"
                                 type="password"
@@ -64,6 +65,7 @@ const closeModal = () => {
                                 :error="form.errors.password"
                                 placeholder="Password"
                             />
+                            <InputError :message="form.errors.password" />
                         </div>
 
                         <DialogFooter class="gap-2">

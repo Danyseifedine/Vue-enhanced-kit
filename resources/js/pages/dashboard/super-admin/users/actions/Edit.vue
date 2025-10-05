@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import DashboardButton from '@/common/components/dashboards/form/DashboardButton.vue';
+import DashboardTextInput from '@/common/components/dashboards/form/DashboardTextInput.vue';
 import type { BreadcrumbItem } from '@core/types';
 import { Head, router, useForm } from '@inertiajs/vue3';
 import ActionLayout from '@modules/admin/layouts/ActionLayout.vue';
 import InputError from '@shared/components/InputError.vue';
 import { Label } from '@ui/label';
-import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import type { User } from '../datatable/type';
 
@@ -64,16 +64,14 @@ const breadcrumbs: BreadcrumbItem[] = [
             <!-- Name -->
             <div class="space-y-2">
                 <Label for="name" required>Name</Label>
-                <InputText
+                <DashboardTextInput
                     id="name"
-                    fluid
                     v-model="form.name"
                     type="text"
-                    :class="form.errors.name ? 'invalid-input-text' : ''"
                     placeholder="Enter user name"
-                    required
+                    :error="form.errors.name"
                     autofocus
-                    size="small"
+                    required
                 />
                 <InputError :message="form.errors.name" />
             </div>
@@ -81,15 +79,13 @@ const breadcrumbs: BreadcrumbItem[] = [
             <!-- Email -->
             <div class="space-y-2">
                 <Label for="email" required>Email</Label>
-                <InputText
+                <DashboardTextInput
                     id="email"
-                    fluid
                     v-model="form.email"
                     type="email"
-                    :class="form.errors.email ? 'invalid-input-text' : ''"
                     placeholder="Enter email address"
+                    :error="form.errors.email"
                     required
-                    size="small"
                 />
                 <InputError :message="form.errors.email" />
             </div>
