@@ -1,48 +1,66 @@
 <script setup lang="ts">
 import { Button, type ButtonVariants } from '@ui/button';
 import { CircleDot, Cog, Disc3, Loader2, LoaderCircle, RefreshCw, RotateCw } from 'lucide-vue-next';
-import { computed, useSlots, type HTMLAttributes } from 'vue';
+import { computed, useSlots } from 'vue';
 
-/**
- * Enhanced Button Component with Loading States and Custom Variants
- *
- * @example
- * ```vue
- * <DashboardButton variant="success" size="lg" :loading="isLoading">
- *   Save Changes
- * </DashboardButton>
- * ```
- */
-const props = withDefaults(
-    defineProps<{
-        /** Button visual style variant */
-        variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link' | 'success' | 'warning' | 'gradient' | 'glass';
-        /** Button size - xs and xl are custom sizes */
-        size?: 'xs' | 'sm' | 'default' | 'lg' | 'xl' | 'icon';
-        /** Show loading state with spinner */
-        loading?: boolean;
-        /** Custom loading text - if not provided, uses button's default text */
-        loadingText?: string;
-        /** Position of loading icon relative to text */
-        loadingPosition?: 'before' | 'after';
-        /** Loading spinner icon type - 'none' shows text only */
-        loadingIcon?: 'circle' | 'spinner' | 'rotate' | 'refresh' | 'gear' | 'dot' | 'disc' | 'none';
-        /** Additional CSS classes */
-        class?: HTMLAttributes['class'];
-        /** Disable button interaction */
-        disabled?: boolean;
-        /** HTML button type attribute */
-        type?: 'button' | 'submit' | 'reset';
-    }>(),
-    {
-        variant: 'default',
-        size: 'default',
-        loading: false,
-        loadingPosition: 'after',
-        loadingIcon: 'circle',
-        type: 'button',
-    },
-);
+interface Props {
+    /**
+     * Button visual style variant
+     */
+    variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link' | 'success' | 'warning' | 'gradient' | 'glass';
+
+    /**
+     * Button size - xs and xl are custom sizes
+     */
+    size?: 'xs' | 'sm' | 'default' | 'lg' | 'xl' | 'icon';
+
+    /**
+     * Show loading state with spinner
+     */
+    loading?: boolean;
+
+    /**
+     * Custom loading text - if not provided, uses button's default text
+     */
+    loadingText?: string;
+
+    /**
+     * Position of loading icon relative to text
+     */
+    loadingPosition?: 'before' | 'after';
+
+    /**
+     * Loading spinner icon type - 'none' shows text only
+     */
+    loadingIcon?: 'circle' | 'spinner' | 'rotate' | 'refresh' | 'gear' | 'dot' | 'disc' | 'none';
+
+    /**
+     * Additional CSS classes
+     */
+    class?: string;
+
+    /**
+     * Disable button interaction
+     */
+    disabled?: boolean;
+
+    /**
+     * HTML button type attribute
+     */
+    type?: 'button' | 'submit' | 'reset';
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    variant: 'default',
+    size: 'default',
+    loading: false,
+    loadingPosition: 'after',
+    loadingIcon: 'circle',
+    type: 'button',
+    class: '',
+    disabled: false,
+    loadingText: undefined,
+});
 
 const slots = useSlots();
 const isDisabled = computed(() => props.disabled || props.loading);

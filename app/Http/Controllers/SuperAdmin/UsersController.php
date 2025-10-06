@@ -44,6 +44,7 @@ class UsersController extends BaseController
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
             'password' => 'required|string|min:8',
+            'role' => 'required|string|exists:roles,name',
         ]);
 
         $this->userService->create($request->all());

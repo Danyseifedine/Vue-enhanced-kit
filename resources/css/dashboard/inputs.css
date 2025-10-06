@@ -54,23 +54,7 @@ This file is used to override the default PrimeVue styles (inputs, selects, etc.
     line-height: 1.25rem !important;
 }
 
-/* focus state for select */
-.p-select.p-focus::after,
-.p-select.p-focus::before {
-    border-color: hsl(var(--ring)) !important;
-    box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2) !important;
-}
-
-/* additional overrides for any remaining green colors */
-.p-select * {
-    border-color: hsl(var(--border)) !important;
-}
-
-.p-select.p-focus * {
-    border-color: hsl(var(--ring)) !important;
-}
-
-/* search input inside select */
+/* search input inside select - only bottom border */
 .p-select-filter {
     width: 100% !important;
     background-color: transparent !important;
@@ -82,6 +66,7 @@ This file is used to override the default PrimeVue styles (inputs, selects, etc.
     margin: 0 !important;
     font-size: 0.875rem !important;
     line-height: 1.25rem !important;
+    box-shadow: none !important;
 }
 
 /* placeholder for search input inside select */
@@ -89,16 +74,41 @@ This file is used to override the default PrimeVue styles (inputs, selects, etc.
     color: hsl(var(--muted-foreground)) !important;
 }
 
-/* focus state for search input inside select */
+/* focus state for search input inside select - keep only bottom border */
 .p-select-filter:focus {
     outline: none !important;
-    border-color: hsl(var(--border)) !important;
-    box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2) !important;
+    border: none !important;
+    border-bottom: 1px solid hsl(var(--ring)) !important;
+    box-shadow: none !important;
 }
 
 /* hover state for search input inside select */
 .p-select-filter:hover {
-    border-color: hsl(var(--input)) !important;
+    border: none !important;
+    border-bottom: 1px solid hsl(var(--input)) !important;
+}
+
+/* remove any wrapper borders around filter input */
+.p-select-filter-container {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* error state for select - must come after normal state for specificity */
+.p-select.invalid-select {
+    border-color: hsl(var(--destructive)) !important;
+}
+
+/* focus state for select with error */
+.p-select.invalid-select:focus,
+.p-select.invalid-select.p-focus {
+    border-color: hsl(var(--destructive)) !important;
+    box-shadow: 0 0 0 2px hsl(var(--destructive) / 0.2) !important;
+}
+
+/* dark mode error state for select */
+.dark .p-select.invalid-select {
+    border-color: hsl(var(--destructive)) !important;
 }
 
 /* end Select2 overrides */

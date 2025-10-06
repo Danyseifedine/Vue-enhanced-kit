@@ -2,12 +2,12 @@
 import DashboardButton from '@/common/components/dashboards/form/DashboardButton.vue';
 import DashboardTextInput from '@/common/components/dashboards/form/DashboardTextInput.vue';
 import DashboardMaskedInput from '@/common/components/dashboards/form/DashboardMaskedInput.vue';
+import DashboardSelect from '@/common/components/dashboards/form/DashboardSelect.vue';
 import type { BreadcrumbItem } from '@core/types';
 import { Head, router, useForm } from '@inertiajs/vue3';
 import ActionLayout from '@modules/admin/layouts/ActionLayout.vue';
 import InputError from '@shared/components/InputError.vue';
 import { Label } from '@ui/label';
-import Select from 'primevue/select';
 
 // Define roles (in real app, this would come from props)
 const roles = [
@@ -100,7 +100,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                     toggleMask
                     size="small"
                     required
-                    show-strength
                 />
                 <InputError :message="form.errors.password" />
             </div>
@@ -115,7 +114,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                     :error="form.errors.password_confirmation"
                     toggleMask
                     required
-                    show-strength
                 />
                 <InputError :message="form.errors.password_confirmation" />
             </div>
@@ -123,19 +121,15 @@ const breadcrumbs: BreadcrumbItem[] = [
             <!-- Role -->
             <div class="space-y-2">
                 <Label for="role">Role</Label>
-                <Select
+                <DashboardSelect
+                    id="role"
                     v-model="form.role"
                     :options="roles"
-                    optionLabel="name"
-                    optionValue="code"
                     placeholder="Select role"
-                    class="w-full"
-                    size="small"
-                    :showClear="true"
+                    :error="form.errors.role"
                     filter
-                    filterPlaceholder="Search..."
-                    :scrollHeight="'200px'"
                 />
+                <InputError :message="form.errors.role" />
             </div>
         </form>
 
