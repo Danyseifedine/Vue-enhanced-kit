@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Services\Core\UserService;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
 
 class UsersController extends BaseController
 {
@@ -35,7 +36,10 @@ class UsersController extends BaseController
 
     public function create()
     {
-        return Inertia::render(SuperAdminPath::view("users/actions/Create"));
+        $roles = Role::all();
+        return Inertia::render(SuperAdminPath::view("users/actions/Create"), [
+            'roles' => $roles,
+        ]);
     }
 
     public function store(Request $request)
@@ -44,17 +48,23 @@ class UsersController extends BaseController
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
             'password' => 'required|string|min:8',
-            'role' => 'required|string|exists:roles,name',
+            'roles' => 'required|array|exists:roles,id',
+            'is_active' => 'required|boolean',
         ]);
 
         $this->userService->create($request->all());
+        return $this->successWithToast('User created successfully', 'User created');
     }
 
     public function edit(User $user)
     {
         $user->load('roles');
+
+        $roles = Role::all();
+
         return Inertia::render(SuperAdminPath::view("users/actions/Edit"), [
             'user' => $user,
+            'roles' => $roles,
         ]);
     }
 
@@ -62,6 +72,8 @@ class UsersController extends BaseController
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'roles' => 'required|array|exists:roles,id',
+            'is_active' => 'required|boolean',
         ]);
 
         $this->userService->update($user, $request->all());

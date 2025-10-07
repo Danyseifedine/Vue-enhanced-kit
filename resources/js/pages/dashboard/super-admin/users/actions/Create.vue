@@ -1,37 +1,38 @@
 <script setup lang="ts">
 import DashboardButton from '@/common/components/dashboards/form/DashboardButton.vue';
-import DashboardTextInput from '@/common/components/dashboards/form/DashboardTextInput.vue';
 import DashboardMaskedInput from '@/common/components/dashboards/form/DashboardMaskedInput.vue';
+import DashboardMultiSelect from '@/common/components/dashboards/form/DashboardMultiSelect.vue';
 import DashboardSelect from '@/common/components/dashboards/form/DashboardSelect.vue';
+import DashboardTextInput from '@/common/components/dashboards/form/DashboardTextInput.vue';
+import Hint from '@/common/components/dashboards/typography/hint.vue';
 import type { BreadcrumbItem } from '@core/types';
 import { Head, router, useForm } from '@inertiajs/vue3';
 import ActionLayout from '@modules/admin/layouts/ActionLayout.vue';
 import InputError from '@shared/components/InputError.vue';
 import { Label } from '@ui/label';
 
-// Define roles (in real app, this would come from props)
-const roles = [
-    { name: 'Super Admin', code: 'super-admin' },
-    { name: 'User', code: 'user' },
-];
+const props = defineProps<{
+    roles: any[];
+}>();
 
-// Form
+const roles = props.roles.map((role: any) => ({
+    name: role.name,
+    id: role.id,
+}));
+
+// Form - Changed roles to array and added permissions
 const form = useForm({
     name: '',
     email: '',
     password: '',
     password_confirmation: '',
-    role: '',
+    roles: [] as string[], // Changed from single role to array of roles
     is_active: true,
 });
 
 // Submit handler
 const submit = () => {
-    form.post(route('super-admin.users.store'), {
-        onSuccess: () => {
-            router.visit(route('super-admin.users.index'));
-        },
-    });
+    form.post(route('super-admin.users.store'));
 };
 
 // Breadcrumbs
@@ -72,6 +73,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                         required
                     />
                     <InputError :message="form.errors.name" />
+                    <Hint text="Enter the user's name." />
                 </div>
 
                 <!-- Email -->
@@ -86,57 +88,92 @@ const breadcrumbs: BreadcrumbItem[] = [
                         required
                     />
                     <InputError :message="form.errors.email" />
+                    <Hint text="Enter the user's email address." />
                 </div>
             </div>
 
-            <!-- Password -->
-            <div class="space-y-2">
-                <Label for="password" required>Password</Label>
-                <DashboardMaskedInput
-                    id="password"
-                    v-model="form.password"
-                    placeholder="Enter password"
-                    :error="form.errors.password"
-                    toggleMask
-                    size="small"
-                    required
-                />
-                <InputError :message="form.errors.password" />
+            <!-- Password Fields -->
+            <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                <!-- Password -->
+                <div class="space-y-2">
+                    <Label for="password" required>Password</Label>
+                    <DashboardMaskedInput
+                        id="password"
+                        v-model="form.password"
+                        placeholder="Enter password"
+                        :error="form.errors.password"
+                        toggleMask
+                        size="small"
+                        required
+                    />
+                    <InputError :message="form.errors.password" />
+                    <Hint text="Enter the user's password." />
+                </div>
+
+                <!-- Password Confirmation -->
+                <div class="space-y-2">
+                    <Label for="password_confirmation" required>Confirm Password</Label>
+                    <DashboardMaskedInput
+                        id="password_confirmation"
+                        v-model="form.password_confirmation"
+                        placeholder="Confirm password"
+                        :error="form.errors.password_confirmation"
+                        toggleMask
+                        required
+                    />
+                    <InputError :message="form.errors.password_confirmation" />
+                    <Hint text="Confirm the user's password." />
+                </div>
             </div>
 
-            <!-- Password Confirmation -->
+            <!-- Roles - Using MultiSelect for multiple role assignment -->
             <div class="space-y-2">
-                <Label for="password_confirmation" required>Confirm Password</Label>
-                <DashboardMaskedInput
-                    id="password_confirmation"
-                    v-model="form.password_confirmation"
-                    placeholder="Confirm password"
-                    :error="form.errors.password_confirmation"
-                    toggleMask
-                    required
-                />
-                <InputError :message="form.errors.password_confirmation" />
-            </div>
-
-            <!-- Role -->
-            <div class="space-y-2">
-                <Label for="role">Role</Label>
-                <DashboardSelect
-                    id="role"
-                    v-model="form.role"
+                <Label for="roles">Roles</Label>
+                <DashboardMultiSelect
+                    id="roles"
+                    v-model="form.roles"
                     :options="roles"
-                    placeholder="Select role"
-                    :error="form.errors.role"
+                    option-label="name"
+                    option-value="id"
+                    placeholder="Select roles"
+                    :error="form.errors.roles"
                     filter
+                    filter-placeholder="Search roles..."
+                    display="chip"
+                    :show-toggle-all="false"
+                    :max-selected-labels="5"
+                    selected-items-label="{0} roles selected"
                 />
-                <InputError :message="form.errors.role" />
+                <InputError :message="form.errors.roles" />
+                <Hint text="Assign one or more roles to this user. Roles determine the user's access level." />
+            </div>
+
+            <!-- Status Toggle (optional) -->
+            <div class="space-y-2">
+                <Label for="status">Status</Label>
+                <DashboardSelect
+                    id="status"
+                    v-model="form.is_active"
+                    :options="[
+                        { label: 'Active', value: true },
+                        { label: 'Inactive', value: false },
+                    ]"
+                    :error="form.errors.is_active"
+                    option-label="label"
+                    option-value="value"
+                    placeholder="Select status"
+                />
+                <InputError :message="form.errors.is_active" />
+                <Hint text="Set whether the user account is active or inactive." />
             </div>
         </form>
 
         <!-- Footer Actions -->
         <template #footer>
             <div class="flex justify-end gap-2">
-                <DashboardButton @click="router.visit(route('super-admin.users.index'))" variant="secondary"> Cancel </DashboardButton>
+                <DashboardButton @click="router.visit(route('super-admin.users.index'))" variant="secondary" :disabled="form.processing">
+                    Cancel
+                </DashboardButton>
                 <DashboardButton @click="submit" :loading="form.processing" variant="default"> Create User </DashboardButton>
             </div>
         </template>

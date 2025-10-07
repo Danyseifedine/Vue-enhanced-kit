@@ -12,8 +12,6 @@ class UserService
      * This query will be used by the HasDataTable trait
      *
      * @uses HasDataTable trait
-     *
-     * @return Builder
      */
     public function getBaseQuery(): Builder
     {
@@ -33,7 +31,7 @@ class UserService
                 'role' => [
                     'type' => 'relationship',
                     'relationship' => 'roles',
-                    'relation_column' => 'name'
+                    'relation_column' => 'name',
                 ],
                 'status' => function ($query, $value) {
                     if ($value === 'active') {
@@ -64,7 +62,7 @@ class UserService
      */
     public function toggleStatus(User $user): bool
     {
-        return $user->update(['is_active' => !$user->is_active]);
+        return $user->update(['is_active' => ! $user->is_active]);
     }
 
     /**
@@ -96,7 +94,11 @@ class UserService
      */
     public function create(array $data): User
     {
-        return User::create($data);
+        User::create($data);
+        $user = User::where('email', $data['email'])->first();
+        $user->assignRole($data['roles']);
+
+        return $user;
     }
 
     /**

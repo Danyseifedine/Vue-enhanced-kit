@@ -89,26 +89,20 @@ const emit = defineEmits<{
     focus: [event: FocusEvent];
 }>();
 
-// Computed class with error state - for input element
-const inputClass = computed(() => {
-    const classes: string[] = [];
+// Computed class for the wrapper
+const wrapperClass = computed(() => {
+    const classes: string[] = ['password-wrapper'];
+
+    if (props.class) {
+        classes.push(props.class);
+    }
 
     if (props.error) {
-        classes.push('invalid-input-text');
+        classes.push('has-error');
     }
 
     return classes.join(' ');
 });
-
-// Computed pt (pass through) object for PrimeVue
-const ptOptions = computed(() => ({
-    pcInput: {
-        class: inputClass.value,
-        root: {
-            class: props.class,
-        },
-    },
-}));
 
 // Handle input event
 const handleInput = (event: Event) => {
@@ -128,21 +122,57 @@ const handleFocus = (event: FocusEvent) => {
 </script>
 
 <template>
-    <Password
-        :id="id"
-        :model-value="modelValue"
-        :placeholder="placeholder"
-        :disabled="disabled"
-        :required="required"
-        :autofocus="autofocus"
-        :toggleMask="toggleMask"
-        :feedback="showStrength"
-        :fluid="fluid"
-        :size="size"
-        :inputClass="inputClass"
-        :pt="ptOptions"
-        @input="handleInput"
-        @blur="handleBlur"
-        @focus="handleFocus"
-    />
+    <div :class="wrapperClass">
+        <Password
+            :id="id"
+            :model-value="modelValue"
+            :placeholder="placeholder"
+            :disabled="disabled"
+            :required="required"
+            :autofocus="autofocus"
+            :toggleMask="toggleMask"
+            :feedback="showStrength"
+            :fluid="fluid"
+            :size="size"
+            @input="handleInput"
+            @blur="handleBlur"
+            @focus="handleFocus"
+        />
+    </div>
 </template>
+
+<style>
+/* Global styles for this component's password inputs */
+.password-wrapper .p-password input {
+    border: 1px solid #e4e4e4 !important;
+    background-color: transparent !important;
+}
+
+/* Dark mode overrides */
+.dark .password-wrapper .p-password input {
+    border: 1px solid #262626 !important;
+    background-color: transparent !important;
+}
+
+/* Error state for input */
+.password-wrapper.has-error .p-password input {
+    border-color: hsl(var(--destructive)) !important;
+}
+
+/* Focus state for error inputs */
+.password-wrapper.has-error .p-password input:focus {
+    border-color: hsl(var(--destructive)) !important;
+    box-shadow: 0 0 0 2px hsl(var(--destructive) / 0.2) !important;
+}
+
+/* Toggle mask button styles if needed */
+.password-wrapper .p-password .p-password-toggle-mask {
+    border: 1px solid #e4e4e4 !important;
+    background-color: transparent !important;
+}
+
+.dark .password-wrapper .p-password .p-password-toggle-mask {
+    border: 1px solid #262626 !important;
+    background-color: transparent !important;
+}
+</style>
