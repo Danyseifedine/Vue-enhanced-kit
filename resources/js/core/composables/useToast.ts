@@ -41,6 +41,12 @@ export const useToast = () => {
         return toast.promise(promise, messages);
     };
 
+    const showToast = (type: 'success' | 'error' | 'info' | 'warning', message: string, description?: string) => {
+        toast[type](message, {
+            description,
+        });
+    };
+
     // Auto-watch for Laravel flash messages
     const initFlashToasts = () => {
         watch(
@@ -77,6 +83,7 @@ export const useToast = () => {
         showInfo,
         showWarning,
         showPromise,
+        showToast,
         initFlashToasts, // Call this to enable Laravel flash message watching
         toast, // Export the raw toast for advanced usage
     };

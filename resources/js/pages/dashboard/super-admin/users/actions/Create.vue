@@ -4,7 +4,7 @@ import DashboardMaskedInput from '@/common/components/dashboards/form/DashboardM
 import DashboardMultiSelect from '@/common/components/dashboards/form/DashboardMultiSelect.vue';
 import DashboardSelect from '@/common/components/dashboards/form/DashboardSelect.vue';
 import DashboardTextInput from '@/common/components/dashboards/form/DashboardTextInput.vue';
-import Hint from '@/common/components/dashboards/typography/hint.vue';
+import Hint from '@/common/components/dashboards/typography/Hint.vue';
 import type { BreadcrumbItem } from '@core/types';
 import { Head, router, useForm } from '@inertiajs/vue3';
 import ActionLayout from '@modules/admin/layouts/ActionLayout.vue';

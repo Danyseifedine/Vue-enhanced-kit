@@ -53,7 +53,14 @@ class UsersController extends BaseController
         ]);
 
         $this->userService->create($request->all());
-        return $this->successWithToast('User created successfully', 'User created');
+        return redirect()->route('super-admin.users.index')->with([
+            'success' => true,
+            'toast' => [
+                'type' => 'success',
+                'title' => 'User created successfully',
+                'message' => 'User created successfully.'
+            ]
+        ]);
     }
 
     public function edit(User $user)

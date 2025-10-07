@@ -2,6 +2,7 @@
 import DataTable from '@/common/components/dashboards/datatable/Datatable.vue';
 import DashboardButton from '@/common/components/dashboards/form/DashboardButton.vue';
 import { useFilters } from '@/core/composables/useFilters';
+import { useToast } from '@/core/composables/useToast';
 import { formatDateForBackend } from '@/core/utils/formatters';
 import { parseDate } from '@/core/utils/parsers';
 import type { BreadcrumbItem } from '@core/types';
@@ -13,7 +14,7 @@ import { Button } from '@ui/button';
 import { Plus } from 'lucide-vue-next';
 import DatePicker from 'primevue/datepicker';
 import Select from 'primevue/select';
-import { watch } from 'vue';
+import { onMounted, watch } from 'vue';
 import type { User } from './datatable/type';
 import { userColumns } from './datatable/userColumns';
 
@@ -118,6 +119,12 @@ const tableConfig = {
 const handleSelectionChange = (users: User[]) => {
     console.log('Selected:', users);
 };
+
+const { initFlashToasts } = useToast();
+
+onMounted(() => {
+    initFlashToasts();
+});
 
 const handleRowClick = (user: User) => {
     router.get(route('super-admin.users.show', user as any));

@@ -9,7 +9,7 @@ class BaseController extends Controller
 {
     use HasDataTable;
 
-    public function successWithToast($message, $title = 'Success')
+    public function successWithToast(string $message, string $title = 'Success')
     {
         return redirect()->back()->with([
             'success' => true,
@@ -21,7 +21,7 @@ class BaseController extends Controller
         ]);
     }
 
-    public function errorWithToast($message, $title = 'Error')
+    public function errorWithToast(string $message, string $title = 'Error')
     {
         return redirect()->back()->with([
             'success' => false,
