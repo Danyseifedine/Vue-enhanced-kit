@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Services\FileUpload\FileUploadService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Storage;
 
 class CleanupTempFiles extends Command
 {
@@ -21,66 +21,31 @@ class CleanupTempFiles extends Command
      */
     protected $description = 'Clean up temporary uploaded files older than specified hours';
 
+    public function __construct(
+        private readonly FileUploadService $fileUploadService
+    ) {
+        parent::__construct();
+    }
+
     /**
      * Execute the console command.
      */
     public function handle(): int
     {
         $hours = (int) $this->option('hours');
-        $cutoffTime = now()->subHours($hours);
 
         $this->info("Cleaning up temporary files older than {$hours} hours...");
 
-        $tempFiles = Storage::disk('public')->allFiles('temp');
-        $deletedCount = 0;
+        try {
+            $deletedCount = $this->fileUploadService->cleanupOldFiles($hours);
 
-        foreach ($tempFiles as $file) {
-            // Skip .gitkeep file
-            if (basename($file) === '.gitkeep') {
-                continue;
-            }
+            $this->info("Cleanup completed. Deleted {$deletedCount} temporary files.");
 
-            $lastModified = Storage::disk('public')->lastModified($file);
+            return self::SUCCESS;
+        } catch (\Exception $e) {
+            $this->error('Cleanup failed: ' . $e->getMessage());
 
-            if ($lastModified < $cutoffTime->timestamp) {
-                Storage::disk('public')->delete($file);
-                $deletedCount++;
-                $this->line("Deleted: {$file}");
-            }
-        }
-
-        // Clean up empty directories
-        $this->cleanupEmptyDirectories('temp');
-
-        $this->info("Cleanup completed. Deleted {$deletedCount} temporary files.");
-
-        return self::SUCCESS;
-    }
-
-    /**
-     * Clean up empty directories recursively
-     */
-    private function cleanupEmptyDirectories(string $directory): void
-    {
-        $directories = Storage::disk('public')->directories($directory);
-
-        foreach ($directories as $dir) {
-            // Recursively clean subdirectories first
-            $this->cleanupEmptyDirectories($dir);
-
-            // Check if directory is empty (only contains .gitkeep or is completely empty)
-            $files = Storage::disk('public')->files($dir);
-            $subdirs = Storage::disk('public')->directories($dir);
-
-            $isEmpty = empty($subdirs) && (
-                empty($files) ||
-                (count($files) === 1 && basename($files[0]) === '.gitkeep')
-            );
-
-            if ($isEmpty && $dir !== 'temp') { // Don't delete the main temp directory
-                Storage::disk('public')->deleteDirectory($dir);
-                $this->line("Deleted empty directory: {$dir}");
-            }
+            return self::FAILURE;
         }
     }
 }
