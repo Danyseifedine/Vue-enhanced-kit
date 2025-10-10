@@ -241,7 +241,7 @@ const uploadToTemp = async (files: File[]) => {
         }, 200);
 
         // Use fetch but with proper CSRF token handling
-        const response = await fetch(route('api.upload-temp'), {
+        const response = await fetch(route('uploads.temp.store'), {
             method: 'POST',
             body: formData,
             headers: {
@@ -326,7 +326,7 @@ const removeTempFile = async (tempFile: TemporaryFile) => {
     isDeleting.value = true;
 
     try {
-        const response = await fetch(route('api.delete-temp'), {
+        const response = await fetch(route('uploads.temp.destroy'), {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',

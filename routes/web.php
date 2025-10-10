@@ -1,18 +1,17 @@
 <?php
 
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\Api\FileUploadController;
+use App\Http\Controllers\BaseController;
+use App\Models\Product;
 use App\Navigation\SuperAdminPath;
-use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 if (config('app.features.multi_lang')) {
     Route::group(
         [
             'prefix' => LaravelLocalization::setLocale(),
-            'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath']
+            'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath'],
         ],
         function () {
             registerWebRoutes();
@@ -26,7 +25,9 @@ if (config('app.features.multi_lang')) {
 function registerWebRoutes()
 {
     Route::get('/', function () {
-        return Inertia::render('Welcome');
+        return Inertia::render('Welcome', [
+            'products' => Product::all(),
+        ]);
     })->name('home');
 
     Route::middleware([
@@ -41,16 +42,20 @@ function registerWebRoutes()
     require __DIR__ . '/auth.php';
 
     Route::get('/documentation', function () {
-        return Inertia::render(SuperAdminPath::view("documentation/Index"));
+        return Inertia::render(SuperAdminPath::view('documentation/Index'));
     })->name('super-admin.documentation');
 
     // =========================================================
     // ---------------- Start File Uploads (GLOBAL) ------------
     // =========================================================
 
-    Route::prefix('file-uploads')->group(function () {
-        Route::post('/upload-temp', [FileUploadController::class, 'uploadTemp'])->name('api.upload-temp');
-        Route::delete('/delete-temp', [FileUploadController::class, 'deleteTemp'])->name('api.delete-temp');
-        Route::post('/cleanup-temp', [FileUploadController::class, 'cleanupTemp'])->name('api.cleanup-temp');
+    Route::prefix('uploads')->group(function () {
+        Route::post('/temp', [BaseController::class, 'uploadTemp'])->name('uploads.temp.store');
+        Route::delete('/temp', [BaseController::class, 'deleteTemp'])->name('uploads.temp.destroy');
+        Route::post('/temp/cleanup', [BaseController::class, 'cleanupTemp'])->name('uploads.temp.cleanup');
     });
+
+    // =========================================================
+    // ---------------- End File Uploads (GLOBAL) --------------
+    // =========================================================
 }

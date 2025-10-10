@@ -183,4 +183,71 @@ class FileUploadService
     {
         return $this->isValidTempPath($tempPath) && Storage::disk('public')->exists($tempPath);
     }
+
+    /**
+     * Move temporary files to media library and clean up
+     *
+     * @param  \Spatie\MediaLibrary\HasMedia  $model
+     * @return int Number of files added
+     *
+     * @throws \Exception
+     */
+    public function moveToMediaLibrary($model, array $tempFiles, string $collectionName = 'default'): int
+    {
+        $addedCount = 0;
+
+        foreach ($tempFiles as $tempFileData) {
+            $tempPath = $tempFileData['temp_path'];
+
+            // Verify the temp file exists
+            if (! $this->tempFileExists($tempPath)) {
+                throw new \Exception("Invalid or missing temporary file: {$tempPath}");
+            }
+
+            // Add file to media library from temp storage
+            $model->addMediaFromDisk($tempPath, 'public')
+                ->usingName($tempFileData['original_name'])
+                ->usingFileName($tempFileData['original_name'])
+                ->toMediaCollection($collectionName);
+
+            // Clean up temporary file
+            $this->deleteTemp($tempPath);
+
+            $addedCount++;
+        }
+
+        return $addedCount;
+    }
+
+    /**
+     * Clean up temporary files (useful for error handling)
+     *
+     * @return array Array with 'deleted' and 'failed' counts
+     */
+    public function cleanupTempFiles(array $tempFiles): array
+    {
+        $deleted = 0;
+        $failed = 0;
+
+        foreach ($tempFiles as $tempFileData) {
+            try {
+                if ($this->deleteTemp($tempFileData['temp_path'])) {
+                    $deleted++;
+                } else {
+                    $failed++;
+                }
+            } catch (\Exception $e) {
+                logger()->warning('Failed to cleanup temp file', [
+                    'path' => $tempFileData['temp_path'],
+                    'error' => $e->getMessage(),
+                ]);
+                $failed++;
+            }
+        }
+
+        return [
+            'deleted' => $deleted,
+            'failed' => $failed,
+        ];
+    }
 }

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Traits\HasDataTable;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use App\Services\FileUpload\FileUploadService;
+use App\Traits\HasDataTable;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 class BaseController extends Controller
@@ -16,24 +16,54 @@ class BaseController extends Controller
         protected readonly FileUploadService $fileUploadService
     ) {}
 
-    public function successResponse(string $message, string $title = 'Success', $data = null): JsonResponse
+    public function successResponse(string $message, string $title = 'Success', $data = null, array $additionalData = []): JsonResponse
     {
-        return response()->json([
+        $response = [
             'success' => true,
             'message' => $message,
-            'title' => $title,
-            'data' => $data,
-        ]);
+        ];
+
+        // Only add title if it's different from default or explicitly provided
+        if ($title !== 'Success') {
+            $response['title'] = $title;
+        }
+
+        // Add data field if provided
+        if ($data !== null) {
+            $response['data'] = $data;
+        }
+
+        // Merge any additional fields (like 'files', 'errors', etc.)
+        if (! empty($additionalData)) {
+            $response = array_merge($response, $additionalData);
+        }
+
+        return response()->json($response);
     }
 
-    public function errorResponse(string $message, string $title = 'Error', $data = null): JsonResponse
+    public function errorResponse(string $message, string $title = 'Error', $data = null, int $statusCode = 400, array $additionalData = []): JsonResponse
     {
-        return response()->json([
+        $response = [
             'success' => false,
             'message' => $message,
-            'title' => $title,
-            'data' => $data,
-        ]);
+        ];
+
+        // Only add title if it's different from default or explicitly provided
+        if ($title !== 'Error') {
+            $response['title'] = $title;
+        }
+
+        // Add data field if provided
+        if ($data !== null) {
+            $response['data'] = $data;
+        }
+
+        // Merge any additional fields (like 'errors', etc.)
+        if (! empty($additionalData)) {
+            $response = array_merge($response, $additionalData);
+        }
+
+        return response()->json($response, $statusCode);
     }
 
     public function successWithToast(string $message, string $title = 'Success')
@@ -43,8 +73,8 @@ class BaseController extends Controller
             'toast' => [
                 'type' => 'success',
                 'title' => $title,
-                'message' => $message
-            ]
+                'message' => $message,
+            ],
         ]);
     }
 
@@ -55,8 +85,8 @@ class BaseController extends Controller
             'toast' => [
                 'type' => 'error',
                 'title' => $title,
-                'message' => $message
-            ]
+                'message' => $message,
+            ],
         ]);
     }
 
@@ -86,11 +116,27 @@ class BaseController extends Controller
                 $context
             );
 
-            return $this->successResponse('Files uploaded successfully', 'Files uploaded successfully', $uploadedFiles);
+            return $this->successResponse(
+                'Files uploaded successfully',
+                'Success',
+                null,
+                ['files' => $uploadedFiles]
+            );
         } catch (ValidationException $e) {
-            return $this->errorResponse('Validation failed', 'Validation failed', $e->errors());
+            return $this->errorResponse(
+                'Validation failed',
+                'Error',
+                null,
+                422,
+                ['errors' => $e->errors()]
+            );
         } catch (\Exception $e) {
-            return $this->errorResponse('Upload failed: ' . $e->getMessage(), 'Upload failed', $e->getMessage());
+            return $this->errorResponse(
+                'Upload failed: ' . $e->getMessage(),
+                'Error',
+                null,
+                500
+            );
         }
     }
 
@@ -108,14 +154,14 @@ class BaseController extends Controller
             $deleted = $this->fileUploadService->deleteTemp($tempPath);
 
             if (! $deleted) {
-                return $this->errorResponse('File not found', 'File not found', $tempPath);
+                return $this->errorResponse('File not found', 'Error', null, 404);
             }
 
-            return $this->successResponse('File deleted successfully', 'File deleted successfully');
+            return $this->successResponse('File deleted successfully');
         } catch (\InvalidArgumentException $e) {
-            return $this->errorResponse('Delete failed: ' . $e->getMessage(), 'Delete failed', $e->getMessage());
+            return $this->errorResponse($e->getMessage(), 'Error', null, 400);
         } catch (\Exception $e) {
-            return $this->errorResponse('Delete failed: ' . $e->getMessage(), 'Delete failed', $e->getMessage());
+            return $this->errorResponse('Delete failed: ' . $e->getMessage(), 'Error', null, 500);
         }
     }
 
@@ -127,9 +173,18 @@ class BaseController extends Controller
         try {
             $deletedCount = $this->fileUploadService->cleanupOldFiles(24);
 
-            return $this->successResponse('Cleaned up ' . $deletedCount . ' temporary files', 'Cleaned up ' . $deletedCount . ' temporary files', $deletedCount);
+            return $this->successResponse(
+                "Cleaned up {$deletedCount} temporary files",
+                'Success',
+                ['count' => $deletedCount]
+            );
         } catch (\Exception $e) {
-            return $this->errorResponse('Cleanup failed: ' . $e->getMessage(), 'Cleanup failed', $e->getMessage());
+            return $this->errorResponse(
+                'Cleanup failed: ' . $e->getMessage(),
+                'Error',
+                null,
+                500
+            );
         }
     }
 
