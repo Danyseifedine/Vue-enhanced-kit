@@ -2,7 +2,7 @@
 import { usePage } from '@inertiajs/vue3';
 import { CheckCircle2, FileIcon, FileText, ImageIcon, Upload, X } from 'lucide-vue-next';
 import FileUpload, { type FileUploadSelectEvent, type FileUploadUploaderEvent } from 'primevue/fileupload';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 
 export interface TemporaryFile {
     temp_path: string;
@@ -78,6 +78,9 @@ const fileUploadRef = ref<any>(null);
 const selectedFiles = ref<File[]>([]);
 const tempFiles = ref<TemporaryFile[]>(props.modelValue || []);
 const isUploading = ref(false);
+const isDeleting = ref(false);
+const uploadProgress = ref(0);
+const currentError = ref<string | null>(null);
 const page = usePage();
 
 // Get CSRF token from multiple sources
@@ -95,7 +98,7 @@ const getCsrfToken = (): string => {
 
     // Last resort - try to get from cookie
     const cookies = document.cookie.split(';');
-    for (let cookie of cookies) {
+    for (const cookie of cookies) {
         const [name, value] = cookie.trim().split('=');
         if (name === 'XSRF-TOKEN') {
             return decodeURIComponent(value);
@@ -105,19 +108,69 @@ const getCsrfToken = (): string => {
     return '';
 };
 
-// Computed class binding with error state
-const inputClass = computed(() => {
-    const baseClass = 'dashboard-file-upload';
-    const errorClass = props.error ? 'dashboard-file-upload--error' : '';
-    const disabledClass = props.disabled ? 'dashboard-file-upload--disabled' : '';
-    return [baseClass, errorClass, disabledClass, props.class].filter(Boolean).join(' ');
-});
+// Format file size for display
+const formatSize = (bytes: number) => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+};
 
-// Handle file selection - automatically upload to temp
+// Show error with auto-dismiss
+const showError = (message: string, duration: number = 5000) => {
+    currentError.value = message;
+    setTimeout(() => {
+        currentError.value = null;
+    }, duration);
+};
+
+// Get user-friendly error message
+const getErrorMessage = (error: any, file?: File): string => {
+    if (typeof error === 'string') return error;
+
+    if (error.message) {
+        // Handle validation errors
+        if (error.message.includes('413') || error.message.includes('file size') || error.message.includes('too large')) {
+            const fileName = file?.name || 'File';
+            const fileSize = file ? formatSize(file.size) : '';
+            const maxSize = formatSize(props.maxFileSize);
+            return `${fileName} is too large (${fileSize}). Maximum size allowed is ${maxSize}.`;
+        }
+
+        if (error.message.includes('type') || error.message.includes('format') || error.message.includes('mimes')) {
+            const fileName = file?.name || 'File';
+            return `${fileName} has an invalid format. Allowed formats: ${props.accept}`;
+        }
+
+        if (error.message.includes('network') || error.message.includes('fetch')) {
+            return 'Network error. Please check your connection and try again.';
+        }
+
+        if (error.message.includes('422') || error.message.includes('Validation failed')) {
+            return 'File validation failed. Please check file size and format.';
+        }
+
+        return error.message;
+    }
+
+    // Handle Laravel validation response format
+    if (error.errors) {
+        const firstError = Object.values(error.errors)[0];
+        if (Array.isArray(firstError) && firstError.length > 0) {
+            return firstError[0] as string;
+        }
+    }
+
+    return 'An unexpected error occurred. Please try again.';
+};
+
+// Handle file selection - automatically upload to temp only if auto=true
 const onSelect = async (event: FileUploadSelectEvent) => {
     selectedFiles.value = event.files;
     emit('select', event);
 
+    // Only auto-upload if auto=true
     if (props.auto) {
         await uploadToTemp(event.files);
     }
@@ -127,15 +180,36 @@ const onSelect = async (event: FileUploadSelectEvent) => {
 const uploadToTemp = async (files: File[]) => {
     if (files.length === 0) return;
 
+    // Clear any previous errors
+    currentError.value = null;
     isUploading.value = true;
+    uploadProgress.value = 0;
 
     try {
+        // Validate files before upload
+        for (const file of files) {
+            if (file.size > props.maxFileSize) {
+                throw new Error(`File size validation failed for ${file.name}`);
+            }
+
+            if (props.accept !== '*' && !file.type.match(new RegExp(props.accept.replace('*', '.*')))) {
+                throw new Error(`File type validation failed for ${file.name}`);
+            }
+        }
+
         const formData = new FormData();
         files.forEach((file) => {
             formData.append('files[]', file);
         });
         // Add context for organizing files
         formData.append('context', props.context || 'general');
+
+        // Simulate progress for better UX
+        const progressInterval = setInterval(() => {
+            if (uploadProgress.value < 90) {
+                uploadProgress.value += Math.random() * 20;
+            }
+        }, 200);
 
         // Use fetch but with proper CSRF token handling
         const response = await fetch(route('api.upload-temp'), {
@@ -147,33 +221,86 @@ const uploadToTemp = async (files: File[]) => {
             },
         });
 
+        clearInterval(progressInterval);
+        uploadProgress.value = 100;
+
+        if (!response.ok) {
+            let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+
+            try {
+                const errorResult = await response.json();
+                if (errorResult.errors) {
+                    // Handle Laravel validation errors
+                    const firstError = Object.values(errorResult.errors)[0];
+                    if (Array.isArray(firstError) && firstError.length > 0) {
+                        errorMessage = firstError[0] as string;
+                    }
+                } else if (errorResult.message) {
+                    errorMessage = errorResult.message;
+                }
+            } catch {
+                // If we can't parse JSON, use status-based messages
+                if (response.status === 413) {
+                    errorMessage = 'File size too large';
+                } else if (response.status === 422) {
+                    errorMessage = 'File validation failed';
+                }
+            }
+
+            throw new Error(errorMessage);
+        }
+
         const result = await response.json();
 
         if (result.success) {
-            const newTempFiles = [...tempFiles.value, ...result.files];
-            tempFiles.value = newTempFiles;
-            emit('update:modelValue', newTempFiles);
+            // If multiple=false, replace existing temp files with new one
+            if (props.multiple === false) {
+                // Clear existing temp files first
+                const filesToDelete = [...tempFiles.value];
+                for (const tempFile of filesToDelete) {
+                    // Delete from server but don't wait for response
+                    removeTempFile(tempFile);
+                }
+                tempFiles.value = result.files;
+            } else {
+                // If multiple=true, add to existing temp files
+                const newTempFiles = [...tempFiles.value, ...result.files];
+                tempFiles.value = newTempFiles;
+            }
+
+            emit('update:modelValue', tempFiles.value);
             emit('temp-uploaded', result.files);
 
             // Clear the file input
             clearFileInput();
         } else {
-            emit('error', { message: result.message || 'Upload failed' });
+            throw new Error(result.message || 'Upload failed');
         }
     } catch (error) {
-        emit('error', { message: 'Upload failed: ' + (error as Error).message });
+        const errorMessage = getErrorMessage(error, files[0]);
+        showError(errorMessage);
+        emit('error', { message: errorMessage });
     } finally {
         isUploading.value = false;
+        uploadProgress.value = 0;
     }
 };
 
 // Handle file upload (custom uploader)
 const customUploader = async (event: FileUploadUploaderEvent) => {
-    await uploadToTemp(event.files);
+    const files = Array.isArray(event.files) ? event.files : [event.files];
+    await uploadToTemp(files);
+};
+
+// Handle manual upload when auto=false
+const handleManualUpload = async (files: File[]) => {
+    await uploadToTemp(files);
 };
 
 // Handle file removal from temp storage
 const removeTempFile = async (tempFile: TemporaryFile) => {
+    isDeleting.value = true;
+
     try {
         const response = await fetch(route('api.delete-temp'), {
             method: 'DELETE',
@@ -185,6 +312,10 @@ const removeTempFile = async (tempFile: TemporaryFile) => {
             body: JSON.stringify({ temp_path: tempFile.temp_path }),
         });
 
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
         const result = await response.json();
 
         if (result.success) {
@@ -193,10 +324,14 @@ const removeTempFile = async (tempFile: TemporaryFile) => {
             emit('update:modelValue', updatedFiles);
             emit('temp-deleted', tempFile.temp_path);
         } else {
-            emit('error', { message: result.message || 'Delete failed' });
+            throw new Error(result.message || 'Delete failed');
         }
     } catch (error) {
-        emit('error', { message: 'Delete failed: ' + (error as Error).message });
+        const errorMessage = getErrorMessage(error);
+        showError(errorMessage);
+        emit('error', { message: errorMessage });
+    } finally {
+        isDeleting.value = false;
     }
 };
 
@@ -209,15 +344,23 @@ const onRemove = (event: any) => {
 
 // Handle clear all (only when user explicitly clears)
 const onClear = async () => {
-    // Clear selected files
-    selectedFiles.value = [];
+    isDeleting.value = true;
 
-    // Delete all temp files
-    for (const tempFile of tempFiles.value) {
-        await removeTempFile(tempFile);
+    try {
+        // Clear selected files
+        selectedFiles.value = [];
+
+        // Delete all temp files
+        const deletePromises = tempFiles.value.map((tempFile) => removeTempFile(tempFile));
+        await Promise.all(deletePromises);
+
+        emit('clear');
+    } catch (error) {
+        const errorMessage = getErrorMessage(error);
+        showError(errorMessage);
+    } finally {
+        isDeleting.value = false;
     }
-
-    emit('clear');
 };
 
 // Clear just the file input without deleting temp files
@@ -241,15 +384,6 @@ const getFileIcon = (file: File | TemporaryFile) => {
     return FileIcon;
 };
 
-// Format file size
-const formatSize = (bytes: number) => {
-    if (bytes === 0) return '0 B';
-    const k = 1024;
-    const sizes = ['B', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-};
-
 // Check if file is image
 const isImage = (file: File | TemporaryFile) => {
     const type = 'type' in file ? file.type : file.mime_type;
@@ -268,15 +402,13 @@ const getPreviewURL = (tempFile: TemporaryFile) => {
 
 // Expose methods for parent component
 defineExpose({
-    upload: () => fileUploadRef.value?.upload(),
     clear: onClear,
-    choose: () => fileUploadRef.value?.choose(),
     getTempFiles: () => tempFiles.value,
 });
 </script>
 
 <template>
-    <div :class="inputClass">
+    <div :class="props.class">
         <FileUpload
             ref="fileUploadRef"
             :name="name"
@@ -305,7 +437,7 @@ defineExpose({
             @before-send="emit('before-send', $event)"
         >
             <!-- Custom header template -->
-            <template #header="{ chooseCallback, uploadCallback, clearCallback, files }">
+            <template #header="{ chooseCallback, clearCallback, files }">
                 <div class="flex items-center justify-between gap-4 border-b p-4">
                     <div class="flex items-center gap-2">
                         <Upload class="h-5 w-5 text-primary" />
@@ -313,46 +445,99 @@ defineExpose({
                         <span v-if="files.length > 0" class="text-xs text-muted-foreground">
                             ({{ files.length }} {{ files.length === 1 ? 'file' : 'files' }})
                         </span>
+
+                        <!-- Upload Progress Indicator -->
+                        <div v-if="isUploading" class="ml-2 flex items-center gap-2">
+                            <div class="h-1.5 w-16 overflow-hidden rounded-full bg-gray-200">
+                                <div
+                                    class="h-full bg-gradient-to-r from-blue-500 to-green-500 transition-all duration-300 ease-out"
+                                    :style="{ width: uploadProgress + '%' }"
+                                ></div>
+                            </div>
+                            <span class="text-xs font-medium text-blue-600">{{ Math.round(uploadProgress) }}%</span>
+                        </div>
                     </div>
                     <div class="flex gap-2">
+                        <!-- Choose button - hide if multiple=false and we already have temp files -->
                         <button
+                            v-if="!(multiple === false && tempFiles.length > 0)"
                             type="button"
                             @click="chooseCallback()"
-                            :disabled="disabled"
+                            :disabled="disabled || isUploading || isDeleting"
                             class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
                         >
                             {{ chooseLabel }}
                         </button>
+
+                        <!-- Upload button - show when auto=false and files are selected, but hide if multiple=false and we have temp files -->
                         <button
-                            v-if="showUploadButton && files.length > 0 && !auto"
+                            v-if="showUploadButton && files.length > 0 && !auto && !(multiple === false && tempFiles.length > 0)"
                             type="button"
-                            @click="uploadCallback()"
-                            :disabled="disabled"
+                            @click="handleManualUpload(files)"
+                            :disabled="disabled || isUploading || isDeleting"
                             class="inline-flex h-9 items-center justify-center rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
                         >
-                            {{ uploadLabel }}
+                            <span v-if="!isUploading" class="flex items-center gap-2">
+                                <Upload class="h-4 w-4" />
+                                {{ uploadLabel }}
+                            </span>
+                            <span v-else class="flex items-center gap-2">
+                                <div class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                                Uploading...
+                            </span>
                         </button>
+
+                        <!-- Cancel button - show when we have files or temp files -->
                         <button
-                            v-if="showCancelButton && files.length > 0"
+                            v-if="showCancelButton && (files.length > 0 || tempFiles.length > 0)"
                             type="button"
                             @click="clearCallback()"
-                            :disabled="disabled"
+                            :disabled="disabled || isUploading"
                             class="inline-flex h-9 items-center justify-center rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground transition-colors hover:bg-destructive/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
                         >
-                            {{ cancelLabel }}
+                            <span v-if="!isDeleting" class="flex items-center gap-2">
+                                <X class="h-4 w-4" />
+                                {{ cancelLabel }}
+                            </span>
+                            <span v-else class="flex items-center gap-2">
+                                <div class="h-4 w-4 animate-spin rounded-full border-2 border-red-400 border-t-transparent"></div>
+                                Deleting...
+                            </span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Error Display -->
+                <div v-if="currentError" class="border-b bg-red-50 p-4 duration-300 animate-in slide-in-from-top-2 dark:bg-red-950/20">
+                    <div class="flex items-start gap-3">
+                        <div class="flex-shrink-0">
+                            <div class="flex h-6 w-6 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/50">
+                                <X class="h-4 w-4 text-red-600 dark:text-red-400" />
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-red-800 dark:text-red-200">Upload Error</p>
+                            <p class="mt-1 text-sm text-red-700 dark:text-red-300">{{ currentError }}</p>
+                        </div>
+                        <button
+                            @click="currentError = null"
+                            class="flex-shrink-0 rounded-md p-1 transition-colors hover:bg-red-100 dark:hover:bg-red-900/50"
+                        >
+                            <X class="h-4 w-4 text-red-600 dark:text-red-400" />
                         </button>
                     </div>
                 </div>
             </template>
 
             <!-- Custom content template for selected files -->
-            <template #content="{ files, uploadedFiles, removeUploadedFileCallback, removeFileCallback }">
+            <template #content="{ files, removeFileCallback }">
                 <div v-if="files.length > 0 || tempFiles.length > 0" class="p-4">
                     <!-- Selected Files (being uploaded) -->
                     <div v-if="files.length > 0" class="mb-6">
                         <h4 class="mb-3 flex items-center gap-2 text-sm font-semibold">
                             <Upload class="h-4 w-4 text-blue-600" />
-                            Uploading Files
+                            <span v-if="!isUploading">Selected Files</span>
+                            <span v-else>Uploading Files</span>
                             <div v-if="isUploading" class="ml-2">
                                 <div class="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent"></div>
                             </div>
@@ -361,12 +546,35 @@ defineExpose({
                             <div
                                 v-for="(file, index) in files"
                                 :key="file.name + index"
-                                class="group relative overflow-hidden rounded-lg border opacity-60 transition-colors hover:border-primary"
+                                class="group relative overflow-hidden rounded-lg border transition-all duration-200"
+                                :class="{
+                                    'opacity-75': isUploading,
+                                    'hover:border-primary': !isUploading,
+                                }"
                             >
                                 <!-- Image Preview -->
                                 <div v-if="isImage(file)" class="relative flex aspect-video items-center justify-center bg-muted">
-                                    <img :src="getObjectURL(file)" :alt="file.name" class="h-full w-full object-cover" />
+                                    <img
+                                        :src="getObjectURL(file)"
+                                        :alt="file.name"
+                                        class="h-full w-full object-cover transition-all duration-300"
+                                        :class="{ 'opacity-90': isUploading }"
+                                    />
+
+                                    <!-- Upload Progress Overlay -->
+                                    <div v-if="isUploading" class="absolute inset-0 flex flex-col items-center justify-center bg-black/30">
+                                        <div class="border-3 mb-2 h-8 w-8 animate-spin rounded-full border-white border-t-transparent"></div>
+                                        <div class="h-1.5 w-20 overflow-hidden rounded-full bg-white/40">
+                                            <div
+                                                class="h-full bg-white transition-all duration-300 ease-out"
+                                                :style="{ width: uploadProgress + '%' }"
+                                            ></div>
+                                        </div>
+                                        <span class="mt-1 text-xs font-medium text-white">{{ Math.round(uploadProgress) }}%</span>
+                                    </div>
+
                                     <button
+                                        v-if="!isUploading"
                                         type="button"
                                         @click="removeFileCallback(index)"
                                         class="absolute right-2 top-2 rounded-full bg-destructive p-1.5 text-destructive-foreground opacity-0 transition-opacity hover:bg-destructive/90 group-hover:opacity-100"
@@ -377,8 +585,26 @@ defineExpose({
 
                                 <!-- Non-Image Preview -->
                                 <div v-else class="relative flex aspect-video items-center justify-center bg-muted">
-                                    <component :is="getFileIcon(file)" class="h-16 w-16 text-muted-foreground" />
+                                    <component
+                                        :is="getFileIcon(file)"
+                                        class="h-16 w-16 text-muted-foreground transition-all duration-300"
+                                        :class="{ 'opacity-90': isUploading }"
+                                    />
+
+                                    <!-- Upload Progress Overlay -->
+                                    <div v-if="isUploading" class="absolute inset-0 flex flex-col items-center justify-center bg-black/15">
+                                        <div class="border-3 mb-2 h-8 w-8 animate-spin rounded-full border-blue-600 border-t-transparent"></div>
+                                        <div class="h-1.5 w-20 overflow-hidden rounded-full bg-blue-100">
+                                            <div
+                                                class="h-full bg-blue-600 transition-all duration-300 ease-out"
+                                                :style="{ width: uploadProgress + '%' }"
+                                            ></div>
+                                        </div>
+                                        <span class="mt-1 text-xs font-medium text-blue-600">{{ Math.round(uploadProgress) }}%</span>
+                                    </div>
+
                                     <button
+                                        v-if="!isUploading"
                                         type="button"
                                         @click="removeFileCallback(index)"
                                         class="absolute right-2 top-2 rounded-full bg-destructive p-1.5 text-destructive-foreground opacity-0 transition-opacity hover:bg-destructive/90 group-hover:opacity-100"
@@ -389,12 +615,16 @@ defineExpose({
 
                                 <!-- File Info -->
                                 <div class="border-t bg-background p-3">
-                                    <p class="truncate text-sm font-medium" :title="file.name">
+                                    <p class="truncate text-sm font-medium" :title="file.name" :class="{ 'text-muted-foreground/70': isUploading }">
                                         {{ file.name }}
                                     </p>
                                     <p class="mt-1 text-xs text-muted-foreground">
                                         {{ formatSize(file.size) }}
                                     </p>
+                                    <div v-if="isUploading" class="mt-2 flex items-center gap-2 text-xs text-blue-600">
+                                        <div class="h-2 w-2 animate-pulse rounded-full bg-blue-600"></div>
+                                        Uploading...
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -408,7 +638,7 @@ defineExpose({
                         </h4>
                         <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                             <div
-                                v-for="(tempFile, index) in tempFiles"
+                                v-for="tempFile in tempFiles"
                                 :key="tempFile.temp_path"
                                 class="group relative overflow-hidden rounded-lg border border-green-200 bg-green-50/50 transition-colors hover:border-green-300 dark:border-green-800 dark:bg-green-950/20"
                             >
@@ -418,9 +648,14 @@ defineExpose({
                                     <button
                                         type="button"
                                         @click="removeTempFile(tempFile)"
-                                        class="absolute right-2 top-2 rounded-full bg-destructive p-1.5 text-destructive-foreground opacity-0 transition-opacity hover:bg-destructive/90 group-hover:opacity-100"
+                                        :disabled="isDeleting"
+                                        class="absolute right-2 top-2 rounded-full bg-destructive p-1.5 text-destructive-foreground opacity-0 transition-opacity hover:bg-destructive/90 disabled:opacity-50 group-hover:opacity-100"
                                     >
-                                        <X class="h-4 w-4" />
+                                        <div
+                                            v-if="isDeleting"
+                                            class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+                                        ></div>
+                                        <X v-else class="h-4 w-4" />
                                     </button>
                                 </div>
 
@@ -430,9 +665,14 @@ defineExpose({
                                     <button
                                         type="button"
                                         @click="removeTempFile(tempFile)"
-                                        class="absolute right-2 top-2 rounded-full bg-destructive p-1.5 text-destructive-foreground opacity-0 transition-opacity hover:bg-destructive/90 group-hover:opacity-100"
+                                        :disabled="isDeleting"
+                                        class="absolute right-2 top-2 rounded-full bg-destructive p-1.5 text-destructive-foreground opacity-0 transition-opacity hover:bg-destructive/90 disabled:opacity-50 group-hover:opacity-100"
                                     >
-                                        <X class="h-4 w-4" />
+                                        <div
+                                            v-if="isDeleting"
+                                            class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+                                        ></div>
+                                        <X v-else class="h-4 w-4" />
                                     </button>
                                 </div>
 
