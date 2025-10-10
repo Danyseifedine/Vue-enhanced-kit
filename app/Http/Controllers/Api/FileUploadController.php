@@ -25,18 +25,21 @@ class FileUploadController extends Controller
 
             $uploadedFiles = [];
             $context = $request->input('context', 'general');
-            $userId = auth()->id() ?? 'guest';
+            $userId = auth()?->id() ?? 'guest';
 
             // Create context-based directory: temp/{context}/{user_id}/
             $contextPath = "temp/{$context}/{$userId}";
 
             foreach ($request->file('files') as $file) {
-                // Generate unique filename
-                $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+                // Generate unique filename with timestamp
+                $timestamp = now()->timestamp;
+                $extension = $file->getClientOriginalExtension();
+                $filename = Str::uuid() . '-' . $timestamp . ($extension ? ".{$extension}" : '');
 
                 // Store in context-specific directory within public disk
                 $path = $file->storeAs($contextPath, $filename, 'public');
 
+                // Add file details, including upload timestamp
                 $uploadedFiles[] = [
                     'temp_path' => $path,
                     'original_name' => $file->getClientOriginalName(),
@@ -44,6 +47,7 @@ class FileUploadController extends Controller
                     'mime_type' => $file->getMimeType(),
                     'url' => Storage::disk('public')->url($path), // For preview
                     'context' => $context, // Include context in response
+                    'uploaded_at' => now()->toIso8601String(), // Add timestamp in ISO8601 format
                 ];
             }
 
