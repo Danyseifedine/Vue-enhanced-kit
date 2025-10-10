@@ -1,10 +1,19 @@
 <script setup lang="ts">
+import { usePage } from '@inertiajs/vue3';
 import { CheckCircle2, FileIcon, FileText, ImageIcon, Upload, X } from 'lucide-vue-next';
 import FileUpload, { type FileUploadSelectEvent, type FileUploadUploaderEvent } from 'primevue/fileupload';
 import { computed, ref } from 'vue';
 
+export interface TemporaryFile {
+    temp_path: string;
+    original_name: string;
+    size: number;
+    mime_type: string;
+    url: string;
+}
+
 export interface DashboardFileUploadProps {
-    modelValue?: File[] | null;
+    modelValue?: TemporaryFile[] | null;
     name?: string;
     url?: string;
     accept?: string;
@@ -26,6 +35,7 @@ export interface DashboardFileUploadProps {
     previewWidth?: number;
     id?: string;
     class?: string;
+    context?: string; // NEW: Context for organizing files (e.g., 'products', 'blogs', 'galleries')
 }
 
 const props = withDefaults(defineProps<DashboardFileUploadProps>(), {
@@ -34,12 +44,12 @@ const props = withDefaults(defineProps<DashboardFileUploadProps>(), {
     maxFileSize: 5000000, // 5MB default
     maxFiles: 10,
     multiple: true,
-    auto: false,
+    auto: true, // Changed default to true for automatic upload
     disabled: false,
     error: null,
     showUploadButton: true,
     showCancelButton: true,
-    customUpload: false,
+    customUpload: true, // Always use custom upload for temp files
     fileLimit: undefined,
     chooseLabel: 'Choose Files',
     uploadLabel: 'Upload',
@@ -47,10 +57,11 @@ const props = withDefaults(defineProps<DashboardFileUploadProps>(), {
     invalidFileSizeMessage: '{0}: Invalid file size, file size should be smaller than {1}.',
     invalidFileTypeMessage: '{0}: Invalid file type, allowed file types: {1}.',
     previewWidth: 100,
+    context: 'general', // Default context
 });
 
 const emit = defineEmits<{
-    'update:modelValue': [files: File[]];
+    'update:modelValue': [files: TemporaryFile[]];
     upload: [event: FileUploadUploaderEvent];
     select: [event: FileUploadSelectEvent];
     remove: [event: { file: File; files: File[] }];
@@ -59,10 +70,40 @@ const emit = defineEmits<{
     'before-upload': [event: any];
     progress: [event: any];
     'before-send': [event: any];
+    'temp-uploaded': [files: TemporaryFile[]];
+    'temp-deleted': [tempPath: string];
 }>();
 
-const fileUploadRef = ref<InstanceType<typeof FileUpload> | null>(null);
+const fileUploadRef = ref<any>(null);
 const selectedFiles = ref<File[]>([]);
+const tempFiles = ref<TemporaryFile[]>(props.modelValue || []);
+const isUploading = ref(false);
+const page = usePage();
+
+// Get CSRF token from multiple sources
+const getCsrfToken = (): string => {
+    // Try to get from Inertia page props first
+    if (page.props._token) {
+        return page.props._token as string;
+    }
+
+    // Fallback to meta tag
+    const metaToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    if (metaToken) {
+        return metaToken;
+    }
+
+    // Last resort - try to get from cookie
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+        const [name, value] = cookie.trim().split('=');
+        if (name === 'XSRF-TOKEN') {
+            return decodeURIComponent(value);
+        }
+    }
+
+    return '';
+};
 
 // Computed class binding with error state
 const inputClass = computed(() => {
@@ -72,31 +113,119 @@ const inputClass = computed(() => {
     return [baseClass, errorClass, disabledClass, props.class].filter(Boolean).join(' ');
 });
 
-// Handle file selection
-const onSelect = (event: FileUploadSelectEvent) => {
+// Handle file selection - automatically upload to temp
+const onSelect = async (event: FileUploadSelectEvent) => {
     selectedFiles.value = event.files;
-    emit('update:modelValue', event.files);
     emit('select', event);
+
+    if (props.auto) {
+        await uploadToTemp(event.files);
+    }
 };
 
-// Handle file upload
-const onUpload = (event: FileUploadUploaderEvent) => {
-    emit('upload', event);
+// Upload files to temporary storage
+const uploadToTemp = async (files: File[]) => {
+    if (files.length === 0) return;
+
+    isUploading.value = true;
+
+    try {
+        const formData = new FormData();
+        files.forEach((file) => {
+            formData.append('files[]', file);
+        });
+        // Add context for organizing files
+        formData.append('context', props.context || 'general');
+
+        // Use fetch but with proper CSRF token handling
+        const response = await fetch(route('api.upload-temp'), {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': getCsrfToken(),
+                Accept: 'application/json',
+            },
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            const newTempFiles = [...tempFiles.value, ...result.files];
+            tempFiles.value = newTempFiles;
+            emit('update:modelValue', newTempFiles);
+            emit('temp-uploaded', result.files);
+
+            // Clear the file input
+            clearFileInput();
+        } else {
+            emit('error', { message: result.message || 'Upload failed' });
+        }
+    } catch (error) {
+        emit('error', { message: 'Upload failed: ' + (error as Error).message });
+    } finally {
+        isUploading.value = false;
+    }
 };
 
-// Handle file removal
+// Handle file upload (custom uploader)
+const customUploader = async (event: FileUploadUploaderEvent) => {
+    await uploadToTemp(event.files);
+};
+
+// Handle file removal from temp storage
+const removeTempFile = async (tempFile: TemporaryFile) => {
+    try {
+        const response = await fetch(route('api.delete-temp'), {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': getCsrfToken(),
+                Accept: 'application/json',
+            },
+            body: JSON.stringify({ temp_path: tempFile.temp_path }),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            const updatedFiles = tempFiles.value.filter((f) => f.temp_path !== tempFile.temp_path);
+            tempFiles.value = updatedFiles;
+            emit('update:modelValue', updatedFiles);
+            emit('temp-deleted', tempFile.temp_path);
+        } else {
+            emit('error', { message: result.message || 'Delete failed' });
+        }
+    } catch (error) {
+        emit('error', { message: 'Delete failed: ' + (error as Error).message });
+    }
+};
+
+// Handle file removal (for selected files before upload)
 const onRemove = (event: any) => {
     const remainingFiles = selectedFiles.value.filter((f) => f !== event.file);
     selectedFiles.value = remainingFiles;
-    emit('update:modelValue', remainingFiles);
     emit('remove', { file: event.file, files: remainingFiles });
 };
 
-// Handle clear all
-const onClear = () => {
+// Handle clear all (only when user explicitly clears)
+const onClear = async () => {
+    // Clear selected files
     selectedFiles.value = [];
-    emit('update:modelValue', []);
+
+    // Delete all temp files
+    for (const tempFile of tempFiles.value) {
+        await removeTempFile(tempFile);
+    }
+
     emit('clear');
+};
+
+// Clear just the file input without deleting temp files
+const clearFileInput = () => {
+    selectedFiles.value = [];
+    if (fileUploadRef.value) {
+        fileUploadRef.value.files = [];
+    }
 };
 
 // Handle errors
@@ -104,14 +233,9 @@ const onError = (event: any) => {
     emit('error', event);
 };
 
-// Custom uploader function
-const customUploader = async (event: FileUploadUploaderEvent) => {
-    emit('upload', event);
-};
-
 // Get file icon based on file type
-const getFileIcon = (file: File) => {
-    const type = file.type;
+const getFileIcon = (file: File | TemporaryFile) => {
+    const type = 'type' in file ? file.type : file.mime_type;
     if (type.startsWith('image/')) return ImageIcon;
     if (type === 'application/pdf') return FileText;
     return FileIcon;
@@ -127,8 +251,9 @@ const formatSize = (bytes: number) => {
 };
 
 // Check if file is image
-const isImage = (file: File) => {
-    return file.type.startsWith('image/');
+const isImage = (file: File | TemporaryFile) => {
+    const type = 'type' in file ? file.type : file.mime_type;
+    return type.startsWith('image/');
 };
 
 // Get object URL for preview
@@ -136,14 +261,17 @@ const getObjectURL = (file: File) => {
     return URL.createObjectURL(file);
 };
 
+// Get preview URL for temp file
+const getPreviewURL = (tempFile: TemporaryFile) => {
+    return tempFile.url;
+};
+
 // Expose methods for parent component
 defineExpose({
     upload: () => fileUploadRef.value?.upload(),
-    clear: () => {
-        fileUploadRef.value?.clear();
-        onClear();
-    },
+    clear: onClear,
     choose: () => fileUploadRef.value?.choose(),
+    getTempFiles: () => tempFiles.value,
 });
 </script>
 
@@ -219,75 +347,107 @@ defineExpose({
 
             <!-- Custom content template for selected files -->
             <template #content="{ files, uploadedFiles, removeUploadedFileCallback, removeFileCallback }">
-                <div v-if="files.length > 0" class="p-4">
-                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        <div
-                            v-for="(file, index) in files"
-                            :key="file.name + index"
-                            class="group relative overflow-hidden rounded-lg border transition-colors hover:border-primary"
-                        >
-                            <!-- Image Preview -->
-                            <div v-if="isImage(file)" class="relative flex aspect-video items-center justify-center bg-muted">
-                                <img :src="getObjectURL(file)" :alt="file.name" class="h-full w-full object-cover" />
-                                <button
-                                    type="button"
-                                    @click="removeFileCallback(index)"
-                                    class="absolute right-2 top-2 rounded-full bg-destructive p-1.5 text-destructive-foreground opacity-0 transition-opacity hover:bg-destructive/90 group-hover:opacity-100"
-                                >
-                                    <X class="h-4 w-4" />
-                                </button>
+                <div v-if="files.length > 0 || tempFiles.length > 0" class="p-4">
+                    <!-- Selected Files (being uploaded) -->
+                    <div v-if="files.length > 0" class="mb-6">
+                        <h4 class="mb-3 flex items-center gap-2 text-sm font-semibold">
+                            <Upload class="h-4 w-4 text-blue-600" />
+                            Uploading Files
+                            <div v-if="isUploading" class="ml-2">
+                                <div class="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent"></div>
                             </div>
+                        </h4>
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                            <div
+                                v-for="(file, index) in files"
+                                :key="file.name + index"
+                                class="group relative overflow-hidden rounded-lg border opacity-60 transition-colors hover:border-primary"
+                            >
+                                <!-- Image Preview -->
+                                <div v-if="isImage(file)" class="relative flex aspect-video items-center justify-center bg-muted">
+                                    <img :src="getObjectURL(file)" :alt="file.name" class="h-full w-full object-cover" />
+                                    <button
+                                        type="button"
+                                        @click="removeFileCallback(index)"
+                                        class="absolute right-2 top-2 rounded-full bg-destructive p-1.5 text-destructive-foreground opacity-0 transition-opacity hover:bg-destructive/90 group-hover:opacity-100"
+                                    >
+                                        <X class="h-4 w-4" />
+                                    </button>
+                                </div>
 
-                            <!-- Non-Image Preview -->
-                            <div v-else class="relative flex aspect-video items-center justify-center bg-muted">
-                                <component :is="getFileIcon(file)" class="h-16 w-16 text-muted-foreground" />
-                                <button
-                                    type="button"
-                                    @click="removeFileCallback(index)"
-                                    class="absolute right-2 top-2 rounded-full bg-destructive p-1.5 text-destructive-foreground opacity-0 transition-opacity hover:bg-destructive/90 group-hover:opacity-100"
-                                >
-                                    <X class="h-4 w-4" />
-                                </button>
-                            </div>
+                                <!-- Non-Image Preview -->
+                                <div v-else class="relative flex aspect-video items-center justify-center bg-muted">
+                                    <component :is="getFileIcon(file)" class="h-16 w-16 text-muted-foreground" />
+                                    <button
+                                        type="button"
+                                        @click="removeFileCallback(index)"
+                                        class="absolute right-2 top-2 rounded-full bg-destructive p-1.5 text-destructive-foreground opacity-0 transition-opacity hover:bg-destructive/90 group-hover:opacity-100"
+                                    >
+                                        <X class="h-4 w-4" />
+                                    </button>
+                                </div>
 
-                            <!-- File Info -->
-                            <div class="border-t bg-background p-3">
-                                <p class="truncate text-sm font-medium" :title="file.name">
-                                    {{ file.name }}
-                                </p>
-                                <p class="mt-1 text-xs text-muted-foreground">
-                                    {{ formatSize(file.size) }}
-                                </p>
+                                <!-- File Info -->
+                                <div class="border-t bg-background p-3">
+                                    <p class="truncate text-sm font-medium" :title="file.name">
+                                        {{ file.name }}
+                                    </p>
+                                    <p class="mt-1 text-xs text-muted-foreground">
+                                        {{ formatSize(file.size) }}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Uploaded Files -->
-                    <div v-if="uploadedFiles && uploadedFiles.length > 0" class="mt-6">
+                    <!-- Temporary Files (uploaded successfully) -->
+                    <div v-if="tempFiles.length > 0">
                         <h4 class="mb-3 flex items-center gap-2 text-sm font-semibold">
                             <CheckCircle2 class="h-4 w-4 text-green-600" />
                             Uploaded Files
                         </h4>
-                        <div class="space-y-2">
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                             <div
-                                v-for="(file, index) in uploadedFiles"
-                                :key="file.name + index"
-                                class="flex items-center justify-between rounded-lg border bg-green-50 p-3 dark:bg-green-950/20"
+                                v-for="(tempFile, index) in tempFiles"
+                                :key="tempFile.temp_path"
+                                class="group relative overflow-hidden rounded-lg border border-green-200 bg-green-50/50 transition-colors hover:border-green-300 dark:border-green-800 dark:bg-green-950/20"
                             >
-                                <div class="flex items-center gap-3">
-                                    <CheckCircle2 class="h-5 w-5 text-green-600" />
-                                    <div>
-                                        <p class="text-sm font-medium">{{ file.name }}</p>
-                                        <p class="text-xs text-muted-foreground">{{ formatSize(file.size) }}</p>
-                                    </div>
+                                <!-- Image Preview -->
+                                <div v-if="isImage(tempFile)" class="relative flex aspect-video items-center justify-center bg-muted">
+                                    <img :src="getPreviewURL(tempFile)" :alt="tempFile.original_name" class="h-full w-full object-cover" />
+                                    <button
+                                        type="button"
+                                        @click="removeTempFile(tempFile)"
+                                        class="absolute right-2 top-2 rounded-full bg-destructive p-1.5 text-destructive-foreground opacity-0 transition-opacity hover:bg-destructive/90 group-hover:opacity-100"
+                                    >
+                                        <X class="h-4 w-4" />
+                                    </button>
                                 </div>
-                                <button
-                                    type="button"
-                                    @click="removeUploadedFileCallback(index)"
-                                    class="rounded p-1 text-destructive transition-colors hover:bg-destructive/10"
-                                >
-                                    <X class="h-4 w-4" />
-                                </button>
+
+                                <!-- Non-Image Preview -->
+                                <div v-else class="relative flex aspect-video items-center justify-center bg-muted">
+                                    <component :is="getFileIcon(tempFile)" class="h-16 w-16 text-green-600" />
+                                    <button
+                                        type="button"
+                                        @click="removeTempFile(tempFile)"
+                                        class="absolute right-2 top-2 rounded-full bg-destructive p-1.5 text-destructive-foreground opacity-0 transition-opacity hover:bg-destructive/90 group-hover:opacity-100"
+                                    >
+                                        <X class="h-4 w-4" />
+                                    </button>
+                                </div>
+
+                                <!-- File Info -->
+                                <div class="border-t bg-background p-3">
+                                    <div class="flex items-center gap-2">
+                                        <CheckCircle2 class="h-4 w-4 flex-shrink-0 text-green-600" />
+                                        <p class="truncate text-sm font-medium text-green-800 dark:text-green-200" :title="tempFile.original_name">
+                                            {{ tempFile.original_name }}
+                                        </p>
+                                    </div>
+                                    <p class="mt-1 text-xs text-green-600/80">
+                                        {{ formatSize(tempFile.size) }}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>

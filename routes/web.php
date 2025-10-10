@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Api\FileUploadController;
 use App\Navigation\SuperAdminPath;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Illuminate\Support\Facades\Route;
@@ -42,4 +43,14 @@ function registerWebRoutes()
     Route::get('/documentation', function () {
         return Inertia::render(SuperAdminPath::view("documentation/Index"));
     })->name('super-admin.documentation');
+
+    // =========================================================
+    // ---------------- Start File Uploads (GLOBAL) ------------
+    // =========================================================
+
+    Route::prefix('file-uploads')->group(function () {
+        Route::post('/upload-temp', [FileUploadController::class, 'uploadTemp'])->name('api.upload-temp');
+        Route::delete('/delete-temp', [FileUploadController::class, 'deleteTemp'])->name('api.delete-temp');
+        Route::post('/cleanup-temp', [FileUploadController::class, 'cleanupTemp'])->name('api.cleanup-temp');
+    });
 }
