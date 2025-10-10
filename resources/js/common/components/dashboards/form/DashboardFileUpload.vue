@@ -2,7 +2,7 @@
 import { usePage } from '@inertiajs/vue3';
 import { CheckCircle2, FileIcon, FileText, ImageIcon, Upload, X } from 'lucide-vue-next';
 import FileUpload, { type FileUploadSelectEvent, type FileUploadUploaderEvent } from 'primevue/fileupload';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 export interface TemporaryFile {
     temp_path: string;
@@ -82,6 +82,12 @@ const isDeleting = ref(false);
 const uploadProgress = ref(0);
 const currentError = ref<string | null>(null);
 const page = usePage();
+
+// Check if file limit is reached
+const isFileLimitReached = computed(() => {
+    if (!props.fileLimit) return false;
+    return tempFiles.value.length >= props.fileLimit;
+});
 
 // Get CSRF token from multiple sources
 const getCsrfToken = (): string => {
@@ -167,6 +173,12 @@ const getErrorMessage = (error: any, file?: File): string => {
 
 // Handle file selection - automatically upload to temp only if auto=true
 const onSelect = async (event: FileUploadSelectEvent) => {
+    // Check file limit before processing
+    if (props.fileLimit && tempFiles.value.length >= props.fileLimit) {
+        showError(`Maximum ${props.fileLimit} ${props.fileLimit === 1 ? 'file' : 'files'} allowed`);
+        return;
+    }
+
     selectedFiles.value = event.files;
     emit('select', event);
 
@@ -179,6 +191,12 @@ const onSelect = async (event: FileUploadSelectEvent) => {
 // Upload files to temporary storage
 const uploadToTemp = async (files: File[]) => {
     if (files.length === 0) return;
+
+    // Check file limit before uploading
+    if (props.fileLimit && tempFiles.value.length >= props.fileLimit) {
+        showError(`Maximum ${props.fileLimit} ${props.fileLimit === 1 ? 'file' : 'files'} allowed`);
+        return;
+    }
 
     // Clear any previous errors
     currentError.value = null;
@@ -289,11 +307,6 @@ const uploadToTemp = async (files: File[]) => {
 // Handle file upload (custom uploader)
 const customUploader = async (event: FileUploadUploaderEvent) => {
     const files = Array.isArray(event.files) ? event.files : [event.files];
-    await uploadToTemp(files);
-};
-
-// Handle manual upload when auto=false
-const handleManualUpload = async (files: File[]) => {
     await uploadToTemp(files);
 };
 
@@ -408,7 +421,7 @@ defineExpose({
 </script>
 
 <template>
-    <div :class="props.class">
+    <div class="dashboard-file-upload" :class="props.class">
         <FileUpload
             ref="fileUploadRef"
             :name="name"
@@ -438,72 +451,70 @@ defineExpose({
         >
             <!-- Custom header template -->
             <template #header="{ chooseCallback, clearCallback, files }">
-                <div class="flex items-center justify-between gap-4 border-b p-4">
-                    <div class="flex items-center gap-2">
-                        <Upload class="h-5 w-5 text-primary" />
-                        <span class="text-sm font-semibold">Upload Files</span>
-                        <span v-if="files.length > 0" class="text-xs text-muted-foreground">
-                            ({{ files.length }} {{ files.length === 1 ? 'file' : 'files' }})
-                        </span>
+                <!-- Clickable Upload Area -->
+                <div
+                    @click="!disabled && !isUploading && !isDeleting && !isFileLimitReached ? chooseCallback() : null"
+                    class="w-full cursor-pointer border-b p-8 transition-colors hover:bg-muted/30"
+                    :class="{
+                        'cursor-not-allowed opacity-50': disabled || isUploading || isDeleting || isFileLimitReached,
+                        'hover:bg-muted/30': !disabled && !isUploading && !isDeleting && !isFileLimitReached,
+                    }"
+                >
+                    <div class="mx-auto flex w-full max-w-md flex-col items-center justify-center gap-4 text-center">
+                        <div class="rounded-full bg-primary/10 p-4">
+                            <Upload class="h-8 w-8 text-primary" />
+                        </div>
+
+                        <div class="w-full space-y-2">
+                            <h3 class="text-lg font-semibold text-foreground">
+                                <span v-if="isFileLimitReached">File limit reached</span>
+                                <span v-else-if="tempFiles.length === 0">Click to upload files</span>
+                                <span v-else>Click to add more files</span>
+                            </h3>
+                            <p class="text-sm text-muted-foreground">
+                                <span v-if="isFileLimitReached">
+                                    Maximum {{ props.fileLimit }} {{ props.fileLimit === 1 ? 'file' : 'files' }} allowed
+                                </span>
+                                <span v-else> Drag and drop or click to select {{ tempFiles.length > 0 ? 'additional ' : '' }}files </span>
+                            </p>
+                        </div>
 
                         <!-- Upload Progress Indicator -->
-                        <div v-if="isUploading" class="ml-2 flex items-center gap-2">
-                            <div class="h-1.5 w-16 overflow-hidden rounded-full bg-gray-200">
+                        <div v-if="isUploading" class="flex w-full max-w-xs flex-col items-center gap-2">
+                            <div class="h-2 w-full overflow-hidden rounded-full bg-gray-200">
                                 <div
                                     class="h-full bg-gradient-to-r from-blue-500 to-green-500 transition-all duration-300 ease-out"
                                     :style="{ width: uploadProgress + '%' }"
                                 ></div>
                             </div>
-                            <span class="text-xs font-medium text-blue-600">{{ Math.round(uploadProgress) }}%</span>
+                            <span class="text-sm font-medium text-blue-600">{{ Math.round(uploadProgress) }}%</span>
                         </div>
-                    </div>
-                    <div class="flex gap-2">
-                        <!-- Choose button - hide if multiple=false and we already have temp files -->
-                        <button
-                            v-if="!(multiple === false && tempFiles.length > 0)"
-                            type="button"
-                            @click="chooseCallback()"
-                            :disabled="disabled || isUploading || isDeleting"
-                            class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-                        >
-                            {{ chooseLabel }}
-                        </button>
 
-                        <!-- Upload button - show when auto=false and files are selected, but hide if multiple=false and we have temp files -->
-                        <button
-                            v-if="showUploadButton && files.length > 0 && !auto && !(multiple === false && tempFiles.length > 0)"
-                            type="button"
-                            @click="handleManualUpload(files)"
-                            :disabled="disabled || isUploading || isDeleting"
-                            class="inline-flex h-9 items-center justify-center rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-                        >
-                            <span v-if="!isUploading" class="flex items-center gap-2">
-                                <Upload class="h-4 w-4" />
-                                {{ uploadLabel }}
-                            </span>
-                            <span v-else class="flex items-center gap-2">
-                                <div class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                                Uploading...
-                            </span>
-                        </button>
+                        <!-- File Count Info -->
+                        <div v-if="tempFiles.length > 0 || files.length > 0" class="flex items-center gap-4 text-xs text-muted-foreground">
+                            <span v-if="files.length > 0">{{ files.length }} selected</span>
+                            <span v-if="tempFiles.length > 0">{{ tempFiles.length }} uploaded</span>
+                            <span v-if="props.fileLimit">{{ tempFiles.length }}/{{ props.fileLimit }} files</span>
+                        </div>
 
-                        <!-- Cancel button - show when we have files or temp files -->
-                        <button
-                            v-if="showCancelButton && (files.length > 0 || tempFiles.length > 0)"
-                            type="button"
-                            @click="clearCallback()"
-                            :disabled="disabled || isUploading"
-                            class="inline-flex h-9 items-center justify-center rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground transition-colors hover:bg-destructive/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-                        >
-                            <span v-if="!isDeleting" class="flex items-center gap-2">
-                                <X class="h-4 w-4" />
-                                {{ cancelLabel }}
-                            </span>
-                            <span v-else class="flex items-center gap-2">
-                                <div class="h-4 w-4 animate-spin rounded-full border-2 border-red-400 border-t-transparent"></div>
-                                Deleting...
-                            </span>
-                        </button>
+                        <!-- Clear All Button (only show when we have files) -->
+                        <div v-if="tempFiles.length > 0 || files.length > 0" class="pt-2">
+                            <button
+                                type="button"
+                                @click.stop="clearCallback()"
+                                :disabled="disabled || isUploading"
+                                class="inline-flex items-center gap-2 rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground transition-colors hover:bg-destructive/90 disabled:pointer-events-none disabled:opacity-50"
+                            >
+                                <span v-if="!isDeleting" class="flex items-center gap-2">
+                                    <X class="h-4 w-4" />
+                                    Clear All
+                                </span>
+                                <span v-else class="flex items-center gap-2">
+                                    <div class="h-4 w-4 animate-spin rounded-full border-2 border-red-400 border-t-transparent"></div>
+                                    Clearing...
+                                </span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -693,22 +704,6 @@ defineExpose({
                     </div>
                 </div>
             </template>
-
-            <!-- Custom empty state -->
-            <template #empty>
-                <div class="flex flex-col items-center justify-center p-12 text-center">
-                    <div class="mb-4 rounded-full bg-muted p-4">
-                        <Upload class="h-8 w-8 text-muted-foreground" />
-                    </div>
-                    <h3 class="mb-2 text-lg font-semibold">Drop files here</h3>
-                    <p class="mb-4 text-sm text-muted-foreground">Drag and drop files here, or click "{{ chooseLabel }}" to select files</p>
-                    <div class="flex flex-col gap-1 text-xs text-muted-foreground">
-                        <p v-if="accept !== '*'">Accepted formats: {{ accept }}</p>
-                        <p>Maximum file size: {{ formatSize(maxFileSize) }}</p>
-                        <p v-if="fileLimit">Maximum {{ fileLimit }} {{ fileLimit === 1 ? 'file' : 'files' }}</p>
-                    </div>
-                </div>
-            </template>
         </FileUpload>
 
         <!-- Error message -->
@@ -744,6 +739,14 @@ defineExpose({
 }
 
 .dashboard-file-upload :deep(.p-fileupload-buttonbar) {
+    @apply hidden;
+}
+
+.dashboard-file-upload :deep(.p-fileupload-header) {
+    @apply border-0 p-0;
+}
+
+.dashboard-file-upload :deep(.p-fileupload-empty) {
     @apply hidden;
 }
 </style>
