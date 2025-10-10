@@ -2,7 +2,7 @@
 import { usePage } from '@inertiajs/vue3';
 import { CheckCircle2, FileIcon, FileText, ImageIcon, Upload, X } from 'lucide-vue-next';
 import FileUpload, { type FileUploadSelectEvent, type FileUploadUploaderEvent } from 'primevue/fileupload';
-import { computed, ref } from 'vue';
+import { computed, nextTick, ref } from 'vue';
 
 export interface TemporaryFile {
     temp_path: string;
@@ -86,7 +86,18 @@ const page = usePage();
 // Check if file limit is reached
 const isFileLimitReached = computed(() => {
     if (!props.fileLimit) return false;
-    return tempFiles.value.length >= props.fileLimit;
+    const currentLength = tempFiles.value.length;
+    const limitReached = currentLength >= props.fileLimit;
+
+    // Debug log to track state changes
+    console.log('File limit check:', {
+        fileLimit: props.fileLimit,
+        currentLength,
+        limitReached,
+        tempFiles: tempFiles.value,
+    });
+
+    return limitReached;
 });
 
 // Get CSRF token from multiple sources
@@ -336,6 +347,17 @@ const removeTempFile = async (tempFile: TemporaryFile) => {
             tempFiles.value = updatedFiles;
             emit('update:modelValue', updatedFiles);
             emit('temp-deleted', tempFile.temp_path);
+
+            // Debug log to confirm file removal
+            console.log('File removed:', {
+                removedFile: tempFile.temp_path,
+                remainingFiles: updatedFiles.length,
+                isLimitReached: updatedFiles.length >= (props.fileLimit || 0),
+            });
+
+            // Force DOM update
+            await nextTick();
+            console.log('DOM updated after file removal');
         } else {
             throw new Error(result.message || 'Delete failed');
         }
@@ -423,6 +445,7 @@ defineExpose({
 <template>
     <div class="dashboard-file-upload" :class="props.class">
         <FileUpload
+            :key="`fileupload-${tempFiles.length}-${isFileLimitReached}`"
             ref="fileUploadRef"
             :name="name"
             :url="url"
@@ -430,7 +453,7 @@ defineExpose({
             :maxFileSize="maxFileSize"
             :multiple="multiple"
             :auto="auto"
-            :disabled="disabled"
+            :disabled="disabled || isFileLimitReached"
             :customUpload="customUpload"
             :fileLimit="fileLimit"
             :chooseLabel="chooseLabel"
@@ -453,6 +476,7 @@ defineExpose({
             <template #header="{ chooseCallback, clearCallback, files }">
                 <!-- Clickable Upload Area -->
                 <div
+                    :key="`upload-area-${tempFiles.length}-${isFileLimitReached}`"
                     @click="!disabled && !isUploading && !isDeleting && !isFileLimitReached ? chooseCallback() : null"
                     class="w-full cursor-pointer border-b p-8 transition-colors hover:bg-muted/30"
                     :class="{
