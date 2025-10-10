@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import DataTable from '@/common/components/dashboards/datatable/Datatable.vue';
 import DashboardButton from '@/common/components/dashboards/form/DashboardButton.vue';
+import DashboardDatePicker from '@/common/components/dashboards/form/DashboardDatePicker.vue';
 import { useFilters } from '@/core/composables/useFilters';
 import { useToast } from '@/core/composables/useToast';
 import { formatDateForBackend } from '@/core/utils/formatters';
@@ -12,7 +13,6 @@ import AdminLayout from '@modules/admin/layouts/AdminLayout.vue';
 import { Tag } from '@ui/badge';
 import { Button } from '@ui/button';
 import { Plus } from 'lucide-vue-next';
-import DatePicker from 'primevue/datepicker';
 import Select from 'primevue/select';
 import { onMounted, watch } from 'vue';
 import type { User } from './datatable/type';
@@ -234,29 +234,22 @@ const breadcrumbs: BreadcrumbItem[] = [
                             <!-- Created From Date -->
                             <div class="space-y-2">
                                 <label class="text-sm font-medium">Created From</label>
-                                <DatePicker
+                                <DashboardDatePicker
                                     v-model="localFilters.created_from"
                                     placeholder="Select Created From"
                                     size="small"
-                                    showIcon
-                                    fluid
-                                    iconDisplay="input"
-                                    dateFormat="yy-mm-dd"
+                                    icon-display="input"
                                 />
                             </div>
 
                             <!-- Created To Date -->
                             <div class="space-y-2">
                                 <label class="text-sm font-medium">Created To</label>
-                                <DatePicker
+                                <DashboardDatePicker
                                     v-model="localFilters.created_to"
                                     placeholder="Select Created To"
                                     size="small"
-                                    showIcon
-                                    fluid
-                                    class="w-full"
-                                    iconDisplay="input"
-                                    dateFormat="yy-mm-dd"
+                                    icon-display="input"
                                 />
                             </div>
                         </div>
