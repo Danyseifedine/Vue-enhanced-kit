@@ -1,30 +1,22 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@ui/card';
-import { Badge } from '@ui/badge';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@ui/table';
-import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
-} from '@ui/collapsible';
-import { Label } from '@ui/label';
-import Hint from '@common/components/dashboards/typography/Hint.vue';
-import DashboardTextInput from '@common/components/dashboards/form/DashboardTextInput.vue';
-import DashboardMaskedInput from '@common/components/dashboards/form/DashboardMaskedInput.vue';
-import DashboardSelect from '@common/components/dashboards/form/DashboardSelect.vue';
 import DashboardButton from '@common/components/dashboards/form/DashboardButton.vue';
-import DashboardMultiSelect from '@common/components/dashboards/form/DashboardMultiSelect.vue';
+import DashboardCheckbox from '@common/components/dashboards/form/DashboardCheckbox.vue';
 import DashboardDatePicker from '@common/components/dashboards/form/DashboardDatePicker.vue';
 import DashboardFileUpload from '@common/components/dashboards/form/DashboardFileUpload.vue';
+import DashboardMaskedInput from '@common/components/dashboards/form/DashboardMaskedInput.vue';
+import DashboardMultiSelect from '@common/components/dashboards/form/DashboardMultiSelect.vue';
+import DashboardRadioButton from '@common/components/dashboards/form/DashboardRadioButton.vue';
+import DashboardSelect from '@common/components/dashboards/form/DashboardSelect.vue';
+import DashboardTextInput from '@common/components/dashboards/form/DashboardTextInput.vue';
+import DashboardToggle from '@common/components/dashboards/form/DashboardToggle.vue';
+import Hint from '@common/components/dashboards/typography/Hint.vue';
+import { Badge } from '@ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@ui/card';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@ui/collapsible';
+import { Label } from '@ui/label';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@ui/table';
 import { ChevronDown, Eye } from 'lucide-vue-next';
+import { ref } from 'vue';
 
 const activeComponent = ref<string | null>('DashboardTextInput');
 
@@ -39,6 +31,10 @@ const demoForm = ref({
     dateRange: null as Date[] | null,
     dateTime: null as Date | null,
     files: [] as File[],
+    checkbox: false,
+    checkboxArray: [] as string[],
+    toggle: false,
+    radio: null as string | null,
     errors: {} as Record<string, string>,
 });
 
@@ -55,6 +51,9 @@ const components = [
     { id: 'DashboardMultiSelect', name: 'Multi Select', color: 'outline' },
     { id: 'DashboardDatePicker', name: 'Date Picker', color: 'outline' },
     { id: 'DashboardFileUpload', name: 'File Upload', color: 'outline' },
+    { id: 'DashboardCheckbox', name: 'Checkbox', color: 'outline' },
+    { id: 'DashboardToggle', name: 'Toggle Switch', color: 'outline' },
+    { id: 'DashboardRadioButton', name: 'Radio Button', color: 'outline' },
     { id: 'DashboardButton', name: 'Button', color: 'default' },
 ];
 
@@ -77,7 +76,7 @@ const selectComponent = (id: string) => {
                         v-for="component in components"
                         :key="component.id"
                         :variant="activeComponent === component.id ? 'default' : 'outline'"
-                        class="cursor-pointer px-4 py-2 text-sm hover:bg-primary/10 transition-colors"
+                        class="cursor-pointer px-4 py-2 text-sm transition-colors hover:bg-primary/10"
                         @click="selectComponent(component.id)"
                     >
                         {{ component.name }}
@@ -92,29 +91,22 @@ const selectComponent = (id: string) => {
                 <div class="flex items-center justify-between">
                     <div>
                         <CardTitle class="text-2xl">DashboardTextInput</CardTitle>
-                        <CardDescription class="text-base mt-2">
-                            Text input with automatic error handling and consistent defaults
-                        </CardDescription>
+                        <CardDescription class="mt-2 text-base"> Text input with automatic error handling and consistent defaults </CardDescription>
                     </div>
                     <Badge variant="secondary">Form Input</Badge>
                 </div>
             </CardHeader>
             <CardContent class="space-y-8 pt-6">
                 <!-- Live Preview -->
-                <div class="bg-muted/30 border-2 border-dashed rounded-lg p-6">
-                    <div class="flex items-center gap-2 mb-4">
+                <div class="rounded-lg border-2 border-dashed bg-muted/30 p-6">
+                    <div class="mb-4 flex items-center gap-2">
                         <Eye class="h-5 w-5 text-primary" />
-                        <h3 class="font-bold text-lg">Live Preview</h3>
+                        <h3 class="text-lg font-bold">Live Preview</h3>
                     </div>
-                    <div class="bg-background rounded-lg p-6 space-y-6">
+                    <div class="space-y-6 rounded-lg bg-background p-6">
                         <div>
                             <Label for="demo-text">Text Input</Label>
-                            <DashboardTextInput
-                                id="demo-text"
-                                v-model="demoForm.text"
-                                placeholder="Type something..."
-                                class="mt-2"
-                            />
+                            <DashboardTextInput id="demo-text" v-model="demoForm.text" placeholder="Type something..." class="mt-2" />
                             <Hint text="This is a standard text input" class="mt-1" />
                         </div>
                         <div>
@@ -134,14 +126,16 @@ const selectComponent = (id: string) => {
 
                 <!-- Import -->
                 <div>
-                    <h3 class="font-bold text-lg mb-3">📦 Import</h3>
-                    <pre class="bg-muted p-4 rounded-lg text-sm"><code>import DashboardTextInput from '@common/components/dashboards/form/DashboardTextInput.vue';</code></pre>
+                    <h3 class="mb-3 text-lg font-bold">📦 Import</h3>
+                    <pre
+                        class="rounded-lg bg-muted p-4 text-sm"
+                    ><code>import DashboardTextInput from '@common/components/dashboards/form/DashboardTextInput.vue';</code></pre>
                 </div>
 
                 <!-- Props Table -->
                 <div>
-                    <h3 class="font-bold text-lg mb-3">⚙️ Props</h3>
-                    <div class="border rounded-lg overflow-hidden">
+                    <h3 class="mb-3 text-lg font-bold">⚙️ Props</h3>
+                    <div class="overflow-hidden rounded-lg border">
                         <Table>
                             <TableHeader>
                                 <TableRow class="bg-muted/50">
@@ -166,9 +160,7 @@ const selectComponent = (id: string) => {
                                         <Badge variant="outline">string</Badge>
                                     </TableCell>
                                     <TableCell><code>'text'</code></TableCell>
-                                    <TableCell>
-                                        Input type: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url'
-                                    </TableCell>
+                                    <TableCell> Input type: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' </TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell class="font-mono text-sm">placeholder</TableCell>
@@ -251,12 +243,12 @@ const selectComponent = (id: string) => {
 
                 <!-- Events -->
                 <Collapsible>
-                    <CollapsibleTrigger class="flex items-center gap-2 font-bold text-lg hover:text-primary transition-colors">
+                    <CollapsibleTrigger class="flex items-center gap-2 text-lg font-bold transition-colors hover:text-primary">
                         <ChevronDown class="h-5 w-5" />
                         🎯 Events
                     </CollapsibleTrigger>
                     <CollapsibleContent class="mt-3">
-                        <div class="border rounded-lg overflow-hidden">
+                        <div class="overflow-hidden rounded-lg border">
                             <Table>
                                 <TableHeader>
                                     <TableRow class="bg-muted/50">
@@ -285,12 +277,12 @@ const selectComponent = (id: string) => {
 
                 <!-- Usage Example -->
                 <Collapsible>
-                    <CollapsibleTrigger class="flex items-center gap-2 font-bold text-lg hover:text-primary transition-colors">
+                    <CollapsibleTrigger class="flex items-center gap-2 text-lg font-bold transition-colors hover:text-primary">
                         <ChevronDown class="h-5 w-5" />
                         📝 Usage Example
                     </CollapsibleTrigger>
                     <CollapsibleContent class="mt-3">
-                        <pre class="bg-muted p-4 rounded-lg text-sm overflow-x-auto"><code>&lt;template&gt;
+                        <pre class="overflow-x-auto rounded-lg bg-muted p-4 text-sm"><code>&lt;template&gt;
     &lt;div&gt;
         &lt;Label for="email" required&gt;Email Address&lt;/Label&gt;
         &lt;DashboardTextInput
@@ -323,21 +315,19 @@ const form = useForm({
                 <div class="flex items-center justify-between">
                     <div>
                         <CardTitle class="text-2xl">DashboardMaskedInput</CardTitle>
-                        <CardDescription class="text-base mt-2">
-                            Password input with toggle visibility and strength meter
-                        </CardDescription>
+                        <CardDescription class="mt-2 text-base"> Password input with toggle visibility and strength meter </CardDescription>
                     </div>
                     <Badge variant="secondary">Password Input</Badge>
                 </div>
             </CardHeader>
             <CardContent class="space-y-8 pt-6">
                 <!-- Live Preview -->
-                <div class="bg-muted/30 border-2 border-dashed rounded-lg p-6">
-                    <div class="flex items-center gap-2 mb-4">
+                <div class="rounded-lg border-2 border-dashed bg-muted/30 p-6">
+                    <div class="mb-4 flex items-center gap-2">
                         <Eye class="h-5 w-5 text-primary" />
-                        <h3 class="font-bold text-lg">Live Preview</h3>
+                        <h3 class="text-lg font-bold">Live Preview</h3>
                     </div>
-                    <div class="bg-background rounded-lg p-6 space-y-6">
+                    <div class="space-y-6 rounded-lg bg-background p-6">
                         <div>
                             <Label for="demo-password">Password with Toggle</Label>
                             <DashboardMaskedInput
@@ -366,14 +356,16 @@ const form = useForm({
 
                 <!-- Import -->
                 <div>
-                    <h3 class="font-bold text-lg mb-3">📦 Import</h3>
-                    <pre class="bg-muted p-4 rounded-lg text-sm"><code>import DashboardMaskedInput from '@common/components/dashboards/form/DashboardMaskedInput.vue';</code></pre>
+                    <h3 class="mb-3 text-lg font-bold">📦 Import</h3>
+                    <pre
+                        class="rounded-lg bg-muted p-4 text-sm"
+                    ><code>import DashboardMaskedInput from '@common/components/dashboards/form/DashboardMaskedInput.vue';</code></pre>
                 </div>
 
                 <!-- Props Table -->
                 <div>
-                    <h3 class="font-bold text-lg mb-3">⚙️ Props</h3>
-                    <div class="border rounded-lg overflow-hidden">
+                    <h3 class="mb-3 text-lg font-bold">⚙️ Props</h3>
+                    <div class="overflow-hidden rounded-lg border">
                         <Table>
                             <TableHeader>
                                 <TableRow class="bg-muted/50">
@@ -444,12 +436,12 @@ const form = useForm({
 
                 <!-- Usage Example -->
                 <Collapsible>
-                    <CollapsibleTrigger class="flex items-center gap-2 font-bold text-lg hover:text-primary transition-colors">
+                    <CollapsibleTrigger class="flex items-center gap-2 text-lg font-bold transition-colors hover:text-primary">
                         <ChevronDown class="h-5 w-5" />
                         📝 Usage Example
                     </CollapsibleTrigger>
                     <CollapsibleContent class="mt-3">
-                        <pre class="bg-muted p-4 rounded-lg text-sm overflow-x-auto"><code>&lt;template&gt;
+                        <pre class="overflow-x-auto rounded-lg bg-muted p-4 text-sm"><code>&lt;template&gt;
     &lt;div&gt;
         &lt;Label for="password" required&gt;Password&lt;/Label&gt;
         &lt;DashboardMaskedInput
@@ -475,21 +467,19 @@ const form = useForm({
                 <div class="flex items-center justify-between">
                     <div>
                         <CardTitle class="text-2xl">DashboardSelect</CardTitle>
-                        <CardDescription class="text-base mt-2">
-                            Single-value select with search/filter and error handling
-                        </CardDescription>
+                        <CardDescription class="mt-2 text-base"> Single-value select with search/filter and error handling </CardDescription>
                     </div>
                     <Badge variant="secondary">Dropdown</Badge>
                 </div>
             </CardHeader>
             <CardContent class="space-y-8 pt-6">
                 <!-- Live Preview -->
-                <div class="bg-muted/30 border-2 border-dashed rounded-lg p-6">
-                    <div class="flex items-center gap-2 mb-4">
+                <div class="rounded-lg border-2 border-dashed bg-muted/30 p-6">
+                    <div class="mb-4 flex items-center gap-2">
                         <Eye class="h-5 w-5 text-primary" />
-                        <h3 class="font-bold text-lg">Live Preview</h3>
+                        <h3 class="text-lg font-bold">Live Preview</h3>
                     </div>
-                    <div class="bg-background rounded-lg p-6 space-y-6">
+                    <div class="space-y-6 rounded-lg bg-background p-6">
                         <div>
                             <Label for="demo-role">Select with Filter</Label>
                             <DashboardSelect
@@ -509,14 +499,16 @@ const form = useForm({
 
                 <!-- Import -->
                 <div>
-                    <h3 class="font-bold text-lg mb-3">📦 Import</h3>
-                    <pre class="bg-muted p-4 rounded-lg text-sm"><code>import DashboardSelect from '@common/components/dashboards/form/DashboardSelect.vue';</code></pre>
+                    <h3 class="mb-3 text-lg font-bold">📦 Import</h3>
+                    <pre
+                        class="rounded-lg bg-muted p-4 text-sm"
+                    ><code>import DashboardSelect from '@common/components/dashboards/form/DashboardSelect.vue';</code></pre>
                 </div>
 
                 <!-- Props Table -->
                 <div>
-                    <h3 class="font-bold text-lg mb-3">⚙️ Props</h3>
-                    <div class="border rounded-lg overflow-hidden">
+                    <h3 class="mb-3 text-lg font-bold">⚙️ Props</h3>
+                    <div class="overflow-hidden rounded-lg border">
                         <Table>
                             <TableHeader>
                                 <TableRow class="bg-muted/50">
@@ -631,12 +623,12 @@ const form = useForm({
 
                 <!-- Usage Example -->
                 <Collapsible>
-                    <CollapsibleTrigger class="flex items-center gap-2 font-bold text-lg hover:text-primary transition-colors">
+                    <CollapsibleTrigger class="flex items-center gap-2 text-lg font-bold transition-colors hover:text-primary">
                         <ChevronDown class="h-5 w-5" />
                         📝 Usage Example
                     </CollapsibleTrigger>
                     <CollapsibleContent class="mt-3">
-                        <pre class="bg-muted p-4 rounded-lg text-sm overflow-x-auto"><code>&lt;template&gt;
+                        <pre class="overflow-x-auto rounded-lg bg-muted p-4 text-sm"><code>&lt;template&gt;
     &lt;div&gt;
         &lt;Label for="role" required&gt;Role&lt;/Label&gt;
         &lt;DashboardSelect
@@ -672,21 +664,19 @@ const roles = [
                 <div class="flex items-center justify-between">
                     <div>
                         <CardTitle class="text-2xl">DashboardMultiSelect</CardTitle>
-                        <CardDescription class="text-base mt-2">
-                            Multi-select dropdown with chip display and filtering support
-                        </CardDescription>
+                        <CardDescription class="mt-2 text-base"> Multi-select dropdown with chip display and filtering support </CardDescription>
                     </div>
                     <Badge variant="secondary">Dropdown</Badge>
                 </div>
             </CardHeader>
             <CardContent class="space-y-8 pt-6">
                 <!-- Live Preview -->
-                <div class="bg-muted/30 border-2 border-dashed rounded-lg p-6">
-                    <div class="flex items-center gap-2 mb-4">
+                <div class="rounded-lg border-2 border-dashed bg-muted/30 p-6">
+                    <div class="mb-4 flex items-center gap-2">
                         <Eye class="h-5 w-5 text-primary" />
-                        <h3 class="font-bold text-lg">Live Preview</h3>
+                        <h3 class="text-lg font-bold">Live Preview</h3>
                     </div>
-                    <div class="bg-background rounded-lg p-6 space-y-6">
+                    <div class="space-y-6 rounded-lg bg-background p-6">
                         <div>
                             <Label for="demo-multiselect">Multi Select</Label>
                             <DashboardMultiSelect
@@ -716,14 +706,16 @@ const roles = [
 
                 <!-- Import -->
                 <div>
-                    <h3 class="font-bold text-lg mb-3">📦 Import</h3>
-                    <pre class="bg-muted p-4 rounded-lg text-sm"><code>import DashboardMultiSelect from '@common/components/dashboards/form/DashboardMultiSelect.vue';</code></pre>
+                    <h3 class="mb-3 text-lg font-bold">📦 Import</h3>
+                    <pre
+                        class="rounded-lg bg-muted p-4 text-sm"
+                    ><code>import DashboardMultiSelect from '@common/components/dashboards/form/DashboardMultiSelect.vue';</code></pre>
                 </div>
 
                 <!-- Props Table -->
                 <div>
-                    <h3 class="font-bold text-lg mb-3">⚙️ Props</h3>
-                    <div class="border rounded-lg overflow-hidden">
+                    <h3 class="mb-3 text-lg font-bold">⚙️ Props</h3>
+                    <div class="overflow-hidden rounded-lg border">
                         <Table>
                             <TableHeader>
                                 <TableRow class="bg-muted/50">
@@ -921,14 +913,12 @@ const roles = [
 
                 <!-- Events -->
                 <Collapsible>
-                    <CollapsibleTrigger
-                        class="flex items-center gap-2 font-bold text-lg hover:text-primary transition-colors"
-                    >
+                    <CollapsibleTrigger class="flex items-center gap-2 text-lg font-bold transition-colors hover:text-primary">
                         <ChevronDown class="h-5 w-5" />
                         🎯 Events
                     </CollapsibleTrigger>
                     <CollapsibleContent class="mt-3">
-                        <div class="border rounded-lg overflow-hidden">
+                        <div class="overflow-hidden rounded-lg border">
                             <Table>
                                 <TableHeader>
                                     <TableRow class="bg-muted/50">
@@ -974,14 +964,12 @@ const roles = [
 
                 <!-- Usage Example -->
                 <Collapsible>
-                    <CollapsibleTrigger
-                        class="flex items-center gap-2 font-bold text-lg hover:text-primary transition-colors"
-                    >
+                    <CollapsibleTrigger class="flex items-center gap-2 text-lg font-bold transition-colors hover:text-primary">
                         <ChevronDown class="h-5 w-5" />
                         📝 Usage Example
                     </CollapsibleTrigger>
                     <CollapsibleContent class="mt-3">
-                        <pre class="bg-muted p-4 rounded-lg text-sm overflow-x-auto"><code>&lt;template&gt;
+                        <pre class="overflow-x-auto rounded-lg bg-muted p-4 text-sm"><code>&lt;template&gt;
     &lt;div class="space-y-2"&gt;
         &lt;Label for="roles" required&gt;Roles&lt;/Label&gt;
         &lt;DashboardMultiSelect
@@ -1029,7 +1017,7 @@ const roles = [
                 <div class="flex items-center justify-between">
                     <div>
                         <CardTitle class="text-2xl">DashboardDatePicker</CardTitle>
-                        <CardDescription class="text-base mt-2">
+                        <CardDescription class="mt-2 text-base">
                             Versatile date/time picker with calendar, range selection, and time support
                         </CardDescription>
                     </div>
@@ -1038,21 +1026,15 @@ const roles = [
             </CardHeader>
             <CardContent class="space-y-8 pt-6">
                 <!-- Live Preview -->
-                <div class="bg-muted/30 border-2 border-dashed rounded-lg p-6">
-                    <div class="flex items-center gap-2 mb-4">
+                <div class="rounded-lg border-2 border-dashed bg-muted/30 p-6">
+                    <div class="mb-4 flex items-center gap-2">
                         <Eye class="h-5 w-5 text-primary" />
-                        <h3 class="font-bold text-lg">Live Preview</h3>
+                        <h3 class="text-lg font-bold">Live Preview</h3>
                     </div>
-                    <div class="bg-background rounded-lg p-6 space-y-6">
+                    <div class="space-y-6 rounded-lg bg-background p-6">
                         <div>
                             <Label for="demo-date">Single Date</Label>
-                            <DashboardDatePicker
-                                id="demo-date"
-                                v-model="demoForm.date"
-                                placeholder="Select a date"
-                                show-icon
-                                class="mt-2"
-                            />
+                            <DashboardDatePicker id="demo-date" v-model="demoForm.date" placeholder="Select a date" show-icon class="mt-2" />
                             <Hint text="Basic date picker" class="mt-1" />
                         </div>
                         <div>
@@ -1084,14 +1066,16 @@ const roles = [
 
                 <!-- Import -->
                 <div>
-                    <h3 class="font-bold text-lg mb-3">📦 Import</h3>
-                    <pre class="bg-muted p-4 rounded-lg text-sm"><code>import DashboardDatePicker from '@common/components/dashboards/form/DashboardDatePicker.vue';</code></pre>
+                    <h3 class="mb-3 text-lg font-bold">📦 Import</h3>
+                    <pre
+                        class="rounded-lg bg-muted p-4 text-sm"
+                    ><code>import DashboardDatePicker from '@common/components/dashboards/form/DashboardDatePicker.vue';</code></pre>
                 </div>
 
                 <!-- Props Table -->
                 <div>
-                    <h3 class="font-bold text-lg mb-3">⚙️ Props</h3>
-                    <div class="border rounded-lg overflow-hidden">
+                    <h3 class="mb-3 text-lg font-bold">⚙️ Props</h3>
+                    <div class="overflow-hidden rounded-lg border">
                         <Table>
                             <TableHeader>
                                 <TableRow class="bg-muted/50">
@@ -1276,9 +1260,7 @@ const roles = [
                                 </TableRow>
                                 <TableRow>
                                     <TableCell class="font-mono text-sm" colspan="4">
-                                        <em class="text-muted-foreground">
-                                            + Common props: disabled, required, size, fluid, id, class
-                                        </em>
+                                        <em class="text-muted-foreground"> + Common props: disabled, required, size, fluid, id, class </em>
                                     </TableCell>
                                 </TableRow>
                             </TableBody>
@@ -1288,14 +1270,12 @@ const roles = [
 
                 <!-- Events -->
                 <Collapsible>
-                    <CollapsibleTrigger
-                        class="flex items-center gap-2 font-bold text-lg hover:text-primary transition-colors"
-                    >
+                    <CollapsibleTrigger class="flex items-center gap-2 text-lg font-bold transition-colors hover:text-primary">
                         <ChevronDown class="h-5 w-5" />
                         🎯 Events
                     </CollapsibleTrigger>
                     <CollapsibleContent class="mt-3">
-                        <div class="border rounded-lg overflow-hidden">
+                        <div class="overflow-hidden rounded-lg border">
                             <Table>
                                 <TableHeader>
                                     <TableRow class="bg-muted/50">
@@ -1362,17 +1342,17 @@ const roles = [
 
                 <!-- Usage Examples -->
                 <Collapsible>
-                    <CollapsibleTrigger
-                        class="flex items-center gap-2 font-bold text-lg hover:text-primary transition-colors"
-                    >
+                    <CollapsibleTrigger class="flex items-center gap-2 text-lg font-bold transition-colors hover:text-primary">
                         <ChevronDown class="h-5 w-5" />
                         📝 Usage Examples
                     </CollapsibleTrigger>
                     <CollapsibleContent class="mt-3">
                         <div class="space-y-4">
                             <div>
-                                <h4 class="font-semibold mb-2 text-sm">1. Basic Date Picker</h4>
-                                <pre class="bg-muted p-3 rounded text-sm overflow-x-auto"><code>&lt;Label for="birth_date" required&gt;Birth Date&lt;/Label&gt;
+                                <h4 class="mb-2 text-sm font-semibold">1. Basic Date Picker</h4>
+                                <pre
+                                    class="overflow-x-auto rounded bg-muted p-3 text-sm"
+                                ><code>&lt;Label for="birth_date" required&gt;Birth Date&lt;/Label&gt;
 &lt;DashboardDatePicker
     id="birth_date"
     v-model="form.birth_date"
@@ -1384,8 +1364,8 @@ const roles = [
                             </div>
 
                             <div>
-                                <h4 class="font-semibold mb-2 text-sm">2. Date Range Picker</h4>
-                                <pre class="bg-muted p-3 rounded text-sm overflow-x-auto"><code>&lt;Label for="date_range"&gt;Date Range&lt;/Label&gt;
+                                <h4 class="mb-2 text-sm font-semibold">2. Date Range Picker</h4>
+                                <pre class="overflow-x-auto rounded bg-muted p-3 text-sm"><code>&lt;Label for="date_range"&gt;Date Range&lt;/Label&gt;
 &lt;DashboardDatePicker
     id="date_range"
     v-model="form.date_range"
@@ -1397,8 +1377,10 @@ const roles = [
                             </div>
 
                             <div>
-                                <h4 class="font-semibold mb-2 text-sm">3. Date & Time Picker</h4>
-                                <pre class="bg-muted p-3 rounded text-sm overflow-x-auto"><code>&lt;Label for="scheduled_at"&gt;Schedule For&lt;/Label&gt;
+                                <h4 class="mb-2 text-sm font-semibold">3. Date & Time Picker</h4>
+                                <pre
+                                    class="overflow-x-auto rounded bg-muted p-3 text-sm"
+                                ><code>&lt;Label for="scheduled_at"&gt;Schedule For&lt;/Label&gt;
 &lt;DashboardDatePicker
     id="scheduled_at"
     v-model="form.scheduled_at"
@@ -1411,8 +1393,8 @@ const roles = [
                             </div>
 
                             <div>
-                                <h4 class="font-semibold mb-2 text-sm">4. Month Picker</h4>
-                                <pre class="bg-muted p-3 rounded text-sm overflow-x-auto"><code>&lt;Label for="month"&gt;Select Month&lt;/Label&gt;
+                                <h4 class="mb-2 text-sm font-semibold">4. Month Picker</h4>
+                                <pre class="overflow-x-auto rounded bg-muted p-3 text-sm"><code>&lt;Label for="month"&gt;Select Month&lt;/Label&gt;
 &lt;DashboardDatePicker
     id="month"
     v-model="form.month"
@@ -1424,8 +1406,8 @@ const roles = [
                             </div>
 
                             <div>
-                                <h4 class="font-semibold mb-2 text-sm">5. Time Only Picker</h4>
-                                <pre class="bg-muted p-3 rounded text-sm overflow-x-auto"><code>&lt;Label for="time"&gt;Select Time&lt;/Label&gt;
+                                <h4 class="mb-2 text-sm font-semibold">5. Time Only Picker</h4>
+                                <pre class="overflow-x-auto rounded bg-muted p-3 text-sm"><code>&lt;Label for="time"&gt;Select Time&lt;/Label&gt;
 &lt;DashboardDatePicker
     id="time"
     v-model="form.time"
@@ -1437,8 +1419,10 @@ const roles = [
                             </div>
 
                             <div>
-                                <h4 class="font-semibold mb-2 text-sm">6. With Date Restrictions</h4>
-                                <pre class="bg-muted p-3 rounded text-sm overflow-x-auto"><code>&lt;Label for="appointment"&gt;Appointment Date&lt;/Label&gt;
+                                <h4 class="mb-2 text-sm font-semibold">6. With Date Restrictions</h4>
+                                <pre
+                                    class="overflow-x-auto rounded bg-muted p-3 text-sm"
+                                ><code>&lt;Label for="appointment"&gt;Appointment Date&lt;/Label&gt;
 &lt;DashboardDatePicker
     id="appointment"
     v-model="form.appointment_date"
@@ -1462,7 +1446,7 @@ const roles = [
                 <div class="flex items-center justify-between">
                     <div>
                         <CardTitle class="text-2xl">DashboardFileUpload</CardTitle>
-                        <CardDescription class="text-base mt-2">
+                        <CardDescription class="mt-2 text-base">
                             Advanced file upload with temporary storage, drag & drop, image previews, progress tracking, and validation
                         </CardDescription>
                     </div>
@@ -1471,12 +1455,12 @@ const roles = [
             </CardHeader>
             <CardContent class="space-y-8 pt-6">
                 <!-- Live Preview -->
-                <div class="bg-muted/30 border-2 border-dashed rounded-lg p-6">
-                    <div class="flex items-center gap-2 mb-4">
+                <div class="rounded-lg border-2 border-dashed bg-muted/30 p-6">
+                    <div class="mb-4 flex items-center gap-2">
                         <Eye class="h-5 w-5 text-primary" />
-                        <h3 class="font-bold text-lg">Live Preview</h3>
+                        <h3 class="text-lg font-bold">Live Preview</h3>
                     </div>
-                    <div class="bg-background rounded-lg p-6 space-y-6">
+                    <div class="space-y-6 rounded-lg bg-background p-6">
                         <div>
                             <Label for="demo-files">File Upload</Label>
                             <DashboardFileUpload
@@ -1495,14 +1479,16 @@ const roles = [
 
                 <!-- Import -->
                 <div>
-                    <h3 class="font-bold text-lg mb-3">📦 Import</h3>
-                    <pre class="bg-muted p-4 rounded-lg text-sm"><code>import DashboardFileUpload from '@common/components/dashboards/form/DashboardFileUpload.vue';</code></pre>
+                    <h3 class="mb-3 text-lg font-bold">📦 Import</h3>
+                    <pre
+                        class="rounded-lg bg-muted p-4 text-sm"
+                    ><code>import DashboardFileUpload from '@common/components/dashboards/form/DashboardFileUpload.vue';</code></pre>
                 </div>
 
                 <!-- Props Table -->
                 <div>
-                    <h3 class="font-bold text-lg mb-3">⚙️ Props</h3>
-                    <div class="border rounded-lg overflow-hidden">
+                    <h3 class="mb-3 text-lg font-bold">⚙️ Props</h3>
+                    <div class="overflow-hidden rounded-lg border">
                         <Table>
                             <TableHeader>
                                 <TableRow class="bg-muted/50">
@@ -1692,14 +1678,12 @@ const roles = [
 
                 <!-- Events -->
                 <Collapsible>
-                    <CollapsibleTrigger
-                        class="flex items-center gap-2 font-bold text-lg hover:text-primary transition-colors"
-                    >
+                    <CollapsibleTrigger class="flex items-center gap-2 text-lg font-bold transition-colors hover:text-primary">
                         <ChevronDown class="h-5 w-5" />
                         🎯 Events
                     </CollapsibleTrigger>
                     <CollapsibleContent class="mt-3">
-                        <div class="border rounded-lg overflow-hidden">
+                        <div class="overflow-hidden rounded-lg border">
                             <Table>
                                 <TableHeader>
                                     <TableRow class="bg-muted/50">
@@ -1798,14 +1782,12 @@ const roles = [
 
                 <!-- Features -->
                 <Collapsible>
-                    <CollapsibleTrigger
-                        class="flex items-center gap-2 font-bold text-lg hover:text-primary transition-colors"
-                    >
+                    <CollapsibleTrigger class="flex items-center gap-2 text-lg font-bold transition-colors hover:text-primary">
                         <ChevronDown class="h-5 w-5" />
                         ✨ Features
                     </CollapsibleTrigger>
                     <CollapsibleContent class="mt-3">
-                        <div class="border rounded-lg p-4">
+                        <div class="rounded-lg border p-4">
                             <ul class="space-y-2 text-sm">
                                 <li class="flex items-start gap-2">
                                     <span class="text-primary">•</span>
@@ -1846,17 +1828,17 @@ const roles = [
 
                 <!-- Usage Examples -->
                 <Collapsible>
-                    <CollapsibleTrigger
-                        class="flex items-center gap-2 font-bold text-lg hover:text-primary transition-colors"
-                    >
+                    <CollapsibleTrigger class="flex items-center gap-2 text-lg font-bold transition-colors hover:text-primary">
                         <ChevronDown class="h-5 w-5" />
                         📝 Usage Examples
                     </CollapsibleTrigger>
                     <CollapsibleContent class="mt-3">
                         <div class="space-y-4">
                             <div>
-                                <h4 class="font-semibold mb-2 text-sm">1. Basic Image Upload</h4>
-                                <pre class="bg-muted p-3 rounded text-sm overflow-x-auto"><code>&lt;Label for="avatar"&gt;Profile Picture&lt;/Label&gt;
+                                <h4 class="mb-2 text-sm font-semibold">1. Basic Image Upload</h4>
+                                <pre
+                                    class="overflow-x-auto rounded bg-muted p-3 text-sm"
+                                ><code>&lt;Label for="avatar"&gt;Profile Picture&lt;/Label&gt;
 &lt;DashboardFileUpload
     id="avatar"
     v-model="form.avatar"
@@ -1871,8 +1853,8 @@ const roles = [
                             </div>
 
                             <div>
-                                <h4 class="font-semibold mb-2 text-sm">2. Multiple Files with Custom Upload</h4>
-                                <pre class="bg-muted p-3 rounded text-sm overflow-x-auto"><code>&lt;script setup&gt;
+                                <h4 class="mb-2 text-sm font-semibold">2. Multiple Files with Custom Upload</h4>
+                                <pre class="overflow-x-auto rounded bg-muted p-3 text-sm"><code>&lt;script setup&gt;
 const handleUpload = async (event) => {
     const formData = new FormData();
     event.files.forEach((file) => {
@@ -1896,8 +1878,10 @@ const handleUpload = async (event) => {
                             </div>
 
                             <div>
-                                <h4 class="font-semibold mb-2 text-sm">3. PDF Documents Only</h4>
-                                <pre class="bg-muted p-3 rounded text-sm overflow-x-auto"><code>&lt;Label for="documents" required&gt;Upload Documents&lt;/Label&gt;
+                                <h4 class="mb-2 text-sm font-semibold">3. PDF Documents Only</h4>
+                                <pre
+                                    class="overflow-x-auto rounded bg-muted p-3 text-sm"
+                                ><code>&lt;Label for="documents" required&gt;Upload Documents&lt;/Label&gt;
 &lt;DashboardFileUpload
     id="documents"
     v-model="form.documents"
@@ -1911,8 +1895,8 @@ const handleUpload = async (event) => {
                             </div>
 
                             <div>
-                                <h4 class="font-semibold mb-2 text-sm">4. Auto Upload to Server</h4>
-                                <pre class="bg-muted p-3 rounded text-sm overflow-x-auto"><code>&lt;DashboardFileUpload
+                                <h4 class="mb-2 text-sm font-semibold">4. Auto Upload to Server</h4>
+                                <pre class="overflow-x-auto rounded bg-muted p-3 text-sm"><code>&lt;DashboardFileUpload
     v-model="files"
     url="/api/upload"
     :auto="true"
@@ -1928,14 +1912,12 @@ const handleUpload = async (event) => {
 
                 <!-- Exposed Methods -->
                 <Collapsible>
-                    <CollapsibleTrigger
-                        class="flex items-center gap-2 font-bold text-lg hover:text-primary transition-colors"
-                    >
+                    <CollapsibleTrigger class="flex items-center gap-2 text-lg font-bold transition-colors hover:text-primary">
                         <ChevronDown class="h-5 w-5" />
                         🔧 Exposed Methods
                     </CollapsibleTrigger>
                     <CollapsibleContent class="mt-3">
-                        <div class="border rounded-lg overflow-hidden">
+                        <div class="overflow-hidden rounded-lg border">
                             <Table>
                                 <TableHeader>
                                     <TableRow class="bg-muted/50">
@@ -1958,7 +1940,7 @@ const handleUpload = async (event) => {
                             </Table>
                         </div>
                         <div class="mt-3">
-                            <pre class="bg-muted p-3 rounded text-sm overflow-x-auto"><code>&lt;script setup&gt;
+                            <pre class="overflow-x-auto rounded bg-muted p-3 text-sm"><code>&lt;script setup&gt;
 const fileUploadRef = ref();
 
 const clearAll = () => {
@@ -1980,27 +1962,857 @@ const getCurrentFiles = () => {
             </CardContent>
         </Card>
 
+        <!-- ==================== DashboardCheckbox ==================== -->
+        <Card v-if="activeComponent === 'DashboardCheckbox'" class="border-2">
+            <CardHeader class="bg-primary/5">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <CardTitle class="text-2xl">DashboardCheckbox</CardTitle>
+                        <CardDescription class="mt-2 text-base"> Checkbox component with label support and array binding </CardDescription>
+                    </div>
+                    <Badge variant="secondary">Form Input</Badge>
+                </div>
+            </CardHeader>
+            <CardContent class="space-y-8 pt-6">
+                <!-- Live Preview -->
+                <div class="space-y-4">
+                    <h3 class="flex items-center gap-2 text-xl font-bold">
+                        <Eye class="h-5 w-5 text-primary" />
+                        Live Preview
+                    </h3>
+                    <div class="space-y-6 rounded-lg border bg-background p-6">
+                        <div class="space-y-4">
+                            <div>
+                                <Label>Single Checkbox (Binary Mode)</Label>
+                                <Hint>Simple true/false checkbox</Hint>
+                                <div class="mt-2">
+                                    <DashboardCheckbox v-model="demoForm.checkbox" label="I agree to the terms and conditions" id="terms" />
+                                </div>
+                                <p class="mt-2 text-sm text-muted-foreground">
+                                    Value: <code class="rounded bg-muted px-2 py-1">{{ demoForm.checkbox }}</code>
+                                </p>
+                            </div>
+
+                            <div>
+                                <Label>Multiple Checkboxes (Array Mode)</Label>
+                                <Hint>Select multiple options into an array</Hint>
+                                <div class="mt-2 space-y-2">
+                                    <DashboardCheckbox
+                                        v-model="demoForm.checkboxArray"
+                                        label="Email Notifications"
+                                        value="email"
+                                        :binary="false"
+                                        id="notify-email"
+                                    />
+                                    <DashboardCheckbox
+                                        v-model="demoForm.checkboxArray"
+                                        label="SMS Notifications"
+                                        value="sms"
+                                        :binary="false"
+                                        id="notify-sms"
+                                    />
+                                    <DashboardCheckbox
+                                        v-model="demoForm.checkboxArray"
+                                        label="Push Notifications"
+                                        value="push"
+                                        :binary="false"
+                                        id="notify-push"
+                                    />
+                                </div>
+                                <p class="mt-2 text-sm text-muted-foreground">
+                                    Selected: <code class="rounded bg-muted px-2 py-1">{{ demoForm.checkboxArray }}</code>
+                                </p>
+                            </div>
+
+                            <div>
+                                <Label>Label Position</Label>
+                                <Hint>Label can be on left or right</Hint>
+                                <div class="mt-2 space-y-2">
+                                    <DashboardCheckbox v-model="demoForm.checkbox" label="Label on right (default)" label-position="right" />
+                                    <DashboardCheckbox v-model="demoForm.checkbox" label="Label on left" label-position="left" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <Label>Disabled State</Label>
+                                <Hint>Checkbox can be disabled</Hint>
+                                <div class="mt-2 space-y-2">
+                                    <DashboardCheckbox :model-value="true" label="Checked and disabled" disabled />
+                                    <DashboardCheckbox :model-value="false" label="Unchecked and disabled" disabled />
+                                </div>
+                            </div>
+
+                            <div>
+                                <Label>Error State</Label>
+                                <Hint>Shows red border when error is present</Hint>
+                                <div class="mt-2">
+                                    <DashboardCheckbox
+                                        v-model="demoForm.checkbox"
+                                        label="You must agree to continue"
+                                        error="This field is required"
+                                    />
+                                    <p class="mt-1 text-sm text-destructive">This field is required</p>
+                                </div>
+                            </div>
+
+                            <div>
+                                <Label>Without Label</Label>
+                                <Hint>Checkbox can be used without a label</Hint>
+                                <div class="mt-2">
+                                    <DashboardCheckbox v-model="demoForm.checkbox" :show-label="false" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Props -->
+                <div class="space-y-4">
+                    <h3 class="flex items-center gap-2 text-xl font-bold">⚙️ Props</h3>
+                    <div class="overflow-hidden rounded-lg border">
+                        <Table>
+                            <TableHeader>
+                                <TableRow class="bg-muted/50">
+                                    <TableHead class="font-bold">Prop</TableHead>
+                                    <TableHead class="font-bold">Type</TableHead>
+                                    <TableHead class="font-bold">Default</TableHead>
+                                    <TableHead class="font-bold">Description</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">modelValue</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">boolean | any</Badge>
+                                    </TableCell>
+                                    <TableCell><code>false</code></TableCell>
+                                    <TableCell>Checkbox value (v-model)</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">value</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">any</Badge>
+                                    </TableCell>
+                                    <TableCell><code>undefined</code></TableCell>
+                                    <TableCell>Value for array binding</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">label</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">string</Badge>
+                                    </TableCell>
+                                    <TableCell><code>''</code></TableCell>
+                                    <TableCell>Label text</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">error</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">string | null</Badge>
+                                    </TableCell>
+                                    <TableCell><code>null</code></TableCell>
+                                    <TableCell>Error message (shows red border)</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">disabled</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">boolean</Badge>
+                                    </TableCell>
+                                    <TableCell><code>false</code></TableCell>
+                                    <TableCell>Disables checkbox</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">required</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">boolean</Badge>
+                                    </TableCell>
+                                    <TableCell><code>false</code></TableCell>
+                                    <TableCell>Required attribute</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">binary</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">boolean</Badge>
+                                    </TableCell>
+                                    <TableCell><code>true</code></TableCell>
+                                    <TableCell>Binary mode (true/false only)</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">labelPosition</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">string</Badge>
+                                    </TableCell>
+                                    <TableCell><code>'right'</code></TableCell>
+                                    <TableCell>'left' | 'right'</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">showLabel</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">boolean</Badge>
+                                    </TableCell>
+                                    <TableCell><code>true</code></TableCell>
+                                    <TableCell>Show or hide label</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">id</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">string</Badge>
+                                    </TableCell>
+                                    <TableCell><code>undefined</code></TableCell>
+                                    <TableCell>Checkbox id attribute</TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </div>
+                </div>
+
+                <!-- Events -->
+                <Collapsible>
+                    <CollapsibleTrigger class="flex items-center gap-2 text-lg font-bold transition-colors hover:text-primary">
+                        <ChevronDown class="h-5 w-5" />
+                        📡 Events
+                    </CollapsibleTrigger>
+                    <CollapsibleContent class="mt-3">
+                        <div class="overflow-hidden rounded-lg border">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow class="bg-muted/50">
+                                        <TableHead class="font-bold">Event</TableHead>
+                                        <TableHead class="font-bold">Payload</TableHead>
+                                        <TableHead class="font-bold">Description</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    <TableRow>
+                                        <TableCell class="font-mono text-sm">update:modelValue</TableCell>
+                                        <TableCell><code>boolean | any</code></TableCell>
+                                        <TableCell>Emitted when checkbox value changes</TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell class="font-mono text-sm">change</TableCell>
+                                        <TableCell><code>Event</code></TableCell>
+                                        <TableCell>Native change event</TableCell>
+                                    </TableRow>
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </CollapsibleContent>
+                </Collapsible>
+
+                <!-- Usage Example -->
+                <Collapsible>
+                    <CollapsibleTrigger class="flex items-center gap-2 text-lg font-bold transition-colors hover:text-primary">
+                        <ChevronDown class="h-5 w-5" />
+                        📝 Usage Examples
+                    </CollapsibleTrigger>
+                    <CollapsibleContent class="mt-3">
+                        <pre class="overflow-x-auto rounded-lg bg-muted p-4 text-sm"><code>&lt;!-- Single checkbox (binary mode) --&gt;
+&lt;DashboardCheckbox
+    v-model="form.accepted"
+    label="I accept the terms"
+    :error="form.errors.accepted"
+/&gt;
+
+&lt;!-- Multiple checkboxes (array mode) --&gt;
+&lt;DashboardCheckbox
+    v-model="form.notifications"
+    label="Email Notifications"
+    value="email"
+    :binary="false"
+/&gt;
+
+&lt;!-- Label on left --&gt;
+&lt;DashboardCheckbox
+    v-model="form.rememberMe"
+    label="Remember me"
+    label-position="left"
+/&gt;
+
+&lt;!-- Without label --&gt;
+&lt;DashboardCheckbox
+    v-model="form.selected"
+    :show-label="false"
+/&gt;</code></pre>
+                    </CollapsibleContent>
+                </Collapsible>
+            </CardContent>
+        </Card>
+
+        <!-- ==================== DashboardToggle ==================== -->
+        <Card v-if="activeComponent === 'DashboardToggle'" class="border-2">
+            <CardHeader class="bg-primary/5">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <CardTitle class="text-2xl">DashboardToggle</CardTitle>
+                        <CardDescription class="mt-2 text-base"> Toggle switch component for boolean values with label support </CardDescription>
+                    </div>
+                    <Badge variant="secondary">Form Input</Badge>
+                </div>
+            </CardHeader>
+            <CardContent class="space-y-8 pt-6">
+                <!-- Live Preview -->
+                <div class="space-y-4">
+                    <h3 class="flex items-center gap-2 text-xl font-bold">
+                        <Eye class="h-5 w-5 text-primary" />
+                        Live Preview
+                    </h3>
+                    <div class="space-y-6 rounded-lg border bg-background p-6">
+                        <div class="space-y-4">
+                            <div>
+                                <Label>Basic Toggle</Label>
+                                <Hint>Simple on/off switch</Hint>
+                                <div class="mt-2">
+                                    <DashboardToggle v-model="demoForm.toggle" label="Enable notifications" id="notify" />
+                                </div>
+                                <p class="mt-2 text-sm text-muted-foreground">
+                                    Value: <code class="rounded bg-muted px-2 py-1">{{ demoForm.toggle }}</code>
+                                </p>
+                            </div>
+
+                            <div>
+                                <Label>Toggle with Hint</Label>
+                                <Hint>Shows additional helper text</Hint>
+                                <div class="mt-2">
+                                    <DashboardToggle
+                                        v-model="demoForm.toggle"
+                                        label="Dark Mode"
+                                        hint="Switch between light and dark themes"
+                                        id="dark-mode"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <Label>Label Position</Label>
+                                <Hint>Label can be on left or right</Hint>
+                                <div class="mt-2 space-y-3">
+                                    <DashboardToggle v-model="demoForm.toggle" label="Label on right (default)" label-position="right" />
+                                    <DashboardToggle v-model="demoForm.toggle" label="Label on left" label-position="left" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <Label>Required Toggle</Label>
+                                <Hint>Shows asterisk for required fields</Hint>
+                                <div class="mt-2">
+                                    <DashboardToggle v-model="demoForm.toggle" label="Accept terms and conditions" required />
+                                </div>
+                            </div>
+
+                            <div>
+                                <Label>Disabled State</Label>
+                                <Hint>Toggle can be disabled</Hint>
+                                <div class="mt-2 space-y-3">
+                                    <DashboardToggle :model-value="true" label="Enabled and disabled" disabled />
+                                    <DashboardToggle :model-value="false" label="Disabled and off" disabled />
+                                </div>
+                            </div>
+
+                            <div>
+                                <Label>Error State</Label>
+                                <Hint>Shows red border and error message</Hint>
+                                <div class="mt-2">
+                                    <DashboardToggle v-model="demoForm.toggle" label="You must accept to continue" error="This field is required" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <Label>Without Label</Label>
+                                <Hint>Toggle can be used without a label</Hint>
+                                <div class="mt-2">
+                                    <DashboardToggle v-model="demoForm.toggle" :show-label="false" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Props -->
+                <div class="space-y-4">
+                    <h3 class="flex items-center gap-2 text-xl font-bold">⚙️ Props</h3>
+                    <div class="overflow-hidden rounded-lg border">
+                        <Table>
+                            <TableHeader>
+                                <TableRow class="bg-muted/50">
+                                    <TableHead class="font-bold">Prop</TableHead>
+                                    <TableHead class="font-bold">Type</TableHead>
+                                    <TableHead class="font-bold">Default</TableHead>
+                                    <TableHead class="font-bold">Description</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">modelValue</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">boolean</Badge>
+                                    </TableCell>
+                                    <TableCell><code>false</code></TableCell>
+                                    <TableCell>Toggle value (v-model)</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">label</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">string</Badge>
+                                    </TableCell>
+                                    <TableCell><code>''</code></TableCell>
+                                    <TableCell>Label text</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">error</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">string | null</Badge>
+                                    </TableCell>
+                                    <TableCell><code>null</code></TableCell>
+                                    <TableCell>Error message (shows red border)</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">disabled</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">boolean</Badge>
+                                    </TableCell>
+                                    <TableCell><code>false</code></TableCell>
+                                    <TableCell>Disables toggle</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">required</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">boolean</Badge>
+                                    </TableCell>
+                                    <TableCell><code>false</code></TableCell>
+                                    <TableCell>Shows asterisk, required attribute</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">labelPosition</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">string</Badge>
+                                    </TableCell>
+                                    <TableCell><code>'right'</code></TableCell>
+                                    <TableCell>'left' | 'right'</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">showLabel</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">boolean</Badge>
+                                    </TableCell>
+                                    <TableCell><code>true</code></TableCell>
+                                    <TableCell>Show or hide label</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">hint</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">string</Badge>
+                                    </TableCell>
+                                    <TableCell><code>''</code></TableCell>
+                                    <TableCell>Helper text below toggle</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">id</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">string</Badge>
+                                    </TableCell>
+                                    <TableCell><code>undefined</code></TableCell>
+                                    <TableCell>Toggle id attribute</TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </div>
+                </div>
+
+                <!-- Events -->
+                <Collapsible>
+                    <CollapsibleTrigger class="flex items-center gap-2 text-lg font-bold transition-colors hover:text-primary">
+                        <ChevronDown class="h-5 w-5" />
+                        📡 Events
+                    </CollapsibleTrigger>
+                    <CollapsibleContent class="mt-3">
+                        <div class="overflow-hidden rounded-lg border">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow class="bg-muted/50">
+                                        <TableHead class="font-bold">Event</TableHead>
+                                        <TableHead class="font-bold">Payload</TableHead>
+                                        <TableHead class="font-bold">Description</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    <TableRow>
+                                        <TableCell class="font-mono text-sm">update:modelValue</TableCell>
+                                        <TableCell><code>boolean</code></TableCell>
+                                        <TableCell>Emitted when toggle value changes</TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell class="font-mono text-sm">change</TableCell>
+                                        <TableCell><code>Event</code></TableCell>
+                                        <TableCell>Native change event</TableCell>
+                                    </TableRow>
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </CollapsibleContent>
+                </Collapsible>
+
+                <!-- Usage Example -->
+                <Collapsible>
+                    <CollapsibleTrigger class="flex items-center gap-2 text-lg font-bold transition-colors hover:text-primary">
+                        <ChevronDown class="h-5 w-5" />
+                        📝 Usage Examples
+                    </CollapsibleTrigger>
+                    <CollapsibleContent class="mt-3">
+                        <pre class="overflow-x-auto rounded-lg bg-muted p-4 text-sm"><code>&lt;!-- Basic toggle --&gt;
+&lt;DashboardToggle
+    v-model="form.enabled"
+    label="Enable feature"
+    :error="form.errors.enabled"
+/&gt;
+
+&lt;!-- Toggle with hint --&gt;
+&lt;DashboardToggle
+    v-model="form.darkMode"
+    label="Dark Mode"
+    hint="Switch between light and dark themes"
+/&gt;
+
+&lt;!-- Required toggle --&gt;
+&lt;DashboardToggle
+    v-model="form.acceptTerms"
+    label="Accept terms and conditions"
+    required
+/&gt;
+
+&lt;!-- Label on left --&gt;
+&lt;DashboardToggle
+    v-model="form.notifications"
+    label="Notifications"
+    label-position="left"
+/&gt;</code></pre>
+                    </CollapsibleContent>
+                </Collapsible>
+            </CardContent>
+        </Card>
+
+        <!-- ==================== DashboardRadioButton ==================== -->
+        <Card v-if="activeComponent === 'DashboardRadioButton'" class="border-2">
+            <CardHeader class="bg-primary/5">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <CardTitle class="text-2xl">DashboardRadioButton</CardTitle>
+                        <CardDescription class="mt-2 text-base"> Radio button component for single selection from multiple options </CardDescription>
+                    </div>
+                    <Badge variant="secondary">Form Input</Badge>
+                </div>
+            </CardHeader>
+            <CardContent class="space-y-8 pt-6">
+                <!-- Live Preview -->
+                <div class="space-y-4">
+                    <h3 class="flex items-center gap-2 text-xl font-bold">
+                        <Eye class="h-5 w-5 text-primary" />
+                        Live Preview
+                    </h3>
+                    <div class="space-y-6 rounded-lg border bg-background p-6">
+                        <div class="space-y-4">
+                            <div>
+                                <Label>Basic Radio Group</Label>
+                                <Hint>Select one option from multiple choices</Hint>
+                                <div class="mt-2 space-y-2">
+                                    <DashboardRadioButton v-model="demoForm.radio" label="Option 1" value="option1" name="demo-radio" id="radio1" />
+                                    <DashboardRadioButton v-model="demoForm.radio" label="Option 2" value="option2" name="demo-radio" id="radio2" />
+                                    <DashboardRadioButton v-model="demoForm.radio" label="Option 3" value="option3" name="demo-radio" id="radio3" />
+                                </div>
+                                <p class="mt-2 text-sm text-muted-foreground">
+                                    Selected: <code class="rounded bg-muted px-2 py-1">{{ demoForm.radio || 'none' }}</code>
+                                </p>
+                            </div>
+
+                            <div>
+                                <Label>Radio with Hints</Label>
+                                <Hint>Each option can have helper text</Hint>
+                                <div class="mt-2 space-y-3">
+                                    <DashboardRadioButton
+                                        v-model="demoForm.radio"
+                                        label="Free Plan"
+                                        value="free"
+                                        hint="Perfect for individuals"
+                                        name="plan"
+                                    />
+                                    <DashboardRadioButton v-model="demoForm.radio" label="Pro Plan" value="pro" hint="For small teams" name="plan" />
+                                    <DashboardRadioButton
+                                        v-model="demoForm.radio"
+                                        label="Enterprise Plan"
+                                        value="enterprise"
+                                        hint="For large organizations"
+                                        name="plan"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <Label>Label Position</Label>
+                                <Hint>Label can be on left or right</Hint>
+                                <div class="mt-2 space-y-2">
+                                    <DashboardRadioButton
+                                        v-model="demoForm.radio"
+                                        label="Label on right (default)"
+                                        value="right"
+                                        label-position="right"
+                                        name="position"
+                                    />
+                                    <DashboardRadioButton
+                                        v-model="demoForm.radio"
+                                        label="Label on left"
+                                        value="left"
+                                        label-position="left"
+                                        name="position"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <Label>Disabled State</Label>
+                                <Hint>Radio buttons can be disabled</Hint>
+                                <div class="mt-2 space-y-2">
+                                    <DashboardRadioButton :model-value="'selected'" label="Selected and disabled" value="selected" disabled />
+                                    <DashboardRadioButton :model-value="'selected'" label="Not selected and disabled" value="not" disabled />
+                                </div>
+                            </div>
+
+                            <div>
+                                <Label>Error State</Label>
+                                <Hint>Shows red border and error message</Hint>
+                                <div class="mt-2 space-y-2">
+                                    <DashboardRadioButton
+                                        v-model="demoForm.radio"
+                                        label="Option A"
+                                        value="a"
+                                        error="Please select an option"
+                                        name="error-demo"
+                                    />
+                                    <DashboardRadioButton
+                                        v-model="demoForm.radio"
+                                        label="Option B"
+                                        value="b"
+                                        error="Please select an option"
+                                        name="error-demo"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Props -->
+                <div class="space-y-4">
+                    <h3 class="flex items-center gap-2 text-xl font-bold">⚙️ Props</h3>
+                    <div class="overflow-hidden rounded-lg border">
+                        <Table>
+                            <TableHeader>
+                                <TableRow class="bg-muted/50">
+                                    <TableHead class="font-bold">Prop</TableHead>
+                                    <TableHead class="font-bold">Type</TableHead>
+                                    <TableHead class="font-bold">Default</TableHead>
+                                    <TableHead class="font-bold">Description</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">modelValue</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">any</Badge>
+                                    </TableCell>
+                                    <TableCell><code>null</code></TableCell>
+                                    <TableCell>Radio value (v-model)</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">value</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">any</Badge>
+                                    </TableCell>
+                                    <TableCell><em>required</em></TableCell>
+                                    <TableCell>Value when selected</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">label</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">string</Badge>
+                                    </TableCell>
+                                    <TableCell><code>''</code></TableCell>
+                                    <TableCell>Label text</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">name</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">string</Badge>
+                                    </TableCell>
+                                    <TableCell><code>undefined</code></TableCell>
+                                    <TableCell>Name for grouping radios</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">error</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">string | null</Badge>
+                                    </TableCell>
+                                    <TableCell><code>null</code></TableCell>
+                                    <TableCell>Error message (shows red border)</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">disabled</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">boolean</Badge>
+                                    </TableCell>
+                                    <TableCell><code>false</code></TableCell>
+                                    <TableCell>Disables radio button</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">required</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">boolean</Badge>
+                                    </TableCell>
+                                    <TableCell><code>false</code></TableCell>
+                                    <TableCell>Shows asterisk, required attribute</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">labelPosition</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">string</Badge>
+                                    </TableCell>
+                                    <TableCell><code>'right'</code></TableCell>
+                                    <TableCell>'left' | 'right'</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">showLabel</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">boolean</Badge>
+                                    </TableCell>
+                                    <TableCell><code>true</code></TableCell>
+                                    <TableCell>Show or hide label</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">hint</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">string</Badge>
+                                    </TableCell>
+                                    <TableCell><code>''</code></TableCell>
+                                    <TableCell>Helper text below radio</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">id</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">string</Badge>
+                                    </TableCell>
+                                    <TableCell><code>undefined</code></TableCell>
+                                    <TableCell>Radio id attribute</TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </div>
+                </div>
+
+                <!-- Events -->
+                <Collapsible>
+                    <CollapsibleTrigger class="flex items-center gap-2 text-lg font-bold transition-colors hover:text-primary">
+                        <ChevronDown class="h-5 w-5" />
+                        📡 Events
+                    </CollapsibleTrigger>
+                    <CollapsibleContent class="mt-3">
+                        <div class="overflow-hidden rounded-lg border">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow class="bg-muted/50">
+                                        <TableHead class="font-bold">Event</TableHead>
+                                        <TableHead class="font-bold">Payload</TableHead>
+                                        <TableHead class="font-bold">Description</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    <TableRow>
+                                        <TableCell class="font-mono text-sm">update:modelValue</TableCell>
+                                        <TableCell><code>any</code></TableCell>
+                                        <TableCell>Emitted when radio value changes</TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell class="font-mono text-sm">change</TableCell>
+                                        <TableCell><code>Event</code></TableCell>
+                                        <TableCell>Native change event</TableCell>
+                                    </TableRow>
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </CollapsibleContent>
+                </Collapsible>
+
+                <!-- Usage Example -->
+                <Collapsible>
+                    <CollapsibleTrigger class="flex items-center gap-2 text-lg font-bold transition-colors hover:text-primary">
+                        <ChevronDown class="h-5 w-5" />
+                        📝 Usage Examples
+                    </CollapsibleTrigger>
+                    <CollapsibleContent class="mt-3">
+                        <pre class="overflow-x-auto rounded-lg bg-muted p-4 text-sm"><code>&lt;!-- Basic radio group --&gt;
+&lt;Label for="gender" required&gt;Gender&lt;/Label&gt;
+&lt;div class="space-y-2"&gt;
+    &lt;DashboardRadioButton
+        v-model="form.gender"
+        label="Male"
+        value="male"
+        name="gender"
+        :error="form.errors.gender"
+    /&gt;
+    &lt;DashboardRadioButton
+        v-model="form.gender"
+        label="Female"
+        value="female"
+        name="gender"
+        :error="form.errors.gender"
+    /&gt;
+    &lt;DashboardRadioButton
+        v-model="form.gender"
+        label="Other"
+        value="other"
+        name="gender"
+        :error="form.errors.gender"
+    /&gt;
+&lt;/div&gt;
+
+&lt;!-- Radio with hints --&gt;
+&lt;Label&gt;Select a plan&lt;/Label&gt;
+&lt;div class="space-y-3"&gt;
+    &lt;DashboardRadioButton
+        v-model="form.plan"
+        label="Free Plan"
+        value="free"
+        hint="Perfect for individuals"
+        name="plan"
+    /&gt;
+    &lt;DashboardRadioButton
+        v-model="form.plan"
+        label="Pro Plan"
+        value="pro"
+        hint="For small teams"
+        name="plan"
+    /&gt;
+&lt;/div&gt;</code></pre>
+                    </CollapsibleContent>
+                </Collapsible>
+            </CardContent>
+        </Card>
+
         <!-- ==================== DashboardButton ==================== -->
         <Card v-if="activeComponent === 'DashboardButton'" class="border-2">
             <CardHeader class="bg-primary/5">
                 <div class="flex items-center justify-between">
                     <div>
                         <CardTitle class="text-2xl">DashboardButton</CardTitle>
-                        <CardDescription class="text-base mt-2">
-                            Button with loading states, variants, and custom icons
-                        </CardDescription>
+                        <CardDescription class="mt-2 text-base"> Button with loading states, variants, and custom icons </CardDescription>
                     </div>
                     <Badge variant="secondary">Action</Badge>
                 </div>
             </CardHeader>
             <CardContent class="space-y-8 pt-6">
                 <!-- Live Preview -->
-                <div class="bg-muted/30 border-2 border-dashed rounded-lg p-6">
-                    <div class="flex items-center gap-2 mb-4">
+                <div class="rounded-lg border-2 border-dashed bg-muted/30 p-6">
+                    <div class="mb-4 flex items-center gap-2">
                         <Eye class="h-5 w-5 text-primary" />
-                        <h3 class="font-bold text-lg">Live Preview</h3>
+                        <h3 class="text-lg font-bold">Live Preview</h3>
                     </div>
-                    <div class="bg-background rounded-lg p-6">
+                    <div class="rounded-lg bg-background p-6">
                         <div class="flex flex-wrap gap-3">
                             <DashboardButton variant="default">Default</DashboardButton>
                             <DashboardButton variant="destructive">Destructive</DashboardButton>
@@ -2014,14 +2826,16 @@ const getCurrentFiles = () => {
 
                 <!-- Import -->
                 <div>
-                    <h3 class="font-bold text-lg mb-3">📦 Import</h3>
-                    <pre class="bg-muted p-4 rounded-lg text-sm"><code>import DashboardButton from '@common/components/dashboards/form/DashboardButton.vue';</code></pre>
+                    <h3 class="mb-3 text-lg font-bold">📦 Import</h3>
+                    <pre
+                        class="rounded-lg bg-muted p-4 text-sm"
+                    ><code>import DashboardButton from '@common/components/dashboards/form/DashboardButton.vue';</code></pre>
                 </div>
 
                 <!-- Props Table -->
                 <div>
-                    <h3 class="font-bold text-lg mb-3">⚙️ Props</h3>
-                    <div class="border rounded-lg overflow-hidden">
+                    <h3 class="mb-3 text-lg font-bold">⚙️ Props</h3>
+                    <div class="overflow-hidden rounded-lg border">
                         <Table>
                             <TableHeader>
                                 <TableRow class="bg-muted/50">
@@ -2040,8 +2854,8 @@ const getCurrentFiles = () => {
                                     <TableCell><code>'default'</code></TableCell>
                                     <TableCell>
                                         <strong>
-                                            'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link' |
-                                            'success' | 'warning' | 'gradient' | 'glass'
+                                            'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link' | 'success' | 'warning' |
+                                            'gradient' | 'glass'
                                         </strong>
                                     </TableCell>
                                 </TableRow>
@@ -2085,9 +2899,7 @@ const getCurrentFiles = () => {
                                         <Badge variant="outline">string</Badge>
                                     </TableCell>
                                     <TableCell><code>'circle'</code></TableCell>
-                                    <TableCell>
-                                        'circle' | 'spinner' | 'rotate' | 'refresh' | 'gear' | 'dot' | 'disc' | 'none'
-                                    </TableCell>
+                                    <TableCell> 'circle' | 'spinner' | 'rotate' | 'refresh' | 'gear' | 'dot' | 'disc' | 'none' </TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell class="font-mono text-sm">disabled</TableCell>
@@ -2112,12 +2924,12 @@ const getCurrentFiles = () => {
 
                 <!-- Slots -->
                 <Collapsible>
-                    <CollapsibleTrigger class="flex items-center gap-2 font-bold text-lg hover:text-primary transition-colors">
+                    <CollapsibleTrigger class="flex items-center gap-2 text-lg font-bold transition-colors hover:text-primary">
                         <ChevronDown class="h-5 w-5" />
                         🎯 Slots
                     </CollapsibleTrigger>
                     <CollapsibleContent class="mt-3">
-                        <div class="border rounded-lg overflow-hidden">
+                        <div class="overflow-hidden rounded-lg border">
                             <Table>
                                 <TableHeader>
                                     <TableRow class="bg-muted/50">
@@ -2142,12 +2954,12 @@ const getCurrentFiles = () => {
 
                 <!-- Usage Example -->
                 <Collapsible>
-                    <CollapsibleTrigger class="flex items-center gap-2 font-bold text-lg hover:text-primary transition-colors">
+                    <CollapsibleTrigger class="flex items-center gap-2 text-lg font-bold transition-colors hover:text-primary">
                         <ChevronDown class="h-5 w-5" />
                         📝 Usage Examples
                     </CollapsibleTrigger>
                     <CollapsibleContent class="mt-3">
-                        <pre class="bg-muted p-4 rounded-lg text-sm overflow-x-auto"><code>&lt;!-- Submit button with loading --&gt;
+                        <pre class="overflow-x-auto rounded-lg bg-muted p-4 text-sm"><code>&lt;!-- Submit button with loading --&gt;
 &lt;DashboardButton
     type="submit"
     :loading="form.processing"
