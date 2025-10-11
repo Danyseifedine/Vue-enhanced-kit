@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Switch } from '@ui/switch';
+import DashboardToggle from '@/common/components/dashboards/form/DashboardToggle.vue';
 import { computed, ref } from 'vue';
 
 interface ToggleControl {
@@ -38,9 +38,9 @@ const isToggled = computed({
     },
     set: (newValue: boolean) => {
         if (isDisabled.value || !props.onToggle || !switchRef.value) return;
-        
+
         localToggleState.value = newValue;
-        
+
         const control: ToggleControl = {
             element: switchRef.value,
             dontToggle: () => localToggleState.value = null,
@@ -50,7 +50,7 @@ const isToggled = computed({
                 localToggleState.value = !currentPropValue;
             }
         };
-        
+
         props.onToggle(newValue, props.row, control);
     }
 });
@@ -69,11 +69,12 @@ const sizeClasses = computed(() => {
 
 <template>
     <div class="flex items-center justify-center">
-        <Switch
+        <DashboardToggle
             ref="switchRef"
             v-model="isToggled"
             :disabled="isDisabled"
-            :class="[sizeClasses, isDisabled ? 'cursor-not-allowed opacity-50' : '']"
+            :size="size"
+            :class="sizeClasses"
         />
     </div>
 </template>
