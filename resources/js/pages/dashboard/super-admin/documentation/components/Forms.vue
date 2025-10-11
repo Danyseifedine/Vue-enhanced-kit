@@ -1463,7 +1463,7 @@ const roles = [
                     <div>
                         <CardTitle class="text-2xl">DashboardFileUpload</CardTitle>
                         <CardDescription class="text-base mt-2">
-                            Advanced file upload with drag & drop, image previews, and file type validation
+                            Advanced file upload with temporary storage, drag & drop, image previews, progress tracking, and validation
                         </CardDescription>
                     </div>
                     <Badge variant="secondary">File Input</Badge>
@@ -1516,11 +1516,11 @@ const roles = [
                                 <TableRow class="bg-primary/5">
                                     <TableCell class="font-mono text-sm font-bold">modelValue</TableCell>
                                     <TableCell>
-                                        <Badge variant="default">File[] | null</Badge>
+                                        <Badge variant="default">TemporaryFile[] | null</Badge>
                                     </TableCell>
                                     <TableCell><code>null</code></TableCell>
                                     <TableCell>
-                                        <strong>✅ Selected files (v-model binding)</strong>
+                                        <strong>✅ Temporary uploaded files (v-model binding)</strong>
                                     </TableCell>
                                 </TableRow>
                                 <TableRow>
@@ -1559,14 +1559,6 @@ const roles = [
                                         <strong>⚠️ Max file size in bytes (default: 5MB)</strong>
                                     </TableCell>
                                 </TableRow>
-                                <TableRow>
-                                    <TableCell class="font-mono text-sm">maxFiles</TableCell>
-                                    <TableCell>
-                                        <Badge variant="outline">number</Badge>
-                                    </TableCell>
-                                    <TableCell><code>10</code></TableCell>
-                                    <TableCell>Maximum number of files allowed</TableCell>
-                                </TableRow>
                                 <TableRow class="bg-green-500/5">
                                     <TableCell class="font-mono text-sm font-bold">multiple</TableCell>
                                     <TableCell>
@@ -1577,21 +1569,31 @@ const roles = [
                                         <strong>📁 Allow multiple file selection</strong>
                                     </TableCell>
                                 </TableRow>
-                                <TableRow>
-                                    <TableCell class="font-mono text-sm">auto</TableCell>
+                                <TableRow class="bg-green-500/5">
+                                    <TableCell class="font-mono text-sm font-bold">auto</TableCell>
                                     <TableCell>
                                         <Badge variant="outline">boolean</Badge>
                                     </TableCell>
-                                    <TableCell><code>false</code></TableCell>
-                                    <TableCell>Automatically upload files on selection</TableCell>
+                                    <TableCell><code>true</code></TableCell>
+                                    <TableCell>
+                                        <strong>🚀 Automatically upload files to temporary storage on selection</strong>
+                                    </TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell class="font-mono text-sm">customUpload</TableCell>
                                     <TableCell>
                                         <Badge variant="outline">boolean</Badge>
                                     </TableCell>
-                                    <TableCell><code>false</code></TableCell>
-                                    <TableCell>Use custom upload handler via @upload event</TableCell>
+                                    <TableCell><code>true</code></TableCell>
+                                    <TableCell>Uses custom upload handler (temp file storage)</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">context</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">string</Badge>
+                                    </TableCell>
+                                    <TableCell><code>'general'</code></TableCell>
+                                    <TableCell>Context for organizing files (e.g., 'products', 'blogs', 'galleries')</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell class="font-mono text-sm">fileLimit</TableCell>
@@ -1710,9 +1712,9 @@ const roles = [
                                     <TableRow>
                                         <TableCell class="font-mono text-sm">update:modelValue</TableCell>
                                         <TableCell>
-                                            <Badge>File[]</Badge>
+                                            <Badge>TemporaryFile[]</Badge>
                                         </TableCell>
-                                        <TableCell>Emitted when files change (v-model)</TableCell>
+                                        <TableCell>Emitted when temporary files change (v-model)</TableCell>
                                     </TableRow>
                                     <TableRow>
                                         <TableCell class="font-mono text-sm">select</TableCell>
@@ -1762,6 +1764,31 @@ const roles = [
                                             <Badge>ProgressEvent</Badge>
                                         </TableCell>
                                         <TableCell>Emitted during upload progress</TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell class="font-mono text-sm">before-send</TableCell>
+                                        <TableCell>
+                                            <Badge>any</Badge>
+                                        </TableCell>
+                                        <TableCell>Emitted before request is sent to server</TableCell>
+                                    </TableRow>
+                                    <TableRow class="bg-green-500/5">
+                                        <TableCell class="font-mono text-sm font-bold">temp-uploaded</TableCell>
+                                        <TableCell>
+                                            <Badge variant="default">TemporaryFile[]</Badge>
+                                        </TableCell>
+                                        <TableCell>
+                                            <strong>🎉 Emitted when files are successfully uploaded to temporary storage</strong>
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow class="bg-red-500/5">
+                                        <TableCell class="font-mono text-sm font-bold">temp-deleted</TableCell>
+                                        <TableCell>
+                                            <Badge variant="default">string</Badge>
+                                        </TableCell>
+                                        <TableCell>
+                                            <strong>🗑️ Emitted when a temporary file is deleted (receives temp_path)</strong>
+                                        </TableCell>
                                     </TableRow>
                                 </TableBody>
                             </Table>
@@ -1918,16 +1945,14 @@ const handleUpload = async (event) => {
                                 </TableHeader>
                                 <TableBody>
                                     <TableRow>
-                                        <TableCell class="font-mono text-sm">upload()</TableCell>
-                                        <TableCell>Programmatically trigger file upload</TableCell>
-                                    </TableRow>
-                                    <TableRow>
                                         <TableCell class="font-mono text-sm">clear()</TableCell>
-                                        <TableCell>Clear all selected files</TableCell>
+                                        <TableCell>Clear all temporary files from storage and reset the component</TableCell>
                                     </TableRow>
-                                    <TableRow>
-                                        <TableCell class="font-mono text-sm">choose()</TableCell>
-                                        <TableCell>Open file browser dialog</TableCell>
+                                    <TableRow class="bg-blue-500/5">
+                                        <TableCell class="font-mono text-sm font-bold">getTempFiles()</TableCell>
+                                        <TableCell>
+                                            <strong>Returns the current array of temporary files (TemporaryFile[])</strong>
+                                        </TableCell>
                                     </TableRow>
                                 </TableBody>
                             </Table>
@@ -1936,12 +1961,13 @@ const handleUpload = async (event) => {
                             <pre class="bg-muted p-3 rounded text-sm overflow-x-auto"><code>&lt;script setup&gt;
 const fileUploadRef = ref();
 
-const triggerUpload = () => {
-    fileUploadRef.value.upload();
-};
-
 const clearAll = () => {
     fileUploadRef.value.clear();
+};
+
+const getCurrentFiles = () => {
+    const tempFiles = fileUploadRef.value.getTempFiles();
+    console.log('Current temporary files:', tempFiles);
 };
 &lt;/script&gt;
 
