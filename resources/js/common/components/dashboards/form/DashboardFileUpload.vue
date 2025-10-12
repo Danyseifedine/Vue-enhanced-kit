@@ -326,6 +326,27 @@ const removeTempFile = async (tempFile: TemporaryFile) => {
     isDeleting.value = true;
 
     try {
+        // If it's an existing file (not a temp file), just remove from UI
+        // The backend will handle deletion during update
+        if ((tempFile as any).is_existing) {
+            const updatedFiles = tempFiles.value.filter((f) => {
+                // For existing files, compare by media_id or url
+                if ((f as any).is_existing && (tempFile as any).media_id) {
+                    return (f as any).media_id !== (tempFile as any).media_id;
+                }
+                return f.url !== tempFile.url;
+            });
+            tempFiles.value = updatedFiles;
+            emit('update:modelValue', updatedFiles);
+            emit('temp-deleted', tempFile.temp_path || tempFile.url);
+
+            // Force DOM update
+            await nextTick();
+            isDeleting.value = false;
+            return;
+        }
+
+        // For temp files, delete from server
         const response = await fetch(route('uploads.temp.destroy'), {
             method: 'DELETE',
             headers: {
@@ -348,16 +369,8 @@ const removeTempFile = async (tempFile: TemporaryFile) => {
             emit('update:modelValue', updatedFiles);
             emit('temp-deleted', tempFile.temp_path);
 
-            // Debug log to confirm file removal
-            console.log('File removed:', {
-                removedFile: tempFile.temp_path,
-                remainingFiles: updatedFiles.length,
-                isLimitReached: updatedFiles.length >= (props.fileLimit || 0),
-            });
-
             // Force DOM update
             await nextTick();
-            console.log('DOM updated after file removal');
         } else {
             throw new Error(result.message || 'Delete failed');
         }
@@ -385,10 +398,30 @@ const onClear = async () => {
         // Clear selected files
         selectedFiles.value = [];
 
-        // Delete all temp files
-        const deletePromises = tempFiles.value.map((tempFile) => removeTempFile(tempFile));
-        await Promise.all(deletePromises);
+        // Separate temp files from existing files (existing files don't need server deletion)
+        const tempFilesToDelete = tempFiles.value.filter((f) => !(f as any).is_existing && f.temp_path);
 
+        // Delete only temp files from server
+        if (tempFilesToDelete.length > 0) {
+            const deletePromises = tempFilesToDelete.map((tempFile) =>
+                fetch(route('uploads.temp.destroy'), {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': getCsrfToken(),
+                        Accept: 'application/json',
+                    },
+                    body: JSON.stringify({ temp_path: tempFile.temp_path }),
+                }).catch((error) => {
+                    console.error('Failed to delete temp file:', tempFile.temp_path, error);
+                }),
+            );
+            await Promise.allSettled(deletePromises);
+        }
+
+        // Clear all files from UI
+        tempFiles.value = [];
+        emit('update:modelValue', []);
         emit('clear');
     } catch (error) {
         const errorMessage = getErrorMessage(error);

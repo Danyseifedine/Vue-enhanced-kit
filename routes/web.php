@@ -45,6 +45,8 @@ function registerWebRoutes()
         return Inertia::render(SuperAdminPath::view('documentation/Index'));
     })->name('super-admin.documentation');
 
+    
+
     // =========================================================
     // ---------------- Start File Uploads (GLOBAL) ------------
     // =========================================================

@@ -2,8 +2,8 @@
 import DashboardButton from '@/common/components/dashboards/form/DashboardButton.vue';
 import DashboardMaskedInput from '@/common/components/dashboards/form/DashboardMaskedInput.vue';
 import DashboardMultiSelect from '@/common/components/dashboards/form/DashboardMultiSelect.vue';
-import DashboardSelect from '@/common/components/dashboards/form/DashboardSelect.vue';
 import DashboardTextInput from '@/common/components/dashboards/form/DashboardTextInput.vue';
+import DashboardToggle from '@/common/components/dashboards/form/DashboardToggle.vue';
 import Hint from '@/common/components/dashboards/typography/Hint.vue';
 import type { BreadcrumbItem } from '@core/types';
 import { Head, router, useForm } from '@inertiajs/vue3';
@@ -151,17 +151,12 @@ const breadcrumbs: BreadcrumbItem[] = [
             <!-- Status Toggle (optional) -->
             <div class="space-y-2">
                 <Label for="status">Status</Label>
-                <DashboardSelect
+                <DashboardToggle
                     id="status"
                     v-model="form.is_active"
-                    :options="[
-                        { label: 'Active', value: true },
-                        { label: 'Inactive', value: false },
-                    ]"
                     :error="form.errors.is_active"
-                    option-label="label"
-                    option-value="value"
-                    placeholder="Select status"
+                    :label="form.is_active ? 'Active' : 'Inactive'"
+                    :hint="form.is_active ? 'The user account is active.' : 'The user account is inactive.'"
                 />
                 <InputError :message="form.errors.is_active" />
                 <Hint text="Set whether the user account is active or inactive." />

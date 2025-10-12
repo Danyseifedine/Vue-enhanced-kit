@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ToggleSwitch from 'primevue/toggleswitch';
+import Switch from '@/shared/ui/switch/Switch.vue';
 import { computed } from 'vue';
 
 interface Props {
@@ -54,6 +54,12 @@ interface Props {
      * Helper text below toggle
      */
     hint?: string;
+
+    /**
+     * Switch size style
+     * @default 'small'
+     */
+    size?: 'small' | 'medium' | 'large';
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -67,6 +73,7 @@ const props = withDefaults(defineProps<Props>(), {
     class: '',
     showLabel: true,
     hint: '',
+    size: 'small',
 });
 
 const emit = defineEmits<{
@@ -74,12 +81,29 @@ const emit = defineEmits<{
     change: [event: Event];
 }>();
 
-// Computed class with error state
+// Compute Tailwind size class for the Switch
+const sizeClass = computed(() => {
+    switch (props.size) {
+        case 'small':
+            return 'scale-75';
+        case 'large':
+            return 'scale-125';
+        case 'medium':
+        default:
+            return 'scale-100';
+    }
+});
+
+// Computed class with error state and size
 const toggleClasses = computed(() => {
     const classes = [props.class];
 
     if (props.error) {
         classes.push('invalid-toggle');
+    }
+
+    if (sizeClass.value) {
+        classes.push(sizeClass.value);
     }
 
     return classes.join(' ');
@@ -94,7 +118,7 @@ const handleChange = (value: boolean) => {
 <template>
     <div class="space-y-1">
         <div class="flex items-center gap-3" :class="{ 'flex-row-reverse justify-end': labelPosition === 'left' }">
-            <ToggleSwitch :id="id" :model-value="modelValue" :disabled="disabled" :class="toggleClasses" @update:model-value="handleChange" />
+            <Switch :id="id" :model-value="modelValue" :disabled="disabled" :class="toggleClasses" @update:model-value="handleChange" />
             <label
                 v-if="showLabel && label"
                 :for="id"
@@ -116,59 +140,59 @@ const handleChange = (value: boolean) => {
 
 <style scoped>
 /* Dark mode overrides */
-.dark .p-toggleswitch .p-toggleswitch-slider {
+.dark .p-switch .p-switch-slider {
     background-color: #262626 !important;
 }
 
-.dark .p-toggleswitch.p-toggleswitch-checked .p-toggleswitch-slider {
+.dark .p-switch.p-switch-checked .p-switch-slider {
     background-color: hsl(var(--primary)) !important;
 }
 
 /* Light mode overrides */
-.p-toggleswitch .p-toggleswitch-slider {
+.p-switch .p-switch-slider {
     background-color: #e4e4e4 !important;
 }
 
-.p-toggleswitch.p-toggleswitch-checked .p-toggleswitch-slider {
+.p-switch.p-switch-checked .p-switch-slider {
     background-color: hsl(var(--primary)) !important;
 }
 
 /* Error state for toggle */
-.invalid-toggle .p-toggleswitch-slider {
+.invalid-toggle .p-switch-slider {
     border: 2px solid hsl(var(--destructive)) !important;
 }
 
 /* Focus state for toggle */
-.p-toggleswitch:not(.p-disabled):hover .p-toggleswitch-slider {
+.p-switch:not(.p-disabled):hover .p-switch-slider {
     background-color: #d4d4d4 !important;
 }
 
-.dark .p-toggleswitch:not(.p-disabled):hover .p-toggleswitch-slider {
+.dark .p-switch:not(.p-disabled):hover .p-switch-slider {
     background-color: #404040 !important;
 }
 
-.p-toggleswitch.p-toggleswitch-checked:not(.p-disabled):hover .p-toggleswitch-slider {
+.p-switch.p-switch-checked:not(.p-disabled):hover .p-switch-slider {
     background-color: hsl(var(--primary) / 0.9) !important;
 }
 
-.p-toggleswitch .p-toggleswitch-slider:focus-visible {
+.p-switch .p-switch-slider:focus-visible {
     box-shadow: 0 0 0 2px hsl(var(--primary) / 0.2) !important;
     outline: none !important;
 }
 
 /* Error focus state */
-.invalid-toggle .p-toggleswitch-slider:focus-visible {
+.invalid-toggle .p-switch-slider:focus-visible {
     box-shadow: 0 0 0 2px hsl(var(--destructive) / 0.2) !important;
 }
 
 /* Disabled state */
-.p-toggleswitch.p-disabled {
+.p-switch.p-disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
 /* Smooth transitions */
-.p-toggleswitch .p-toggleswitch-slider {
+.p-switch .p-switch-slider {
     transition: all 0.2s ease-in-out;
 }
 </style>

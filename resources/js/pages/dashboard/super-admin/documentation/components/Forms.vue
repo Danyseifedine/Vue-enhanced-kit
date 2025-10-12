@@ -1959,6 +1959,387 @@ const getCurrentFiles = () => {
                         </div>
                     </CollapsibleContent>
                 </Collapsible>
+
+                <!-- Backend Integration -->
+                <Collapsible>
+                    <CollapsibleTrigger
+                        class="flex items-center gap-2 font-bold text-lg hover:text-primary transition-colors"
+                    >
+                        <ChevronDown class="h-5 w-5" />
+                        🔌 Backend Integration (Laravel)
+                    </CollapsibleTrigger>
+                    <CollapsibleContent class="mt-3">
+                        <div class="space-y-4">
+                            <div class="border rounded-lg p-4 bg-blue-500/5">
+                                <h4 class="font-semibold mb-2 text-sm">📋 Overview</h4>
+                                <p class="text-sm text-muted-foreground">
+                                    The DashboardFileUpload component automatically uploads files to temporary storage.
+                                    When the form is submitted, you need to move these temporary files to permanent storage using the FileUploadService.
+                                </p>
+                            </div>
+
+                            <!-- Built-in Helper Methods -->
+                            <div class="border rounded-lg p-4 bg-purple-500/5">
+                                <h4 class="font-semibold mb-3 text-sm flex items-center gap-2">
+                                    <span>🛠️</span>
+                                    Built-in Helper Methods (BaseController)
+                                </h4>
+                                <p class="text-sm text-muted-foreground mb-3">
+                                    When your controller extends <code>BaseController</code>, you automatically get access to these helper methods for file upload handling:
+                                </p>
+
+                                <div class="space-y-4">
+                                    <!-- getExistingFilesForEdit -->
+                                    <div class="border-l-2 border-primary pl-3">
+                                        <code class="text-sm font-semibold text-primary">getExistingFilesForEdit($model, string $collection): array</code>
+                                        <p class="text-xs text-muted-foreground mt-1 mb-2">
+                                            Converts existing media library items to the format expected by DashboardFileUpload component.
+                                        </p>
+                                        <div class="text-xs space-y-1">
+                                            <p><strong>When to use:</strong> In your <code>edit()</code> method to load existing files</p>
+                                            <p><strong>Parameters:</strong></p>
+                                            <ul class="list-disc list-inside ml-2 space-y-0.5">
+                                                <li><code>$model</code> - The model instance (e.g., Product, Blog)</li>
+                                                <li><code>$collection</code> - Media collection name (e.g., 'products', 'avatars')</li>
+                                            </ul>
+                                            <p><strong>Returns:</strong> Array of files formatted for the component</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- updateMediaFiles -->
+                                    <div class="border-l-2 border-primary pl-3">
+                                        <code class="text-sm font-semibold text-primary">updateMediaFiles($model, array $tempFiles, string $collection): int</code>
+                                        <p class="text-xs text-muted-foreground mt-1 mb-2">
+                                            Handles file updates during edit operations. Keeps existing files, removes deleted ones, and adds new uploads.
+                                        </p>
+                                        <div class="text-xs space-y-1">
+                                            <p><strong>When to use:</strong> In your <code>update()</code> method to handle file changes</p>
+                                            <p><strong>Parameters:</strong></p>
+                                            <ul class="list-disc list-inside ml-2 space-y-0.5">
+                                                <li><code>$model</code> - The model instance to update</li>
+                                                <li><code>$tempFiles</code> - Array from <code>$request-&gt;temp_files</code></li>
+                                                <li><code>$collection</code> - Media collection name</li>
+                                            </ul>
+                                            <p><strong>Returns:</strong> Number of new files added</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- getNewTempFiles -->
+                                    <div class="border-l-2 border-primary pl-3">
+                                        <code class="text-sm font-semibold text-primary">getNewTempFiles(array $tempFiles): array</code>
+                                        <p class="text-xs text-muted-foreground mt-1 mb-2">
+                                            Filters out only new temporary files (excludes existing media files).
+                                        </p>
+                                        <div class="text-xs space-y-1">
+                                            <p><strong>When to use:</strong> In error handling to cleanup only new uploads</p>
+                                            <p><strong>Parameters:</strong></p>
+                                            <ul class="list-disc list-inside ml-2 space-y-0.5">
+                                                <li><code>$tempFiles</code> - Array from <code>$request-&gt;temp_files</code></li>
+                                            </ul>
+                                            <p><strong>Returns:</strong> Array containing only new temporary files</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- successWithToast -->
+                                    <div class="border-l-2 border-primary pl-3">
+                                        <code class="text-sm font-semibold text-primary">successWithToast(string $message, string $title = 'Success', ?string $route = null)</code>
+                                        <p class="text-xs text-muted-foreground mt-1 mb-2">
+                                            Returns a redirect response with a success toast notification.
+                                        </p>
+                                        <div class="text-xs space-y-1">
+                                            <p><strong>When to use:</strong> After successful create/update operations</p>
+                                            <p><strong>Parameters:</strong></p>
+                                            <ul class="list-disc list-inside ml-2 space-y-0.5">
+                                                <li><code>$message</code> - Toast message to display</li>
+                                                <li><code>$title</code> - Toast title (default: 'Success')</li>
+                                                <li><code>$route</code> - Route name to redirect to (default: back)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <!-- errorWithToast -->
+                                    <div class="border-l-2 border-primary pl-3">
+                                        <code class="text-sm font-semibold text-primary">errorWithToast(string $message, string $title = 'Error', ?string $route = null)</code>
+                                        <p class="text-xs text-muted-foreground mt-1 mb-2">
+                                            Returns a redirect response with an error toast notification.
+                                        </p>
+                                        <div class="text-xs space-y-1">
+                                            <p><strong>When to use:</strong> For error scenarios without exceptions</p>
+                                            <p><strong>Parameters:</strong></p>
+                                            <ul class="list-disc list-inside ml-2 space-y-0.5">
+                                                <li><code>$message</code> - Toast message to display</li>
+                                                <li><code>$title</code> - Toast title (default: 'Error')</li>
+                                                <li><code>$route</code> - Route name to redirect to (default: back)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Complete Controller Example -->
+                            <div>
+                                <h4 class="font-semibold mb-2 text-sm">📝 Complete Controller Example</h4>
+                                <p class="text-xs text-muted-foreground mb-2">Here's a full CRUD controller using all the built-in helper methods:</p>
+                                <pre class="bg-muted p-3 rounded text-sm overflow-x-auto"><code>&lt;?php
+
+namespace App\Http\Controllers\SuperAdmin;
+
+use App\Http\Controllers\BaseController;
+use App\Models\Product;
+use App\Navigation\SuperAdminPath;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
+
+class ProductController extends BaseController
+{
+    /**
+     * Show the form for creating a new product
+     */
+    public function create()
+    {
+        return Inertia::render(SuperAdminPath::view('products/Create'));
+    }
+
+    /**
+     * Store a newly created product with file uploads
+     */
+    public function store(Request $request)
+    {
+        $request-&gt;validate([
+            'name' =&gt; 'required|string|max:255',
+            'temp_files' =&gt; 'required|array|min:1',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            // Create the product
+            $product = Product::create([
+                'name' =&gt; $request-&gt;name,
+            ]);
+
+            // Move temporary files to media library
+            $filesAdded = $this-&gt;fileUploadService-&gt;moveToMediaLibrary(
+                $product,
+                $request-&gt;temp_files,
+                'products'
+            );
+
+            DB::commit();
+
+            // ✅ Using built-in helper method
+            return $this-&gt;successWithToast(
+                "Product '{$product-&gt;name}' created with {$filesAdded} images.",
+                'Product created successfully',
+                'super-admin.products.index'
+            );
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            // Clean up temporary files on error
+            $this-&gt;fileUploadService-&gt;cleanupTempFiles($request-&gt;temp_files);
+
+            return back()-&gt;withErrors([
+                'temp_files' =&gt; 'Failed to create product: ' . $e-&gt;getMessage(),
+            ])-&gt;withInput();
+        }
+    }
+
+    /**
+     * Show the form for editing a product with existing files
+     */
+    public function edit(Product $product)
+    {
+        // ✅ Using built-in helper method
+        $existingFiles = $this-&gt;getExistingFilesForEdit($product, 'products');
+
+        return Inertia::render(SuperAdminPath::view('products/Edit'), [
+            'product' =&gt; $product,
+            'existingFiles' =&gt; $existingFiles,
+        ]);
+    }
+
+    /**
+     * Update a product and handle file changes
+     */
+    public function update(Request $request, Product $product)
+    {
+        $request-&gt;validate([
+            'name' =&gt; 'required|string|max:255',
+            'temp_files' =&gt; 'sometimes|array',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            // Update the product
+            $product-&gt;update([
+                'name' =&gt; $request-&gt;name,
+            ]);
+
+            // Handle file updates if provided
+            if ($request-&gt;has('temp_files')) {
+                // ✅ Using built-in helper method
+                $this-&gt;updateMediaFiles(
+                    $product,
+                    $request-&gt;temp_files,
+                    'products'
+                );
+            }
+
+            DB::commit();
+
+            // ✅ Using built-in helper method
+            return $this-&gt;successWithToast(
+                "Product '{$product-&gt;name}' has been updated.",
+                'Product updated successfully',
+                'super-admin.products.index'
+            );
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            // Clean up only new temporary files on error
+            if ($request-&gt;has('temp_files')) {
+                // ✅ Using built-in helper method
+                $newTempFiles = $this-&gt;getNewTempFiles($request-&gt;temp_files);
+                if (! empty($newTempFiles)) {
+                    $this-&gt;fileUploadService-&gt;cleanupTempFiles($newTempFiles);
+                }
+            }
+
+            return back()-&gt;withErrors([
+                'temp_files' =&gt; 'Failed to update product: ' . $e-&gt;getMessage(),
+            ])-&gt;withInput();
+        }
+    }
+}</code></pre>
+                            </div>
+
+                            <div>
+                                <h4 class="font-semibold mb-2 text-sm">🎨 Frontend Form Example</h4>
+                                <pre class="bg-muted p-3 rounded text-sm overflow-x-auto"><code>&lt;script setup lang="ts"&gt;
+import { useForm } from '@inertiajs/vue3';
+import DashboardFileUpload from '@common/components/dashboards/form/DashboardFileUpload.vue';
+
+const props = defineProps&lt;{
+    product?: Product;
+    existingFiles?: TemporaryFile[];
+}&gt;();
+
+const form = useForm({
+    name: props.product?.name || '',
+    temp_files: props.existingFiles || [],
+});
+
+const submit = () => {
+    if (props.product) {
+        form.put(route('super-admin.products.update', props.product.id));
+    } else {
+        form.post(route('super-admin.products.store'));
+    }
+};
+&lt;/script&gt;
+
+&lt;template&gt;
+    &lt;form @submit.prevent="submit"&gt;
+        &lt;Label for="name" required&gt;Product Name&lt;/Label&gt;
+        &lt;DashboardTextInput
+            id="name"
+            v-model="form.name"
+            :error="form.errors.name"
+        /&gt;
+
+        &lt;Label for="images" required&gt;Product Images&lt;/Label&gt;
+        &lt;DashboardFileUpload
+            id="images"
+            v-model="form.temp_files"
+            accept="image/*"
+            :multiple="true"
+            :file-limit="5"
+            context="products"
+            :error="form.errors.temp_files"
+        /&gt;
+
+        &lt;DashboardButton type="submit" :loading="form.processing"&gt;
+            {{ product ? 'Update' : 'Create' }} Product
+        &lt;/DashboardButton&gt;
+    &lt;/form&gt;
+&lt;/template&gt;</code></pre>
+                            </div>
+
+                            <div class="border rounded-lg p-4 bg-yellow-500/5">
+                                <h4 class="font-semibold mb-2 text-sm flex items-center gap-2">
+                                    <span>💡</span>
+                                    Key Points
+                                </h4>
+                                <ul class="space-y-2 text-sm text-muted-foreground">
+                                    <li class="flex items-start gap-2">
+                                        <span class="text-primary">•</span>
+                                        <span><strong>Extend BaseController:</strong> Your controller must extend <code>BaseController</code> to access helper methods</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <span class="text-primary">•</span>
+                                        <span><strong>Temporary Storage:</strong> Files are uploaded to temporary storage first, not directly attached to models</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <span class="text-primary">•</span>
+                                        <span><strong>FileUploadService:</strong> Automatically injected into BaseController via constructor</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <span class="text-primary">•</span>
+                                        <span><strong>Helper Methods:</strong> Use <code>getExistingFilesForEdit()</code>, <code>updateMediaFiles()</code>, <code>getNewTempFiles()</code> for cleaner code</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <span class="text-primary">•</span>
+                                        <span><strong>Cleanup:</strong> Always cleanup temp files on errors using <code>cleanupTempFiles()</code></span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <span class="text-primary">•</span>
+                                        <span><strong>Context:</strong> Use the <code>context</code> prop to organize files by type (e.g., 'products', 'blogs')</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <span class="text-primary">•</span>
+                                        <span><strong>Transactions:</strong> Wrap file operations in database transactions for data consistency</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <span class="text-primary">•</span>
+                                        <span><strong>Toast Helpers:</strong> Use <code>successWithToast()</code> and <code>errorWithToast()</code> for consistent user feedback</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="border rounded-lg p-4 bg-green-500/5">
+                                <h4 class="font-semibold mb-2 text-sm">🔄 Request Data Structure</h4>
+                                <p class="text-sm text-muted-foreground mb-2">The <code>temp_files</code> array contains objects with:</p>
+                                <pre class="bg-muted p-3 rounded text-sm overflow-x-auto"><code>// New uploaded files:
+[
+    {
+        "temp_path": "temp-uploads/products/abc123.jpg",
+        "original_name": "product-image.jpg",
+        "size": 245678,
+        "mime_type": "image/jpeg",
+        "url": "/storage/temp-uploads/products/abc123.jpg",
+        "is_existing": false
+    }
+]
+
+// Existing media files (from edit):
+[
+    {
+        "temp_path": null,
+        "original_name": "existing-product.jpg",
+        "size": 189234,
+        "mime_type": "image/jpeg",
+        "url": "/storage/products/existing-product.jpg",
+        "media_id": 42,
+        "is_existing": true
+    }
+]</code></pre>
+                            </div>
+                        </div>
+                    </CollapsibleContent>
+                </Collapsible>
             </CardContent>
         </Card>
 
@@ -2355,6 +2736,14 @@ const getCurrentFiles = () => {
                                     </TableCell>
                                     <TableCell><code>''</code></TableCell>
                                     <TableCell>Label text</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell class="font-mono text-sm">size</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">string</Badge>
+                                    </TableCell>
+                                    <TableCell><code>'small'</code></TableCell>
+                                    <TableCell>'small' | 'medium' | 'large'</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell class="font-mono text-sm">error</TableCell>
