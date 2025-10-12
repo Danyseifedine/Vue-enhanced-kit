@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\FileUpload\FileUploadService;
+use App\Services\File\FileUploadService;
 use App\Traits\HasDataTable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -66,9 +66,10 @@ class BaseController extends Controller
         return response()->json($response, $statusCode);
     }
 
-    public function successWithToast(string $message, string $title = 'Success')
+    public function successWithToast(string $message, string $title = 'Success', string $route = null)
     {
-        return redirect()->back()->with([
+        $redirect = $route ? redirect()->route($route) : redirect()->back();
+        return $redirect->with([
             'success' => true,
             'toast' => [
                 'type' => 'success',
@@ -78,9 +79,10 @@ class BaseController extends Controller
         ]);
     }
 
-    public function errorWithToast(string $message, string $title = 'Error')
+    public function errorWithToast(string $message, string $title = 'Error', string $route = null)
     {
-        return redirect()->back()->with([
+        $redirect = $route ? redirect()->route($route) : redirect()->back();
+        return $redirect->with([
             'success' => false,
             'toast' => [
                 'type' => 'error',

@@ -53,14 +53,7 @@ class UsersController extends BaseController
         ]);
 
         $this->userService->create($request->all());
-        return redirect()->route('super-admin.users.index')->with([
-            'success' => true,
-            'toast' => [
-                'type' => 'success',
-                'title' => 'User created successfully',
-                'message' => 'User created successfully.'
-            ]
-        ]);
+        return $this->successWithToast('User created successfully', 'Success', 'super-admin.users.index');
     }
 
     public function edit(User $user)
@@ -84,6 +77,7 @@ class UsersController extends BaseController
         ]);
 
         $this->userService->update($user, $request->all());
+        return $this->successWithToast('User updated successfully', 'Success', 'super-admin.users.index');
     }
 
     public function show(User $user)

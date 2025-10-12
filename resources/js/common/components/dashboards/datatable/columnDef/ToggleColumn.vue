@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DashboardToggle from '@/common/components/dashboards/form/DashboardToggle.vue';
+import { Switch } from '@ui/switch';
 import { computed, ref } from 'vue';
 
 interface ToggleControl {
@@ -69,12 +69,11 @@ const sizeClasses = computed(() => {
 
 <template>
     <div class="flex items-center justify-center">
-        <DashboardToggle
+        <Switch
             ref="switchRef"
             v-model="isToggled"
             :disabled="isDisabled"
-            :size="size"
-            :class="sizeClasses"
+            :class="[sizeClasses, isDisabled ? 'cursor-not-allowed opacity-50' : '']"
         />
     </div>
 </template>

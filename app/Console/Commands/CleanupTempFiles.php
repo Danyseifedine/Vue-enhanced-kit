@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Services\FileUpload\FileUploadService;
+use App\Services\File\FileUploadService;
 use Illuminate\Console\Command;
 
 class CleanupTempFiles extends Command

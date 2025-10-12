@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\FileUpload;
+namespace App\Services\File;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
