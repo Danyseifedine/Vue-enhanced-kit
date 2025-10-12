@@ -38,7 +38,7 @@ const visibleActions = computed(() => props.actions.filter((action) => !action.s
 </script>
 
 <template>
-    <div @click.stop>
+    <div @click.stop.prevent>
         <DropdownMenu>
             <DropdownMenuTrigger as-child>
                 <Button variant="ghost" size="icon" class="h-8 w-8">

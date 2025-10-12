@@ -49,6 +49,8 @@ export const userColumns = createColumns<User>([
     toggleColumn('is_active', 'Active', {
         onToggle: (value: boolean, user: User, control) => {
             router.patch(route('super-admin.users.toggle-status', user.id), { is_active: value }, {
+                preserveScroll: true,
+                preserveState: true,
                 onStart: () => {
                     isToggleLoading.value = true;
                 },

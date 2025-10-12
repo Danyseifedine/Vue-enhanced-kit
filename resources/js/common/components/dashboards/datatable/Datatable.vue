@@ -106,7 +106,7 @@ const hasActiveFilters = computed(() => {
                         :model-value="globalFilter"
                         :placeholder="config.searchPlaceholder"
                         class="h-9 pl-8"
-                        @update:model-value="(value: string) => handleSearch(value)"
+                        @update:model-value="(value: string | number) => handleSearch(String(value))"
                     />
                 </div>
             </div>

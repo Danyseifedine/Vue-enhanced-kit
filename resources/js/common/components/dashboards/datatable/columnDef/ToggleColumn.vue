@@ -43,16 +43,16 @@ const isToggled = computed({
 
         const control: ToggleControl = {
             element: switchRef.value,
-            dontToggle: () => localToggleState.value = null,
-            revert: () => localToggleState.value = null,
+            dontToggle: () => (localToggleState.value = null),
+            revert: () => (localToggleState.value = null),
             toggle: () => {
                 const currentPropValue = props.toggledWhen ? props.toggledWhen(props.value, props.row) : !!props.value;
                 localToggleState.value = !currentPropValue;
-            }
+            },
         };
 
         props.onToggle(newValue, props.row, control);
-    }
+    },
 });
 
 const sizeClasses = computed(() => {
@@ -68,7 +68,7 @@ const sizeClasses = computed(() => {
 </script>
 
 <template>
-    <div class="flex items-center justify-center">
+    <div class="flex items-center justify-center" @click.stop.prevent>
         <Switch
             ref="switchRef"
             v-model="isToggled"
