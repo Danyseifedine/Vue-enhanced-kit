@@ -16,7 +16,7 @@ class RoleService
     public function getBaseQuery(): Builder
     {
         return Role::select('id', 'name', 'guard_name', 'created_at')
-            ->withCount('permissions');
+            ->with('permissions:id,name');
     }
 
     /**

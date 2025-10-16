@@ -1,10 +1,10 @@
 import {
     createColumns,
-    selectColumn,
     textColumn,
     badgeColumn,
     dateColumn,
-    actionsColumn
+    actionsColumn,
+    counterColumn
 } from '@/common/components/dashboards/datatable/columnDef'
 import { Copy, Eye, Edit, Trash2 } from 'lucide-vue-next'
 import type { Role } from './type'
@@ -12,8 +12,9 @@ import type { Role } from './type'
 export const roleColumns = createColumns<Role>([
 
     // Row counter (change to selectColumn() for checkboxes)
-    selectColumn(),
-
+    counterColumn('#', {
+        startFrom: 1,
+    }),
     // Name with custom styling
     textColumn('name', 'Name', {
         sortable: true,
@@ -22,13 +23,8 @@ export const roleColumns = createColumns<Role>([
         className: 'font-medium font-bold',
     }),
 
-    // Permissions count
-    textColumn('permissions_count', 'Permissions', {
-        format: (value: any) => {
-            const count = value || 0;
-            return `${count} ${count === 1 ? 'permission' : 'permissions'}`;
-        },
-    }),
+    // Permissions with badge variants
+    badgeColumn('permissions', 'Permissions'),
 
     // Join date
     dateColumn('created_at', 'Created', {

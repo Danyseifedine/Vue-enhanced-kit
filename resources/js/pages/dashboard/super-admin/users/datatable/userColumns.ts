@@ -1,6 +1,6 @@
 import {
     createColumns,
-    selectColumn,
+    counterColumn,
     toggleColumn,
     textColumn,
     badgeColumn,
@@ -22,7 +22,9 @@ const isToggleLoading = ref(false);
 export const userColumns = createColumns<User>([
 
     // Row counter (change to selectColumn() for checkboxes)
-    selectColumn(),
+    counterColumn('#', {
+        startFrom: 1,
+    }),
 
     // Name with custom styling
     textColumn('name', 'Name', {
@@ -40,10 +42,7 @@ export const userColumns = createColumns<User>([
     }),
 
     // Roles with badge variants
-    badgeColumn('roles', 'Roles', {
-        'super-admin': 'default',
-        'user': 'outline',
-    }),
+    badgeColumn('roles', 'Roles'),
 
     // Active status toggle
     toggleColumn('is_active', 'Active', {
