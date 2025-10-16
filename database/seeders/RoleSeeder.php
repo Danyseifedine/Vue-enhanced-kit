@@ -15,7 +15,6 @@ class RoleSeeder extends Seeder
     {
         $roles = [
             'super-admin' => [
-                'access-super-admin-panel',
                 'access-super-admin-dashboard',
                 'update-super-admin-profile',
                 'delete-super-admin-profile',

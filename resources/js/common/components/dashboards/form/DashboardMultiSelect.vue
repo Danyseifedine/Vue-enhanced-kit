@@ -218,6 +218,7 @@ const handleFocus = (event: Event) => {
     border: 1px solid #e4e4e4 !important;
     background-color: transparent !important;
     min-height: 2.5rem !important;
+    height: auto !important;
 }
 
 /* Dark mode multiselect */
@@ -264,6 +265,10 @@ const handleFocus = (event: Event) => {
 .multiselect-wrapper .p-multiselect-label {
     padding: 0.5rem 0.75rem !important;
     color: hsl(var(--foreground)) !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 0.25rem !important;
+    align-items: center !important;
 }
 
 /* Placeholder */
@@ -463,10 +468,11 @@ const handleFocus = (event: Event) => {
     color: hsl(var(--secondary-foreground)) !important;
     padding: 0.125rem 0.375rem !important;
     border-radius: 0.25rem !important;
-    margin-right: 0.25rem !important;
+    margin: 0 !important;
     font-size: 0.75rem !important;
     display: inline-flex !important;
     align-items: center !important;
+    flex-shrink: 0 !important;
 }
 
 /* Chip remove icon */

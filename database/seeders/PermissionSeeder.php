@@ -19,7 +19,6 @@ class PermissionSeeder extends Seeder
             // ---------------- Start Super Admin ---------------
             // ================================================
             // Dashboard permissions
-            'access-super-admin-panel',
             'access-super-admin-dashboard',
 
             // Profile permissions

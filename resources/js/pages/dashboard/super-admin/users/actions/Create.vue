@@ -13,6 +13,7 @@ import { Label } from '@ui/label';
 
 const props = defineProps<{
     roles: any[];
+    permissions: any[];
 }>();
 
 const roles = props.roles.map((role: any) => ({
@@ -20,14 +21,20 @@ const roles = props.roles.map((role: any) => ({
     id: role.id,
 }));
 
-// Form - Changed roles to array and added permissions
+const permissions = props.permissions.map((permission: any) => ({
+    name: permission.name,
+    id: permission.id,
+}));
+
+// Form - Initialize with empty values
 const form = useForm({
     name: '',
     email: '',
     password: '',
     password_confirmation: '',
-    roles: [] as string[], // Changed from single role to array of roles
+    roles: [] as string[],
     is_active: true,
+    permissions: [] as string[],
 });
 
 // Submit handler
@@ -141,11 +148,31 @@ const breadcrumbs: BreadcrumbItem[] = [
                     filter-placeholder="Search roles..."
                     display="chip"
                     :show-toggle-all="false"
-                    :max-selected-labels="5"
+                    :max-selected-labels="999"
                     selected-items-label="{0} roles selected"
                 />
                 <InputError :message="form.errors.roles" />
                 <Hint text="Assign one or more roles to this user. Roles determine the user's access level." />
+            </div>
+            <div class="space-y-2">
+                <Label for="permissions">Permissions</Label>
+                <DashboardMultiSelect
+                    id="permissions"
+                    v-model="form.permissions"
+                    :options="permissions"
+                    option-label="name"
+                    option-value="id"
+                    placeholder="Select permissions"
+                    :error="form.errors.permissions"
+                    filter
+                    filter-placeholder="Search permissions..."
+                    display="chip"
+                    :show-toggle-all="false"
+                    :max-selected-labels="999"
+                    selected-items-label="{0} permissions selected"
+                />
+                <InputError :message="form.errors.permissions" />
+                <Hint text="Assign one or more permissions to this user. Permissions determine the user's access level." />
             </div>
 
             <!-- Status Toggle (optional) -->

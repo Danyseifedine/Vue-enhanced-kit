@@ -7,8 +7,10 @@ use App\Navigation\SuperAdminPath;
 use App\Models\User;
 use App\Services\Core\UserService;
 use Inertia\Inertia;
-use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+use App\Http\Requests\User\StoreUserRequest;
+use App\Http\Requests\User\UpdateUserRequest;
 
 class UsersController extends BaseController
 {
@@ -31,61 +33,50 @@ class UsersController extends BaseController
         return Inertia::render(SuperAdminPath::view("users/Index"), [
             'users' => $users,
             'filters' => $this->getFilters(['role', 'status', 'email_verified', 'created_from', 'created_to']),
+            'roles' => Role::all(),
         ]);
     }
 
     public function create()
     {
-        $roles = Role::all();
         return Inertia::render(SuperAdminPath::view("users/actions/Create"), [
-            'roles' => $roles,
+            'roles' => Role::all(),
+            'permissions' => Permission::all(),
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
-            'password' => 'required|string|min:8',
-            'roles' => 'required|array|exists:roles,id',
-            'is_active' => 'required|boolean',
-        ]);
-
         $this->userService->create($request->all());
         return $this->successWithToast('User created successfully', 'Success', 'super-admin.users.index');
     }
 
     public function edit(User $user)
     {
-        $user->load('roles');
-
-        $roles = Role::all();
-
         return Inertia::render(SuperAdminPath::view("users/actions/Edit"), [
             'user' => $user,
-            'roles' => $roles,
+            'roles' => Role::all(),
+            'permissions' => Permission::all(),
         ]);
     }
 
-    public function update(Request $request, User $user)
+    public function update(UpdateUserRequest $request, User $user)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'roles' => 'required|array|exists:roles,id',
-            'is_active' => 'required|boolean',
-        ]);
-
         $this->userService->update($user, $request->all());
         return $this->successWithToast('User updated successfully', 'Success', 'super-admin.users.index');
     }
 
     public function show(User $user)
     {
-        $user->load('roles');
         return Inertia::render(SuperAdminPath::view("users/actions/Show"), [
             'user' => $user,
         ]);
+    }
+
+    public function destroy(User $user)
+    {
+        $this->userService->delete($user);
+        return $this->successWithToast('User deleted successfully', 'Success', 'super-admin.users.index');
     }
 
 

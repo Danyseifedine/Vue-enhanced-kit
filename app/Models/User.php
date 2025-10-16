@@ -54,6 +54,8 @@ class User extends Authenticatable implements MustVerifyEmail, HasMedia
 
     protected $with = [
         'media',
+        'roles',
+        'permissions',
     ];
 
     /**

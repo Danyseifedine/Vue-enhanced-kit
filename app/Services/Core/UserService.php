@@ -31,7 +31,7 @@ class UserService
                 'role' => [
                     'type' => 'relationship',
                     'relationship' => 'roles',
-                    'relation_column' => 'name',
+                    'relation_column' => 'id',
                 ],
                 'status' => function ($query, $value) {
                     if ($value === 'active') {
@@ -86,6 +86,8 @@ class UserService
      */
     public function update(User $user, array $data): bool
     {
+        $user->syncRoles($data['roles']);
+        $user->syncPermissions($data['permissions']);
         return $user->update($data);
     }
 
@@ -97,7 +99,7 @@ class UserService
         User::create($data);
         $user = User::where('email', $data['email'])->first();
         $user->assignRole($data['roles']);
-
+        $user->givePermissionTo($data['permissions']);
         return $user;
     }
 

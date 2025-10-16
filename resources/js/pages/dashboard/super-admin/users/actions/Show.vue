@@ -137,12 +137,12 @@ const handleDelete = () => {
 
         <!-- Roles & Permissions -->
         <div class="space-y-4">
-            <h3 class="text-lg font-semibold">Roles</h3>
+            <h3 class="text-lg font-semibold">Permissions</h3>
             <div class="flex flex-wrap gap-2">
-                <Badge v-for="role in user.roles" :key="role.id" variant="outline" class="px-3 py-1 text-sm">
-                    {{ role.name }}
+                <Badge v-for="permission in user.permissions" :key="permission.id" variant="outline" class="px-3 py-1 text-sm">
+                    {{ permission.name }}
                 </Badge>
-                <Badge v-if="!user.roles || user.roles.length === 0" variant="secondary"> No roles assigned </Badge>
+                <Badge v-if="!user.permissions || user.permissions.length === 0" variant="secondary"> No permissions assigned </Badge>
             </div>
         </div>
     </ActionLayout>

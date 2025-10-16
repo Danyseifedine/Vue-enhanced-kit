@@ -34,7 +34,6 @@ function registerWebRoutes()
         'auth',
         'verified',
         'role:super-admin',
-        'permission:access-super-admin-panel',
     ])->group(function () {
         require __DIR__ . '/super-admin.php';
     });
@@ -45,7 +44,7 @@ function registerWebRoutes()
         return Inertia::render(SuperAdminPath::view('documentation/Index'));
     })->name('super-admin.documentation');
 
-    
+
 
     // =========================================================
     // ---------------- Start File Uploads (GLOBAL) ------------

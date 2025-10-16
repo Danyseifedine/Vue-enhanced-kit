@@ -105,12 +105,12 @@ export const userColumns = createColumns<User>([
         {
             label: 'View',
             icon: Eye,
-            href: (user) => route('users.show', user.id),
+            href: (user) => route('super-admin.users.show', user.id),
         },
         {
             label: 'Edit',
             icon: Edit,
-            href: (user) => route('users.edit', user.id),
+            href: (user) => route('super-admin.users.edit', user.id),
         },
         { separator: true, label: 'Separator', show: (user: User) => !userIsSuperAdmin(user) },
         {
@@ -121,8 +121,9 @@ export const userColumns = createColumns<User>([
             icon: Trash2,
             destructive: true,
             onClick: (user) => {
-                if (confirm('Are you sure?')) {
-                    router.delete(route('users.destroy', user.id))
+                // Call the global openDeleteDialog function
+                if ((window as any).openDeleteDialog) {
+                    (window as any).openDeleteDialog(user);
                 }
             },
         },

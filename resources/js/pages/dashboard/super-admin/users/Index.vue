@@ -2,6 +2,7 @@
 import DataTable from '@/common/components/dashboards/datatable/Datatable.vue';
 import DashboardButton from '@/common/components/dashboards/form/DashboardButton.vue';
 import DashboardDatePicker from '@/common/components/dashboards/form/DashboardDatePicker.vue';
+import DashboardSelect from '@/common/components/dashboards/form/DashboardSelect.vue';
 import { useFilters } from '@/core/composables/useFilters';
 import { useToast } from '@/core/composables/useToast';
 import { formatDateForBackend } from '@/core/utils/formatters';
@@ -9,11 +10,12 @@ import { parseDate } from '@/core/utils/parsers';
 import type { BreadcrumbItem } from '@core/types';
 import type { DataTablePageProps } from '@core/types/datatable';
 import { Head, router } from '@inertiajs/vue3';
+import DeleteDialog from '@modules/admin/components/DeleteDialog.vue';
+import { useDeleteDialog } from '@modules/admin/composables/useDeleteDialog';
 import AdminLayout from '@modules/admin/layouts/AdminLayout.vue';
 import { Tag } from '@ui/badge';
 import { Button } from '@ui/button';
 import { Plus } from 'lucide-vue-next';
-import Select from 'primevue/select';
 import { onMounted, watch } from 'vue';
 import type { User } from './datatable/type';
 import { userColumns } from './datatable/userColumns';
@@ -31,6 +33,7 @@ interface UserFilters {
 const props = defineProps<{
     users: DataTablePageProps<User, UserFilters>['data'];
     filters: DataTablePageProps<User, UserFilters>['filters'];
+    roles: any[];
 }>();
 
 // Initialize filters from URL params
@@ -57,6 +60,11 @@ const { localFilters, isFilteringLoading, hasActiveFilters, activeFilterCount, a
     },
 );
 
+const roleOptions = props.roles.map((role: any) => ({
+    name: role.name,
+    id: role.id,
+}));
+
 watch(
     () => props.filters,
     (newFilters) => {
@@ -68,11 +76,6 @@ watch(
 );
 
 // Filter options
-const roleOptions = [
-    { name: 'Super Admin', code: 'super-admin' },
-    { name: 'User', code: 'user' },
-];
-
 const statusOptions = [
     { name: 'Active', code: 'active' },
     { name: 'Inactive', code: 'inactive' },
@@ -116,8 +119,8 @@ const tableConfig = {
 };
 
 // Handle events
-const handleSelectionChange = (users: User[]) => {
-    console.log('Selected:', users);
+const handleSelectionChange = () => {
+    //
 };
 
 const { initFlashToasts } = useToast();
@@ -136,6 +139,9 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: route('super-admin.users.index'),
     },
 ];
+
+// Delete dialog using composable
+const { deleteDialogOpen, itemToDelete: userToDelete } = useDeleteDialog<User>('openDeleteDialog');
 </script>
 
 <template>
@@ -180,11 +186,11 @@ const breadcrumbs: BreadcrumbItem[] = [
                             <!-- Role Filter -->
                             <div class="space-y-2">
                                 <label class="text-sm font-medium">Role</label>
-                                <Select
+                                <DashboardSelect
                                     v-model="localFilters.role"
                                     :options="roleOptions"
                                     optionLabel="name"
-                                    optionValue="code"
+                                    optionValue="id"
                                     placeholder="All Roles"
                                     class="w-full"
                                     size="small"
@@ -198,7 +204,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                             <!-- Status Filter -->
                             <div class="space-y-2">
                                 <label class="text-sm font-medium">Status</label>
-                                <Select
+                                <DashboardSelect
                                     v-model="localFilters.status"
                                     :options="statusOptions"
                                     optionLabel="name"
@@ -216,7 +222,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                             <!-- Email Verified Filter -->
                             <div class="space-y-2">
                                 <label class="text-sm font-medium">Email Verification</label>
-                                <Select
+                                <DashboardSelect
                                     v-model="localFilters.email_verified"
                                     :options="emailVerifiedOptions"
                                     optionLabel="name"
@@ -273,6 +279,15 @@ const breadcrumbs: BreadcrumbItem[] = [
                     </div>
                 </template>
             </DataTable>
+
+            <!-- Delete confirmation dialog -->
+            <DeleteDialog
+                v-model:open="deleteDialogOpen"
+                :item-id="userToDelete?.id ?? null"
+                :item-name="userToDelete?.name"
+                route-name="super-admin.users.destroy"
+                title="Delete User"
+            />
         </div>
     </AdminLayout>
 </template>
