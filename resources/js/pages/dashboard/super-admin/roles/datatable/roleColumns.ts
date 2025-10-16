@@ -20,7 +20,7 @@ export const roleColumns = createColumns<Role>([
         sortable: true,
         searchable: true,
         visible: true,
-        className: 'font-medium font-bold',
+        className: 'font-medium font-bold w-[120px]',
     }),
 
     // Permissions with badge variants

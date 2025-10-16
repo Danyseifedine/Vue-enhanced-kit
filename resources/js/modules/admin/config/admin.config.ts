@@ -2,7 +2,9 @@ import type { DashboardConfig } from '../../../core/types/dashboardTypes';
 import type { NavItem } from "@/core/types";
 import {
     BookOpen,
+    Key,
     LayoutGrid,
+    Shield,
     Users,
 } from "lucide-vue-next";
 
@@ -19,6 +21,29 @@ const getAdminSidebarMainItems = (): NavItem[] => [
         icon: Users,
         permissions: ['access-super-admin-dashboard'],
     },
+    {
+
+        title: 'Privileges',
+        isSection: true,
+    },
+    {
+        title: 'Roles',
+        href: route('super-admin.roles.index'),
+        icon: Shield,
+        permissions: ['access-super-admin-role'],
+    },
+    {
+        title: 'Permissions',
+        href: route('super-admin.permissions.index'),
+        icon: Key,
+        permissions: ['access-super-admin-permission'],
+    },
+    // {
+    //     title: 'Products',
+    //     href: route('super-admin.products.create'),
+    //     icon: Package,
+    //     permissions: ['access-super-admin-dashboard'],
+    // },
 ];
 
 const getAdminSidebarFooterItems = (): NavItem[] => [

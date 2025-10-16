@@ -12,7 +12,9 @@ class PermissionsController extends BaseController
 {
     public function __construct(
         private PermissionService $permissionService
-    ) {}
+    ) {
+        $this->middleware('permission:access-super-admin-permission')->only('index');
+    }
 
     public function index()
     {

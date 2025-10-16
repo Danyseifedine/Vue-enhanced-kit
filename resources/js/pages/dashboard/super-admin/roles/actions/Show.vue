@@ -5,7 +5,7 @@ import { Head, router } from '@inertiajs/vue3';
 import ActionLayout from '@modules/admin/layouts/ActionLayout.vue';
 import { Badge } from '@ui/badge';
 import { Separator } from '@ui/separator';
-import { Calendar, Edit, Shield, Trash2 } from 'lucide-vue-next';
+import { Calendar, Edit, Shield } from 'lucide-vue-next';
 import type { Role } from '../datatable/type';
 
 interface Props {
@@ -19,17 +19,6 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Roles', href: route('super-admin.roles.index') },
     { title: props.role.name, href: route('super-admin.roles.show', props.role.id) },
 ];
-
-// Delete handler
-const handleDelete = () => {
-    if (confirm('Are you sure you want to delete this role?')) {
-        router.delete(route('super-admin.roles.destroy', props.role.id), {
-            onSuccess: () => {
-                router.visit(route('super-admin.roles.index'));
-            },
-        });
-    }
-};
 </script>
 
 <template>
@@ -57,10 +46,6 @@ const handleDelete = () => {
                 <DashboardButton variant="outline" @click="router.visit(route('super-admin.roles.edit', props.role.id))">
                     <Edit class="mr-2 h-4 w-4" />
                     Edit
-                </DashboardButton>
-                <DashboardButton variant="destructive" @click="handleDelete">
-                    <Trash2 class="mr-2 h-4 w-4" />
-                    Delete
                 </DashboardButton>
             </div>
         </div>

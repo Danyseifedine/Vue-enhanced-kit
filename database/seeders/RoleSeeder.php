@@ -19,6 +19,13 @@ class RoleSeeder extends Seeder
                 'update-super-admin-profile',
                 'delete-super-admin-profile',
                 'update-super-admin-password',
+
+                'create-super-admin-role',
+                'access-super-admin-role',
+                'update-super-admin-role',
+                'delete-super-admin-role',
+
+                'access-super-admin-permission',
             ],
 
             'user' => [],

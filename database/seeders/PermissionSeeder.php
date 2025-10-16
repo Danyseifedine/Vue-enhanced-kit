@@ -26,6 +26,15 @@ class PermissionSeeder extends Seeder
             'delete-super-admin-profile',
             'update-super-admin-password',
 
+            // Roles permissions
+            'create-super-admin-role',
+            'access-super-admin-role',
+            'update-super-admin-role',
+            'delete-super-admin-role',
+
+            // Permissions permissions
+            'access-super-admin-permission',
+
             // ================================================
             // ---------------- End Super Admin ---------------
             // ================================================

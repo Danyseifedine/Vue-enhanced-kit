@@ -6,7 +6,7 @@ import ActionLayout from '@modules/admin/layouts/ActionLayout.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@ui/avatar';
 import { Badge } from '@ui/badge';
 import { Separator } from '@ui/separator';
-import { Calendar, Edit, Mail, Shield, Trash2 } from 'lucide-vue-next';
+import { Calendar, Edit, Mail, Shield } from 'lucide-vue-next';
 import type { User } from '../datatable/type';
 
 interface Props {
@@ -36,16 +36,6 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: props.user.name, href: route('super-admin.users.show', props.user.id) },
 ];
 
-// Delete handler
-const handleDelete = () => {
-    if (confirm('Are you sure you want to delete this user?')) {
-        router.delete(route('super-admin.users.destroy', props.user.id), {
-            onSuccess: () => {
-                router.visit(route('super-admin.users.index'));
-            },
-        });
-    }
-};
 </script>
 
 <template>
@@ -80,10 +70,6 @@ const handleDelete = () => {
                 <DashboardButton variant="outline" @click="router.visit(route('super-admin.users.edit', props.user.id))">
                     <Edit class="mr-2 h-4 w-4" />
                     Edit
-                </DashboardButton>
-                <DashboardButton variant="destructive" @click="handleDelete">
-                    <Trash2 class="mr-2 h-4 w-4" />
-                    Delete
                 </DashboardButton>
             </div>
         </div>
