@@ -14,7 +14,7 @@ const getAdminSidebarMainItems = (): NavItem[] => [
         href: route('super-admin.dashboard'),
         icon: LayoutGrid,
         iconColor: '#3b82f6',
-        iconSize: '1.25rem', // 18px
+        iconSize: '1.25rem',
         permissions: ['access-super-admin-dashboard'],
     },
     {
@@ -26,7 +26,7 @@ const getAdminSidebarMainItems = (): NavItem[] => [
         href: route('super-admin.users.index'),
         icon: User,
         iconColor: '#10b981',
-        iconSize: '1.25rem', // 18px
+        iconSize: '1.25rem',
         permissions: ['access-super-admin-dashboard'],
     },
 
@@ -40,7 +40,7 @@ const getAdminSidebarMainItems = (): NavItem[] => [
         href: route('super-admin.roles.index'),
         icon: Shield,
         iconColor: '#f59e0b',
-        iconSize: '1.25rem', // 18px
+        iconSize: '1.25rem',
         permissions: ['access-super-admin-role'],
     },
     {
@@ -48,15 +48,9 @@ const getAdminSidebarMainItems = (): NavItem[] => [
         href: route('super-admin.permissions.index'),
         icon: Key,
         iconColor: '#ef4444',
-        iconSize: '1.25rem', // 22px
+        iconSize: '1.25rem',
         permissions: ['access-super-admin-permission'],
     },
-    // {
-    //     title: 'Products',
-    //     href: route('super-admin.products.create'),
-    //     icon: Package,
-    //     permissions: ['access-super-admin-dashboard'],
-    // },
 ];
 
 const getAdminSidebarFooterItems = (): NavItem[] => [
