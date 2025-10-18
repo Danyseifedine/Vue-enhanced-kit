@@ -14,10 +14,6 @@ const sidebarNavItems: NavItem[] = [
         title: 'Password',
         href: route('super-admin.settings.password.edit'),
     },
-    {
-        title: 'Appearance',
-        href: route('super-admin.settings.appearance'),
-    },
 ];
 
 const page = usePage();
@@ -29,7 +25,10 @@ const currentPath = typeof ziggy?.location === 'string' ? new URL(ziggy.location
 
 <template>
     <div class="px-4 py-6">
-        <Heading title="Settings" description="Manage your profile and account settings" />
+        <Heading
+            title="Profile & Security"
+            description="Update your personal information, change your password, and manage important aspects of your account to keep it secure and tailored to your needs."
+        />
 
         <div class="flex flex-col space-y-8 md:space-y-0 lg:flex-row lg:space-x-12 lg:space-y-0">
             <aside class="w-full max-w-xl lg:w-48">

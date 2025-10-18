@@ -8,6 +8,9 @@ import {
 } from '@/common/components/dashboards/datatable/columnDef'
 import { Copy, Eye, Edit, Trash2 } from 'lucide-vue-next'
 import type { Role } from './type'
+import { useToast } from '@/core/composables/useToast';
+
+const { showCopyToClipboardToast } = useToast();
 
 export const roleColumns = createColumns<Role>([
 
@@ -37,7 +40,8 @@ export const roleColumns = createColumns<Role>([
             label: 'Copy ID',
             icon: Copy,
             onClick: (role) => {
-                navigator.clipboard.writeText(role.id.toString())
+                navigator.clipboard.writeText(role.id.toString());
+                showCopyToClipboardToast('Role ID');
             },
         },
         { separator: true, label: 'Separator' },

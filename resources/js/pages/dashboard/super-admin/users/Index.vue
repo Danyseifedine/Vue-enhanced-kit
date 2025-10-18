@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import DataTable from '@/common/components/dashboards/datatable/Datatable.vue';
+import DashboardDeleteDialog from '@/common/components/dashboards/datatable/datatableDeleteDialog.vue';
 import DashboardButton from '@/common/components/dashboards/form/DashboardButton.vue';
 import DashboardDatePicker from '@/common/components/dashboards/form/DashboardDatePicker.vue';
 import DashboardSelect from '@/common/components/dashboards/form/DashboardSelect.vue';
@@ -10,7 +11,6 @@ import { parseDate } from '@/core/utils/parsers';
 import type { BreadcrumbItem } from '@core/types';
 import type { DataTablePageProps } from '@core/types/datatable';
 import { Head, router } from '@inertiajs/vue3';
-import DeleteDialog from '@modules/admin/components/DeleteDialog.vue';
 import { useDeleteDialog } from '@modules/admin/composables/useDeleteDialog';
 import AdminLayout from '@modules/admin/layouts/AdminLayout.vue';
 import { Tag } from '@ui/badge';
@@ -281,7 +281,7 @@ const { deleteDialogOpen, itemToDelete: userToDelete } = useDeleteDialog<User>('
             </DataTable>
 
             <!-- Delete confirmation dialog -->
-            <DeleteDialog
+            <DashboardDeleteDialog
                 v-model:open="deleteDialogOpen"
                 :item-id="userToDelete?.id ?? null"
                 :item-name="userToDelete?.name"

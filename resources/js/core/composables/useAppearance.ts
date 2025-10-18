@@ -90,5 +90,6 @@ export function useAppearance() {
     return {
         appearance,
         updateAppearance,
+        getStoredAppearance,
     };
 }

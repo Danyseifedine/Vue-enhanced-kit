@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import DataTable from '@/common/components/dashboards/datatable/Datatable.vue';
+import DashboardDeleteDialog from '@/common/components/dashboards/datatable/datatableDeleteDialog.vue';
 import DashboardButton from '@/common/components/dashboards/form/DashboardButton.vue';
 import DashboardDatePicker from '@/common/components/dashboards/form/DashboardDatePicker.vue';
 import DashboardSelect from '@/common/components/dashboards/form/DashboardSelect.vue';
@@ -10,6 +11,7 @@ import { parseDate } from '@/core/utils/parsers';
 import type { BreadcrumbItem } from '@core/types';
 import type { DataTablePageProps } from '@core/types/datatable';
 import { Head } from '@inertiajs/vue3';
+import { useDeleteDialog } from '@modules/admin/composables/useDeleteDialog';
 import AdminLayout from '@modules/admin/layouts/AdminLayout.vue';
 import { Tag } from '@ui/badge';
 import { Button } from '@ui/button';
@@ -121,6 +123,9 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: route('super-admin.permissions.index'),
     },
 ];
+
+// Delete dialog using composable
+const { deleteDialogOpen, itemToDelete } = useDeleteDialog<Permission>('openDeleteDialog');
 </script>
 
 <template>
@@ -218,6 +223,15 @@ const breadcrumbs: BreadcrumbItem[] = [
                     </div>
                 </template>
             </DataTable>
+
+            <!-- Delete confirmation dialog -->
+            <DashboardDeleteDialog
+                v-model:open="deleteDialogOpen"
+                :item-id="itemToDelete?.id ?? null"
+                :item-name="itemToDelete?.name"
+                route-name="super-admin.permissions.destroy"
+                title="Delete Permission"
+            />
         </div>
     </AdminLayout>
 </template>

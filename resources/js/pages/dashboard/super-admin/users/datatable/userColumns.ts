@@ -10,11 +10,12 @@ import {
 import { Copy, Eye, Edit, Trash2 } from 'lucide-vue-next'
 import { router } from '@inertiajs/vue3'
 import type { User } from './type'
-
+import { useToast } from '@/core/composables/useToast';
 import { useGuard } from '@/guard'
 import { convertToBoolean } from '@/core/utils/converters';
 import { ref } from 'vue';
 
+const { showCopyToClipboardToast } = useToast();
 const { userIsSuperAdmin } = useGuard();
 
 const isToggleLoading = ref(false);
@@ -98,6 +99,7 @@ export const userColumns = createColumns<User>([
             icon: Copy,
             onClick: (user) => {
                 navigator.clipboard.writeText(user.id.toString())
+                showCopyToClipboardToast('User ID');
             },
         },
         { separator: true, label: 'Separator' },

@@ -6,27 +6,31 @@ import { usePage } from '@inertiajs/vue3';
 export const useToast = () => {
     const page = usePage<SharedData>();
 
-    const showSuccess = (message: string, description?: string) => {
+    const showSuccess = (message: string, description?: string, position: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' = 'top-right') => {
         toast.success(message, {
             description,
+            position,
         });
     };
 
-    const showError = (message: string, description?: string) => {
+    const showError = (message: string, description?: string, position: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' = 'top-right') => {
         toast.error(message, {
             description,
+            position,
         });
     };
 
-    const showInfo = (message: string, description?: string) => {
+    const showInfo = (message: string, description?: string, position: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' = 'top-right') => {
         toast.info(message, {
             description,
+            position,
         });
     };
 
-    const showWarning = (message: string, description?: string) => {
+    const showWarning = (message: string, description?: string, position: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' = 'top-right') => {
         toast.warning(message, {
             description,
+            position,
         });
     };
 
@@ -77,6 +81,12 @@ export const useToast = () => {
         );
     };
 
+    const showCopyToClipboardToast = (copiedItem: string, position: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' = 'bottom-left') => {
+        toast.success(`${copiedItem} copied to clipboard`, {
+            position,
+        });
+    };
+
     return {
         showSuccess,
         showError,
@@ -86,5 +96,6 @@ export const useToast = () => {
         showToast,
         initFlashToasts, // Call this to enable Laravel flash message watching
         toast, // Export the raw toast for advanced usage
+        showCopyToClipboardToast,
     };
 };

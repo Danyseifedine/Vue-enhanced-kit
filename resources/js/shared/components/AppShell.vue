@@ -11,7 +11,6 @@ defineProps<Props>();
 
 const isOpen = ref(true);
 
-
 onMounted(() => {
     isOpen.value = localStorage.getItem('sidebar') !== 'false';
 });
@@ -32,12 +31,6 @@ const handleSidebarChange = (open: boolean) => {
 
     <!-- Toast notifications - positioned outside the sidebar context -->
     <Teleport to="body">
-        <Toaster
-            position="top-right"
-            :duration="4000"
-            close-button
-            rich-colors
-            class="z-[9999] !fixed"
-        />
+        <Toaster position="top-right" :duration="4000" theme="light" class="!fixed z-[9999]" />
     </Teleport>
 </template>

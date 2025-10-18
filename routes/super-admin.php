@@ -1,11 +1,12 @@
 <?php
 
 use App\Http\Controllers\SuperAdmin\IndexController;
-use App\Http\Controllers\SuperAdmin\UsersController;
+use App\Http\Controllers\SuperAdmin\PermissionsController;
+use App\Http\Controllers\SuperAdmin\RolesController;
 use App\Http\Controllers\SuperAdmin\Settings\PasswordController;
 use App\Http\Controllers\SuperAdmin\Settings\ProfileController;
+use App\Http\Controllers\SuperAdmin\UsersController;
 use Illuminate\Support\Facades\Route;
-
 
 Route::prefix('super-admin')->name('super-admin.')->group(function () {
 
@@ -57,4 +58,46 @@ Route::prefix('super-admin')->name('super-admin.')->group(function () {
         // Custom route for toggling user status
         Route::patch('/{user}/toggle-status', [UsersController::class, 'toggleStatus'])->name('toggle-status');
     });
+
+    // ================================================
+    // ---------------- Start Roles ------------------
+    // ================================================
+
+    Route::prefix('roles')->name('roles.')->group(function () {
+        Route::resource('/', RolesController::class)
+            ->parameters(['' => 'role'])
+            ->only(['index', 'create', 'store', 'edit', 'show', 'update', 'destroy'])
+            ->names([
+                'index' => 'index',
+                'create' => 'create',
+                'store' => 'store',
+                'edit' => 'edit',
+                'show' => 'show',
+                'update' => 'update',
+                'destroy' => 'destroy',
+            ]);
+    });
+
+    // ================================================
+    // ---------------- End Roles --------------------
+    // ================================================
+
+    Route::prefix('permissions')->name('permissions.')->group(function () {
+        Route::resource('/', PermissionsController::class)
+            ->parameters(['' => 'permission'])
+            ->only(['index', 'create', 'store', 'edit', 'show', 'update', 'destroy'])
+            ->names([
+                'index' => 'index',
+                'create' => 'create',
+                'store' => 'store',
+                'edit' => 'edit',
+                'show' => 'show',
+                'update' => 'update',
+                'destroy' => 'destroy',
+            ]);
+    });
+
+    // ================================================
+    // ---------------- End Permissions --------------
+    // ================================================
 });
