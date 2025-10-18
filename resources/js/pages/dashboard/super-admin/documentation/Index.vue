@@ -19,6 +19,7 @@ import {
 } from 'lucide-vue-next';
 import FormsDoc from './components/Forms.vue';
 import TypographyDoc from './components/Typography.vue';
+import DataTableDoc from './components/DataTable.vue';
 
 const activeTab = ref(0);
 const componentSubTab = ref(0);
@@ -63,18 +64,24 @@ const sections = [
                     <TabPanel :value="0">
                         <Tabs v-model="componentSubTab" value="0" class="w-full">
                             <TabList class="mb-4">
-                                <Tab :value="0">Forms</Tab>
-                                <Tab :value="1">Typography</Tab>
+                                <Tab :value="0">DataTable</Tab>
+                                <Tab :value="1">Forms</Tab>
+                                <Tab :value="2">Typography</Tab>
                             </TabList>
 
                             <TabPanels>
-                                <!-- Forms Sub-Tab -->
+                                <!-- DataTable Sub-Tab -->
                                 <TabPanel :value="0">
+                                    <DataTableDoc />
+                                </TabPanel>
+
+                                <!-- Forms Sub-Tab -->
+                                <TabPanel :value="1">
                                     <FormsDoc />
                                 </TabPanel>
 
                                 <!-- Typography Sub-Tab -->
-                                <TabPanel :value="1">
+                                <TabPanel :value="2">
                                     <TypographyDoc />
                                 </TabPanel>
                             </TabPanels>
