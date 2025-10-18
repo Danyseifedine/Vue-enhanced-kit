@@ -13,7 +13,7 @@ const getAdminSidebarMainItems = (): NavItem[] => [
         title: 'Dashboard',
         href: route('super-admin.dashboard'),
         icon: LayoutGrid,
-        iconColor: '#3b82f6',
+        iconColor: '#3b82f6', // blue-500 (informative/overview)
         iconSize: '1.25rem',
         permissions: ['access-super-admin-dashboard'],
     },
@@ -25,13 +25,11 @@ const getAdminSidebarMainItems = (): NavItem[] => [
         title: 'Users',
         href: route('super-admin.users.index'),
         icon: User,
-        iconColor: '#10b981',
+        iconColor: '#16a34a', // green-600 (people/growth)
         iconSize: '1.25rem',
         permissions: ['access-super-admin-dashboard'],
     },
-
     {
-
         title: 'Privileges',
         isSection: true,
     },
@@ -39,7 +37,7 @@ const getAdminSidebarMainItems = (): NavItem[] => [
         title: 'Roles',
         href: route('super-admin.roles.index'),
         icon: Shield,
-        iconColor: '#f59e0b',
+        iconColor: '#f59e42', // orange-400 (protection/roles/shields)
         iconSize: '1.25rem',
         permissions: ['access-super-admin-role'],
     },
@@ -47,7 +45,7 @@ const getAdminSidebarMainItems = (): NavItem[] => [
         title: 'Permissions',
         href: route('super-admin.permissions.index'),
         icon: Key,
-        iconColor: '#ef4444',
+        iconColor: '#8b5cf6', // purple-500 (key/access/security)
         iconSize: '1.25rem',
         permissions: ['access-super-admin-permission'],
     },
