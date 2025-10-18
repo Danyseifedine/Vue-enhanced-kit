@@ -3,9 +3,9 @@ import type { NavItem } from "@/core/types";
 import {
     BookOpen,
     Key,
+    User,
     LayoutGrid,
     Shield,
-    Users,
 } from "lucide-vue-next";
 
 const getAdminSidebarMainItems = (): NavItem[] => [
@@ -13,14 +13,23 @@ const getAdminSidebarMainItems = (): NavItem[] => [
         title: 'Dashboard',
         href: route('super-admin.dashboard'),
         icon: LayoutGrid,
+        iconColor: '#3b82f6',
+        iconSize: '1.25rem', // 18px
         permissions: ['access-super-admin-dashboard'],
+    },
+    {
+        title: 'Pages',
+        isSection: true,
     },
     {
         title: 'Users',
         href: route('super-admin.users.index'),
-        icon: Users,
+        icon: User,
+        iconColor: '#10b981',
+        iconSize: '1.25rem', // 18px
         permissions: ['access-super-admin-dashboard'],
     },
+
     {
 
         title: 'Privileges',
@@ -30,12 +39,16 @@ const getAdminSidebarMainItems = (): NavItem[] => [
         title: 'Roles',
         href: route('super-admin.roles.index'),
         icon: Shield,
+        iconColor: '#f59e0b',
+        iconSize: '1.25rem', // 18px
         permissions: ['access-super-admin-role'],
     },
     {
         title: 'Permissions',
         href: route('super-admin.permissions.index'),
         icon: Key,
+        iconColor: '#ef4444',
+        iconSize: '1.25rem', // 22px
         permissions: ['access-super-admin-permission'],
     },
     // {
@@ -51,6 +64,8 @@ const getAdminSidebarFooterItems = (): NavItem[] => [
         title: 'Documentation',
         href: route('super-admin.documentation'),
         icon: BookOpen,
+        iconColor: '#8b5cf6',
+        iconSize: '1.25rem',
     },
 ];
 

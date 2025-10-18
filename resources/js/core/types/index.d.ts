@@ -28,6 +28,8 @@ export interface NavItem {
     title: string;
     href?: string;
     icon?: Component;
+    iconColor?: string; // Custom color for the icon (CSS color value)
+    iconSize?: string; // Custom size for the icon (CSS size value like '1.5rem', '24px', etc.)
     permission?: string;
     role?: string;
     permissions?: string[];

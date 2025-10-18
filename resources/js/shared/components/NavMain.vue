@@ -12,11 +12,13 @@ import {
     SidebarMenuSub,
     SidebarMenuSubButton,
     SidebarMenuSubItem,
+    useSidebar,
 } from '@ui/sidebar';
 import { ChevronRight } from 'lucide-vue-next';
 import { computed, onMounted, ref, watch } from 'vue';
 
 const globalLayoutStore = useGlobalLayoutStore();
+const { state: sidebarState } = useSidebar();
 
 const props = defineProps<{
     items: NavItem[];
@@ -211,19 +213,23 @@ const submenuItemClass = computed(() => {
             return 'minimal-menu-item';
     }
 });
+
+const isRTL = computed(() => {
+    return document.documentElement.dir === 'rtl';
+});
 </script>
 
 <template>
     <SidebarGroup class="px-2 py-0">
         <SidebarMenu>
             <template v-for="(item, index) in filteredItems" :key="index">
-                <!-- Section header -->
-                <template v-if="item.isSection">
+                <!-- Section header - only show when sidebar is expanded -->
+                <template v-if="item.isSection && sidebarState === 'expanded'">
                     <SidebarGroupLabel class="mt-4">{{ item.title }}</SidebarGroupLabel>
                 </template>
 
                 <!-- Regular menu item -->
-                <SidebarMenuItem v-else class="mb-1">
+                <SidebarMenuItem v-if="!item.isSection" class="mb-1">
                     <!-- Regular menu item without children -->
                     <template v-if="!item.children?.length">
                         <SidebarMenuButton
@@ -234,11 +240,32 @@ const submenuItemClass = computed(() => {
                             :class="globalLayoutStore.sidebarPadding"
                         >
                             <Link v-if="item.href !== '#'" :href="item.href ?? ''" class="flex items-center gap-2">
-                                <component :is="item.icon" v-if="item.icon" class="transition-transform duration-200" />
+                                <component
+                                    :is="item.icon"
+                                    v-if="item.icon"
+                                    class="font-bold transition-transform duration-200"
+                                    :style="{
+                                        color: item.iconColor || '',
+                                        width: item.iconSize || '',
+                                        height: item.iconSize || '',
+                                        position: 'relative',
+                                        [isRTL ? 'right' : 'left']: '-2px',
+                                    }"
+                                />
                                 <span>{{ item.title }}</span>
                             </Link>
                             <button v-else class="flex items-center gap-2">
-                                <component :is="item.icon" v-if="item.icon" class="transition-transform duration-200" />
+                                <component
+                                    :is="item.icon"
+                                    v-if="item.icon"
+                                    class="transition-transform duration-200"
+                                    :style="{
+                                        color: item.iconColor || '',
+                                        width: item.iconSize || '',
+                                        height: item.iconSize || '',
+                                        [isRTL ? 'right' : 'left']: '-2px',
+                                    }"
+                                />
                                 <span>{{ item.title }}</span>
                             </button>
                         </SidebarMenuButton>
@@ -292,11 +319,29 @@ const submenuItemClass = computed(() => {
                                                 class="flex items-center gap-2"
                                                 :class="globalLayoutStore.sidebarPadding"
                                             >
-                                                <component :is="child.icon" v-if="child.icon" class="h-4 w-4" />
+                                                <component
+                                                    :is="child.icon"
+                                                    v-if="child.icon"
+                                                    class="h-4 w-4"
+                                                    :style="{
+                                                        color: child.iconColor || '',
+                                                        width: child.iconSize || '',
+                                                        height: child.iconSize || '',
+                                                    }"
+                                                />
                                                 <span class="text-sm">{{ child.title }}</span>
                                             </Link>
                                             <button v-else class="flex items-center gap-2">
-                                                <component :is="child.icon" v-if="child.icon" class="h-4 w-4" />
+                                                <component
+                                                    :is="child.icon"
+                                                    v-if="child.icon"
+                                                    class="h-4 w-4"
+                                                    :style="{
+                                                        color: child.iconColor || '',
+                                                        width: child.iconSize || '',
+                                                        height: child.iconSize || '',
+                                                    }"
+                                                />
                                                 <span class="text-sm">{{ child.title }}</span>
                                             </button>
                                         </SidebarMenuSubButton>
