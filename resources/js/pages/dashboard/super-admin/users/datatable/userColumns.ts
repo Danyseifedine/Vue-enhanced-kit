@@ -5,7 +5,8 @@ import {
     textColumn,
     badgeColumn,
     dateColumn,
-    actionsColumn
+    actionsColumn,
+    imageColumn
 } from '@/common/components/dashboards/datatable/columnDef'
 import { Copy, Eye, Edit, Trash2 } from 'lucide-vue-next'
 import { router } from '@inertiajs/vue3'
@@ -28,6 +29,14 @@ export function createUserColumns(openDeleteDialog: (user: User) => void) {
         // Row counter (change to selectColumn() for checkboxes)
         counterColumn('#', {
             startFrom: 1,
+        }),
+
+        // Avatar image
+        imageColumn('avatar_url', 'Avatar', {
+            size: 'sm',
+            shape: 'circle',
+            alt: (user) => user.name,
+            fallback: '/assets/images/default.jpg'
         }),
 
         // Name with custom styling

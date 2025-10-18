@@ -794,6 +794,154 @@ actionsColumn([
                         </div>
                     </CollapsibleContent>
                 </Collapsible>
+
+                <!-- Image Column -->
+                <Collapsible>
+                    <CollapsibleTrigger class="flex items-center gap-2 font-bold text-lg hover:text-primary transition-colors w-full">
+                        <ChevronDown class="h-5 w-5" />
+                        <span>imageColumn</span>
+                        <Badge variant="secondary" class="ml-2">Image</Badge>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent class="mt-3 space-y-4">
+                        <p class="text-sm text-muted-foreground">
+                            Display images with automatic fallback, customizable size and shape. Perfect for avatars and thumbnails.
+                        </p>
+
+                        <div>
+                            <h4 class="font-semibold mb-2 text-sm">Usage Example</h4>
+                            <pre class="bg-muted p-3 rounded text-sm overflow-x-auto"><code>import { imageColumn } from '@/common/components/dashboards/datatable/columnDef';
+
+// Basic usage
+imageColumn('avatar', 'Photo')
+
+// With options
+imageColumn('avatar', 'Photo', {
+    fallback: '/images/default-avatar.png',
+    size: 'lg',
+    shape: 'circle',
+    alt: (user) =&gt; user.name,
+    sortable: false
+})</code></pre>
+                        </div>
+
+                        <div>
+                            <h4 class="font-semibold mb-2 text-sm">Properties</h4>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Property</TableHead>
+                                        <TableHead>Type</TableHead>
+                                        <TableHead>Default</TableHead>
+                                        <TableHead>Description</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    <TableRow>
+                                        <TableCell class="font-mono text-xs">fallback</TableCell>
+                                        <TableCell><Badge variant="outline">string</Badge></TableCell>
+                                        <TableCell><code>'/images/default-avatar.png'</code></TableCell>
+                                        <TableCell>Fallback image when value is null or fails to load</TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell class="font-mono text-xs">size</TableCell>
+                                        <TableCell><Badge variant="outline">'sm' | 'md' | 'lg'</Badge></TableCell>
+                                        <TableCell><code>'md'</code></TableCell>
+                                        <TableCell>Image size (sm: 32px, md: 40px, lg: 64px)</TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell class="font-mono text-xs">shape</TableCell>
+                                        <TableCell><Badge variant="outline">'circle' | 'square' | 'rounded'</Badge></TableCell>
+                                        <TableCell><code>'circle'</code></TableCell>
+                                        <TableCell>Image shape style</TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell class="font-mono text-xs">alt</TableCell>
+                                        <TableCell><Badge variant="outline">(row) => string</Badge></TableCell>
+                                        <TableCell><code>label</code></TableCell>
+                                        <TableCell>Alt text function for accessibility</TableCell>
+                                    </TableRow>
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </CollapsibleContent>
+                </Collapsible>
+
+                <!-- Link Column -->
+                <Collapsible>
+                    <CollapsibleTrigger class="flex items-center gap-2 font-bold text-lg hover:text-primary transition-colors w-full">
+                        <ChevronDown class="h-5 w-5" />
+                        <span>linkColumn</span>
+                        <Badge variant="secondary" class="ml-2">Link</Badge>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent class="mt-3 space-y-4">
+                        <p class="text-sm text-muted-foreground">
+                            Display clickable links with optional external link icon. Auto-truncates long URLs for better display.
+                        </p>
+
+                        <div>
+                            <h4 class="font-semibold mb-2 text-sm">Usage Example</h4>
+                            <pre class="bg-muted p-3 rounded text-sm overflow-x-auto"><code>import { linkColumn } from '@/common/components/dashboards/datatable/columnDef';
+
+// Basic usage (uses value as href)
+linkColumn('website', 'Website')
+
+// With custom href
+linkColumn('website', 'Website', {
+    href: (value, row) =&gt; `https://${value}`,
+    openInNewTab: true,
+    showIcon: true
+})
+
+// External link
+linkColumn('documentation_url', 'Docs', {
+    openInNewTab: true,
+    showIcon: true,
+    className: 'font-medium'
+})</code></pre>
+                        </div>
+
+                        <div>
+                            <h4 class="font-semibold mb-2 text-sm">Properties</h4>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Property</TableHead>
+                                        <TableHead>Type</TableHead>
+                                        <TableHead>Default</TableHead>
+                                        <TableHead>Description</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    <TableRow>
+                                        <TableCell class="font-mono text-xs">href</TableCell>
+                                        <TableCell><Badge variant="outline">(value, row) => string</Badge></TableCell>
+                                        <TableCell><code>value</code></TableCell>
+                                        <TableCell>Custom href function (defaults to cell value)</TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell class="font-mono text-xs">openInNewTab</TableCell>
+                                        <TableCell><Badge variant="outline">boolean</Badge></TableCell>
+                                        <TableCell><code>false</code></TableCell>
+                                        <TableCell>Open link in new tab (adds target="_blank")</TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell class="font-mono text-xs">showIcon</TableCell>
+                                        <TableCell><Badge variant="outline">boolean</Badge></TableCell>
+                                        <TableCell><code>false</code></TableCell>
+                                        <TableCell>Show external link icon (only when openInNewTab is true)</TableCell>
+                                    </TableRow>
+                                </TableBody>
+                            </Table>
+                        </div>
+
+                        <div class="border-l-4 border-blue-500 pl-4 bg-blue-500/5 p-3 rounded">
+                            <h5 class="font-semibold text-sm mb-2">💡 Note</h5>
+                            <p class="text-xs text-muted-foreground">
+                                URLs longer than 40 characters are automatically truncated for display. The full URL is still used in the href attribute.
+                            </p>
+                        </div>
+                    </CollapsibleContent>
+                </Collapsible>
             </CardContent>
         </Card>
 

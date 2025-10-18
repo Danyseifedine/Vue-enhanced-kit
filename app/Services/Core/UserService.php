@@ -15,8 +15,7 @@ class UserService
      */
     public function getBaseQuery(): Builder
     {
-        return User::select('id', 'name', 'email', 'is_active', 'email_verified_at', 'created_at')
-            ->with('roles');
+        return User::select('id', 'name', 'email', 'is_active', 'email_verified_at', 'created_at');
     }
 
     /**

@@ -116,6 +116,23 @@ export interface CustomColumnConfig extends ColumnConfig {
     render: (row: any) => any
 }
 
+// Image column configuration
+export interface ImageColumnConfig extends ColumnConfig {
+    type: 'image'
+    fallback?: string
+    size?: 'sm' | 'md' | 'lg'
+    shape?: 'circle' | 'square' | 'rounded'
+    alt?: (row: any) => string
+}
+
+// Link column configuration
+export interface LinkColumnConfig extends ColumnConfig {
+    type: 'link'
+    href?: (value: any, row: any) => string
+    openInNewTab?: boolean
+    showIcon?: boolean
+}
+
 // Action item in dropdown
 export interface ActionItem {
     label: string
@@ -137,3 +154,5 @@ export type AnyColumnConfig =
     | ToggleColumnConfig
     | ActionsColumnConfig
     | CustomColumnConfig
+    | ImageColumnConfig
+    | LinkColumnConfig

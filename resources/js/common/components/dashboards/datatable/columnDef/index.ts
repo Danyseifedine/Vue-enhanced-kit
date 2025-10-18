@@ -9,7 +9,9 @@ import type {
     CounterColumnConfig,
     ToggleColumnConfig,
     ActionsColumnConfig,
-    CustomColumnConfig
+    CustomColumnConfig,
+    ImageColumnConfig,
+    LinkColumnConfig
 } from '../index'
 import SelectColumn from './SelectColumn.vue'
 import CounterColumn from './CounterColumn.vue'
@@ -18,6 +20,8 @@ import TextColumn from './TextColumn.vue'
 import BadgeColumn from './BadgeColumn.vue'
 import DateColumn from './DateColumn.vue'
 import ActionsColumn from './ActionsColumn.vue'
+import ImageColumn from './ImageColumn.vue'
+import LinkColumn from './LinkColumn.vue'
 import SortableHeader from './SortableHeader.vue'
 
 /**
@@ -153,6 +157,28 @@ export function createColumns<TData>(configs: AnyColumnConfig[]): ColumnDef<TDat
                     cell: ({ row }) => customConfig.render(row.original),
                     enableSorting: customConfig.sortable ?? false,
                 }
+
+            case 'image':
+                const imageConfig = config as ImageColumnConfig
+                baseColumn.cell = ({ row }) => h(ImageColumn, {
+                    value: row.getValue(config.key) as string,
+                    fallback: imageConfig.fallback,
+                    size: imageConfig.size,
+                    shape: imageConfig.shape,
+                    alt: imageConfig.alt ? imageConfig.alt(row.original) : config.label || 'Image',
+                })
+                break
+
+            case 'link':
+                const linkConfig = config as LinkColumnConfig
+                baseColumn.cell = ({ row }) => h(LinkColumn, {
+                    value: row.getValue(config.key) as string,
+                    href: linkConfig.href ? linkConfig.href(row.getValue(config.key), row.original) : undefined,
+                    openInNewTab: linkConfig.openInNewTab,
+                    showIcon: linkConfig.showIcon,
+                    className: config.className,
+                })
+                break
         }
 
         return baseColumn
@@ -286,6 +312,45 @@ export function customColumn<TData = any>(
         label,
         render,
         sortable: false,
+        ...options,
+    }
+}
+
+/**
+ * Helper function to create an image column
+ */
+export function imageColumn(
+    key: string,
+    label?: string,
+    options?: Partial<ImageColumnConfig>
+): ImageColumnConfig {
+    return {
+        type: 'image',
+        key,
+        label: label || key,
+        sortable: false,
+        fallback: '/images/default-avatar.png',
+        size: 'md',
+        shape: 'circle',
+        ...options,
+    }
+}
+
+/**
+ * Helper function to create a link column
+ */
+export function linkColumn(
+    key: string,
+    label?: string,
+    options?: Partial<LinkColumnConfig>
+): LinkColumnConfig {
+    return {
+        type: 'link',
+        key,
+        label: label || key,
+        sortable: false,
+        openInNewTab: false,
+        showIcon: false,
         ...options,
     }
 }
