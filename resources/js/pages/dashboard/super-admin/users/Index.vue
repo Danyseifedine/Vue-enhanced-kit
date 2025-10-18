@@ -18,7 +18,7 @@ import { Button } from '@ui/button';
 import { Plus } from 'lucide-vue-next';
 import { onMounted, watch } from 'vue';
 import type { User } from './datatable/type';
-import { userColumns } from './datatable/userColumns';
+import { createUserColumns } from './datatable/userColumns';
 
 // User-specific filters interface
 interface UserFilters {
@@ -141,7 +141,10 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 // Delete dialog using composable
-const { deleteDialogOpen, itemToDelete: userToDelete } = useDeleteDialog<User>('openDeleteDialog');
+const { deleteDialogOpen, itemToDelete: userToDelete, openDeleteDialog } = useDeleteDialog<User>();
+
+// Create columns with delete dialog function passed as parameter
+const userColumns = createUserColumns(openDeleteDialog);
 </script>
 
 <template>

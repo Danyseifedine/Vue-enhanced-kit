@@ -110,6 +110,12 @@ export interface ActionsColumnConfig extends ColumnConfig {
     actions: ActionItem[]
 }
 
+// Custom column configuration
+export interface CustomColumnConfig extends ColumnConfig {
+    type: 'custom'
+    render: (row: any) => any
+}
+
 // Action item in dropdown
 export interface ActionItem {
     label: string
@@ -130,3 +136,4 @@ export type AnyColumnConfig =
     | CounterColumnConfig
     | ToggleColumnConfig
     | ActionsColumnConfig
+    | CustomColumnConfig

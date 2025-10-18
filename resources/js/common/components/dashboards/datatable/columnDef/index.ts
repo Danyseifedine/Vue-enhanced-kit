@@ -8,7 +8,8 @@ import type {
     SelectColumnConfig,
     CounterColumnConfig,
     ToggleColumnConfig,
-    ActionsColumnConfig
+    ActionsColumnConfig,
+    CustomColumnConfig
 } from '../index'
 import SelectColumn from './SelectColumn.vue'
 import CounterColumn from './CounterColumn.vue'
@@ -116,6 +117,7 @@ export function createColumns<TData>(configs: AnyColumnConfig[]): ColumnDef<TDat
                     value: row.getValue(config.key),
                     variants: badgeConfig.variants,
                     defaultVariant: badgeConfig.defaultVariant,
+                    multiple: badgeConfig.multiple,
                 })
                 break
 
@@ -142,6 +144,14 @@ export function createColumns<TData>(configs: AnyColumnConfig[]): ColumnDef<TDat
                     enableSorting: false,
                     enableHiding: false,
                     size: 40,
+                }
+
+            case 'custom':
+                const customConfig = config as CustomColumnConfig
+                return {
+                    ...baseColumn,
+                    cell: ({ row }) => customConfig.render(row.original),
+                    enableSorting: customConfig.sortable ?? false,
                 }
         }
 
@@ -172,14 +182,16 @@ export function textColumn(
 export function badgeColumn(
     key: string,
     label?: string,
-    variants?: Record<string, string>,
     options?: Partial<BadgeColumnConfig>
 ): BadgeColumnConfig {
     return {
         type: 'badge',
         key,
         label: label || key,
-        variants,
+        sortable: false,
+        variants: {},
+        defaultVariant: 'secondary',
+        multiple: false,
         ...options,
     }
 }
@@ -255,6 +267,25 @@ export function actionsColumn(
         type: 'actions',
         key: 'actions',
         actions,
+        ...options,
+    }
+}
+
+/**
+ * Helper function to create a custom column with custom render function
+ */
+export function customColumn<TData = any>(
+    key: string,
+    label: string,
+    render: (row: TData) => any,
+    options?: Partial<CustomColumnConfig>
+): CustomColumnConfig {
+    return {
+        type: 'custom',
+        key,
+        label,
+        render,
+        sortable: false,
         ...options,
     }
 }

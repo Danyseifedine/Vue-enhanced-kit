@@ -16,7 +16,7 @@ import AdminLayout from '@modules/admin/layouts/AdminLayout.vue';
 import { Tag } from '@ui/badge';
 import { Button } from '@ui/button';
 import { onMounted, watch } from 'vue';
-import { permissionColumns } from './datatable/permissionColumns';
+import { createPermissionColumns } from './datatable/permissionColumns';
 import type { Permission } from './datatable/type';
 
 // Permission-specific filters interface
@@ -125,7 +125,10 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 // Delete dialog using composable
-const { deleteDialogOpen, itemToDelete } = useDeleteDialog<Permission>('openDeleteDialog');
+const { deleteDialogOpen, itemToDelete, openDeleteDialog } = useDeleteDialog<Permission>();
+
+// Create columns with delete dialog function passed as parameter
+const permissionColumns = createPermissionColumns(openDeleteDialog);
 </script>
 
 <template>

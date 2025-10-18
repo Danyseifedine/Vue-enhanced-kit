@@ -9,12 +9,13 @@
       "Bash(find:*)",
       "Bash(cp:*)",
       "Bash(php artisan route:list:*)",
-      "Bash(php artisan:*)"
+      "Bash(php artisan:*)",
+      "Bash(vendor/bin/pint:*)"
     ],
     "deny": []
   },
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "laravel-boost"
-  ],
-  "enableAllProjectMcpServers": true
+  ]
 }

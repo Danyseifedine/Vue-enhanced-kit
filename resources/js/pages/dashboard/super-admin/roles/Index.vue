@@ -16,7 +16,7 @@ import { Tag } from '@ui/badge';
 import { Button } from '@ui/button';
 import { Plus } from 'lucide-vue-next';
 import { onMounted, watch } from 'vue';
-import { roleColumns } from './datatable/roleColumns';
+import { createRoleColumns } from './datatable/roleColumns';
 import type { Role } from './datatable/type';
 
 // Role-specific filters interface
@@ -116,7 +116,10 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 // Delete dialog using composable
-const { deleteDialogOpen, itemToDelete: roleToDelete } = useDeleteDialog<Role>('openRoleDeleteDialog');
+const { deleteDialogOpen, itemToDelete: roleToDelete, openDeleteDialog } = useDeleteDialog<Role>();
+
+// Create columns with delete dialog function passed as parameter
+const roleColumns = createRoleColumns(openDeleteDialog);
 </script>
 
 <template>

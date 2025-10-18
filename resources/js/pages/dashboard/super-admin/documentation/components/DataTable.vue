@@ -1027,68 +1027,80 @@ class UsersController extends BaseController
 } from '@/common/components/dashboards/datatable/columnDef';
 import { Copy, Eye, Edit, Trash2 } from 'lucide-vue-next';
 import { router } from '@inertiajs/vue3';
+import { useToast } from '@/core/composables/useToast';
 import type { User } from './type';
 
-export const userColumns = createColumns&lt;User&gt;([
-    counterColumn('#', { startFrom: 1 }),
+/**
+ * Factory function to create user table columns
+ * @param openDeleteDialog - Function to open delete dialog (passed from parent)
+ */
+export function createUserColumns(openDeleteDialog: (user: User) =&gt; void) {
+    const { showCopyToClipboardToast } = useToast();
 
-    textColumn('name', 'Name', {
-        sortable: true,
-        searchable: true,
-        className: 'font-medium',
-    }),
+    return createColumns&lt;User&gt;([
+        counterColumn('#', { startFrom: 1 }),
 
-    textColumn('email', 'Email', {
-        sortable: true,
-        className: 'lowercase',
-    }),
+        textColumn('name', 'Name', {
+            sortable: true,
+            searchable: true,
+            className: 'font-medium',
+        }),
 
-    badgeColumn('roles', 'Roles'),
+        textColumn('email', 'Email', {
+            sortable: true,
+            className: 'lowercase',
+        }),
 
-    toggleColumn('is_active', 'Active', {
-        onToggle: (value, user, control) =&gt; {
-            router.patch(route('super-admin.users.toggle-status', user.id),
-                { is_active: value },
-                {
-                    onSuccess: (page) =&gt; {
-                        if (page.props.flash?.toast?.success === false) {
-                            control.revert();
+        badgeColumn('roles', 'Roles'),
+
+        toggleColumn('is_active', 'Active', {
+            onToggle: (value, user, control) =&gt; {
+                router.patch(route('super-admin.users.toggle-status', user.id),
+                    { is_active: value },
+                    {
+                        onSuccess: (page) =&gt; {
+                            if (page.props.flash?.toast?.success === false) {
+                                control.revert();
+                            }
                         }
                     }
-                }
-            );
-        },
-        size: 'sm',
-    }),
+                );
+            },
+            size: 'sm',
+        }),
 
-    dateColumn('created_at', 'Joined', { relative: true }),
+        dateColumn('created_at', 'Joined', { relative: true }),
 
-    actionsColumn([
-        {
-            label: 'Copy ID',
-            icon: Copy,
-            onClick: (user) =&gt; navigator.clipboard.writeText(user.id),
-        },
-        { separator: true, label: 'Separator' },
-        {
-            label: 'View',
-            icon: Eye,
-            href: (user) =&gt; route('super-admin.users.show', user.id),
-        },
-        {
-            label: 'Edit',
-            icon: Edit,
-            href: (user) =&gt; route('super-admin.users.edit', user.id),
-        },
-        { separator: true, label: 'Separator' },
-        {
-            label: 'Delete',
-            icon: Trash2,
-            destructive: true,
-            onClick: (user) =&gt; openDeleteDialog(user),
-        },
-    ]),
-]);</code></pre>
+        actionsColumn([
+            {
+                label: 'Copy ID',
+                icon: Copy,
+                onClick: (user) =&gt; {
+                    navigator.clipboard.writeText(user.id);
+                    showCopyToClipboardToast('User ID');
+                },
+            },
+            { separator: true, label: 'Separator' },
+            {
+                label: 'View',
+                icon: Eye,
+                href: (user) =&gt; route('super-admin.users.show', user.id),
+            },
+            {
+                label: 'Edit',
+                icon: Edit,
+                href: (user) =&gt; route('super-admin.users.edit', user.id),
+            },
+            { separator: true, label: 'Separator' },
+            {
+                label: 'Delete',
+                icon: Trash2,
+                destructive: true,
+                onClick: (user) =&gt; openDeleteDialog(user),
+            },
+        ]),
+    ]);
+}</code></pre>
                 </div>
 
                 <div>
@@ -1108,9 +1120,10 @@ export const userColumns = createColumns&lt;User&gt;([
                     <h4 class="font-semibold mb-2 text-sm">Page Component (Index.vue)</h4>
                     <pre class="bg-muted p-3 rounded text-sm overflow-x-auto"><code>&lt;script setup lang="ts"&gt;
 import DataTable from '@/common/components/dashboards/datatable/Datatable.vue';
-import { userColumns } from './datatable/userColumns';
+import { createUserColumns } from './datatable/userColumns';
 import type { User } from './datatable/type';
 import { useFilters } from '@/core/composables/useFilters';
+import { useDeleteDialog } from '@/modules/admin/composables/useDeleteDialog';
 
 const props = defineProps&lt;{
     users: {
@@ -1142,6 +1155,12 @@ const { localFilters, applyFilters, clearFilters } = useFilters(
     props.filters,
     { routeName: 'super-admin.users.index' }
 );
+
+// Setup delete dialog
+const { deleteDialogOpen, itemToDelete, openDeleteDialog } = useDeleteDialog&lt;User&gt;();
+
+// Create columns with delete dialog function passed as parameter
+const userColumns = createUserColumns(openDeleteDialog);
 
 const handleRowClick = (user: User) =&gt; {
     router.get(route('super-admin.users.show', user));
