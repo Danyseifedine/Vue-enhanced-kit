@@ -15,7 +15,12 @@ class RolesController extends BaseController
 {
     public function __construct(
         private RoleService $roleService
-    ) {}
+    ) {
+        $this->middleware('permission:access-super-admin-role')->only('index', 'show');
+        $this->middleware('permission:create-super-admin-role')->only('create', 'store');
+        $this->middleware('permission:update-super-admin-role')->only('edit', 'update');
+        $this->middleware('permission:delete-super-admin-role')->only('destroy');
+    }
 
     public function index()
     {
